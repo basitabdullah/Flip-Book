@@ -11,13 +11,16 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.3",
+    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
     "react-pageflip": "^2.0.3",
     "react-router-dom": "^7.0.2",
     "sass": "^1.83.0",
-    "scss": "^0.2.4"
+    "scss": "^0.2.4",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

@@ -1,0 +1,139 @@
+// Colors
+$primary-color: #646cff;
+$secondary-color: #535bf2;
+$text-color: #ffffff;
+$background-dark: #1a1a1a;
+
+// Spacing
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 2rem;
+$spacing-xl: 4rem;
+
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+.footer {
+  background-color: $background-dark;
+  color: $text-color;
+  padding: $spacing-lg $spacing-md;
+  width: 100%;
+
+  &__content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: $spacing-lg;
+  }
+
+  &__section {
+    flex: 1;
+    min-width: 250px;
+    padding: $spacing-md;
+
+    h3 {
+      color: $text-color;
+      font-size: 1.2rem;
+      margin-bottom: $spacing-md;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -0.5rem;
+        width: 50px;
+        height: 2px;
+        background-color: $primary-color;
+      }
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: $spacing-sm;
+        gap: $spacing-sm;
+        
+        i {
+          color: $primary-color;
+          min-width: 20px;
+        }
+      }
+    }
+  }
+
+  &__social {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba($text-color, 0.1);
+      color: $text-color;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: $primary-color;
+        transform: translateY(-3px);
+      }
+
+      i {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  &__bottom {
+    margin-top: $spacing-lg;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba($text-color, 0.1);
+    text-align: center;
+
+    p {
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .footer {
+    padding: $spacing-md;
+
+    &__content {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: $spacing-lg;
+    }
+
+    &__section {
+      h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      ul li {
+        justify-content: center;
+      }
+    }
+
+    &__social {
+      justify-content: center;
+    }
+  }
+}

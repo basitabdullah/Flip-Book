@@ -1,0 +1,231 @@
+// Colors
+$primary-color: #4a90e2;
+$secondary-color: #2c3e50;
+$background-color: #f5f6fa;
+$text-color: #2c3e50;
+$error-color: #e74c3c;
+$success-color: #2ecc71;
+
+// Breakpoints
+$mobile: 576px;
+$tablet: 768px;
+$desktop: 1024px;
+
+// Animations
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+
+// Shadows
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+// Reset
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.animate {
+  &-fadeIn {
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  &-slideIn {
+    animation: slideIn 0.6s ease-out;
+  }
+
+  &-pulse {
+    animation: pulse 2s infinite;
+  }
+}
+
+.back-button {
+  padding: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}
+
+// Auth Forms
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: $shadow-lg;
+  transition: all $transition-normal ease;
+  animation: fadeIn 0.8s ease-out;
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  h2 {
+    text-align: center;
+    color: $secondary-color;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
+    animation: fadeIn 1s ease-out;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    animation: fadeIn 0.8s ease-out;
+    animation-fill-mode: both;
+
+    @for $i from 1 through 4 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+
+    label {
+      font-weight: 500;
+      color: $secondary-color;
+      font-size: 1rem;
+    }
+
+    input {
+      padding: 0.7rem;
+      border: 2px solid #e1e1e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all $transition-normal ease;
+      background-color: #f8f9fa;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba($primary-color, 0.1);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  &__button {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $transition-normal ease;
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.8s ease-out;
+    animation-delay: 0.4s;
+    animation-fill-mode: both;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    &:hover {
+      background-color: ($primary-color, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba($primary-color, 0.3);
+
+      &::before {
+        width: 300px;
+        height: 300px;
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+      animation: shake 0.3s ease-out;
+    }
+  }
+
+  &__link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    animation: fadeIn 0.8s ease-out;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      transition: all $transition-normal ease;
+
+      &:hover {
+        color: ($primary-color, 15%);
+        text-decoration: underline;
+      }
+    }
+  }
+}

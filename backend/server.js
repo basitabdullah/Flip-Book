@@ -4,18 +4,24 @@ import cors from "cors";
 import { connectDB } from "./lib/connectDB.js";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
-import pageRoutes from "./routes/pageRoutes.js";
+import flipbookRoutes from "./routes/flipbookRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 const app = express();
 dotenv.config();
 app.use(express.json({ limit: "10mb" }));
-app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
+const corsOptions = {
+  origin: process.env.CLIENT_URL || "http://localhost:5173", // Specify exact origin
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+app.use(cors(corsOptions));
 
 //ROUTES
 app.use("/api/auth", authRoutes);
-app.use("/api/pages", pageRoutes);
+app.use("/api/flipbook", flipbookRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

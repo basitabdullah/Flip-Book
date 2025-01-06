@@ -9,7 +9,7 @@ import { CgProfile } from "react-icons/cg";
 import { FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const Navigation = ({ bookRef }) => { 
+const Navigation = ({ bookRef }) => {
   const goForward = () => {
     if (bookRef?.current) {
       bookRef.current.pageFlip().flipNext();
@@ -23,8 +23,8 @@ const Navigation = ({ bookRef }) => {
   };
 
   const user = {
-    role : "admin"
-  }
+    role: "admin",
+  };
 
   return (
     <div className="navigation">
@@ -44,21 +44,17 @@ const Navigation = ({ bookRef }) => {
         <div className="button" title="Search">
           <IoSearch />
         </div>
-        <div className="button" title="Search">
+        <Link to="/login" className="button" title="Search">
           <CgProfile />
-        </div>
-       {
-        user.role === "admin" && (
-          <Link to="/admin-dashboard" className="button" title="Search">
+        </Link>
+        {user.role === "admin" && (
+          <Link to="/admin/admin-dashboard" className="button" title="Search">
             <FaLock />
           </Link>
-        )
-       }
-        
+        )}
       </div>
     </div>
   );
 };
 
 export default Navigation;
-  
