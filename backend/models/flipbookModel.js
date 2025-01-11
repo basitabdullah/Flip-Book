@@ -5,6 +5,11 @@ const pageSchema = new mongoose.Schema({
   description: { type: String, required: true },
   content: { type: String, required: true }, // URL for image, video, or map
   pageNumber: { type: Number, required: true },
+  contentType: {
+    type: String,
+    required: true,
+    enum: ["image", "video", "map"], // Add allowed content types
+  },
 });
 
 const flipbookSchema = new mongoose.Schema({
