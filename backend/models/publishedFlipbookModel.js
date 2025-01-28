@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 
-const archiveSchema = new mongoose.Schema({
-  version: { type: String, required: true, unique: true },
+const publishedFlipbookSchema = new mongoose.Schema({
+  issue: { type: String, required: true, unique: true },
   name: { type: String, required: true, unique: true },
-  flipbook: { type: mongoose.Schema.Types.ObjectId, ref: "Flipbook" },
+  flipbook: { type: mongoose.Schema.Types.ObjectId, unique: false, ref: "Flipbook" },
+  isPublished: { type: Boolean, default: false },
   pages: [{
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -15,11 +16,7 @@ const archiveSchema = new mongoose.Schema({
       enum: ["image", "video", "map"],
     },
   }],
-  archivedAt: { type: Date, default: Date.now },
+  publishedAt: { type: Date, default: Date.now },
 });
 
-export const Archive = mongoose.model("Archive", archiveSchema);
-
-
-
-
+export const PublishedFlipbook = mongoose.model("PublishedFlipbook", publishedFlipbookSchema);

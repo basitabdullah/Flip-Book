@@ -8,8 +8,9 @@ import { IoSearch } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { BiScreenshot } from "react-icons/bi";
 
-const Navigation = ({ bookRef }) => {
+const Navigation = ({ bookRef, onStartSnipping }) => {
   const goForward = () => {
     if (bookRef?.current) {
       bookRef.current.pageFlip().flipNext();
@@ -52,6 +53,9 @@ const Navigation = ({ bookRef }) => {
             <FaLock />
           </Link>
         )}
+        <div className="button" title="Take Screenshot">
+          <BiScreenshot onClick={onStartSnipping} />
+        </div>
       </div>
     </div>
   );

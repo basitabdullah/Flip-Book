@@ -1,23 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import { Flipbook } from "../models/flipbookModel.js";
 import { Archive } from "../models/archiveModel.js";
+import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
 // Get a flipbook by ID
 
 export const getFlipbookById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('Fetching flipbook with ID:', id);
 
     const flipbook = await Flipbook.findById(id);
-    console.log('Found flipbook:', flipbook);
-    
+
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found" });
     }
 
     res.status(200).json(flipbook);
   } catch (error) {
-    console.error('Error in getFlipbookById:', error);
+    console.error("Error in getFlipbookById:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -99,7 +98,13 @@ export const createPage = async (req, res) => {
     }
 
     // Add the new page to the flipbook
-    flipbook.pages.push({ pageNumber, title, description, content, contentType });
+    flipbook.pages.push({
+      pageNumber,
+      title,
+      description,
+      content,
+      contentType,
+    });
     await flipbook.save();
 
     res.status(201).json({ message: "Page added successfully.", flipbook });
@@ -111,37 +116,45 @@ export const createPage = async (req, res) => {
 
 // Update an existing page
 export const updatePage = async (req, res) => {
-  const { title, description, content, pageNumber, version, contentType } = req.body;
+  const { title, description, content, pageNumber, version, contentType } =
+    req.body;
   const { pageId } = req.params;
   const { flipbookId } = req.params;
 
-  console.log('Received request with:', {
+  console.log("Received request with:", {
     flipbookId,
     pageId,
-    body: req.body
+    body: req.body,
   });
 
   // Validate MongoDB ObjectId format
-  if (!mongoose.Types.ObjectId.isValid(flipbookId) || !mongoose.Types.ObjectId.isValid(pageId)) {
-    return res.status(400).json({ message: "Invalid flipbook or page ID format" });
+  if (
+    !mongoose.Types.ObjectId.isValid(flipbookId) ||
+    !mongoose.Types.ObjectId.isValid(pageId)
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Invalid flipbook or page ID format" });
   }
 
   try {
     // Find the specific flipbook by ID
     const flipbook = await Flipbook.findById(flipbookId);
-    console.log('Flipbook query result:', flipbook);
-    
+    console.log("Flipbook query result:", flipbook);
+
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
 
     // Find the page by ID within the flipbook's pages array
-    const pageIndex = flipbook.pages.findIndex(p => p._id.toString() === pageId);
-    console.log('Page search result:', {
+    const pageIndex = flipbook.pages.findIndex(
+      (p) => p._id.toString() === pageId
+    );
+    console.log("Page search result:", {
       pageIndex,
-      availablePages: flipbook.pages.map(p => p._id.toString())
+      availablePages: flipbook.pages.map((p) => p._id.toString()),
     });
-    
+
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });
     }
@@ -156,14 +169,6 @@ export const updatePage = async (req, res) => {
       }
     }
 
-    // Archive the current version
-    const archive = new Archive({
-      flipbookId: flipbook._id,
-      version: version || `v${Date.now()}`,
-      pages: flipbook.pages,
-    });
-    await archive.save();
-
     // Update the page
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
@@ -171,9 +176,9 @@ export const updatePage = async (req, res) => {
       description: description || flipbook.pages[pageIndex].description,
       content: content || flipbook.pages[pageIndex].content,
       contentType: contentType || flipbook.pages[pageIndex].contentType,
-      pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber
+      pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber,
     };
-    
+
     await flipbook.save();
 
     res.status(200).json({ message: "Page updated successfully.", flipbook });
@@ -185,7 +190,7 @@ export const updatePage = async (req, res) => {
 
 // Delete a page
 export const deletePage = async (req, res) => {
-  const { pageNumber } = req.params;
+  const { pageId } = req.params;
 
   try {
     const flipbook = await Flipbook.findOne();
@@ -193,20 +198,14 @@ export const deletePage = async (req, res) => {
       return res.status(404).json({ message: "Flipbook not found." });
     }
 
+    // Find the page by ID instead of page number
     const pageIndex = flipbook.pages.findIndex(
-      (p) => p.pageNumber === parseInt(pageNumber, 10)
+      (p) => p._id.toString() === pageId
     );
+
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });
     }
-
-    // Archive the current version
-    const archive = new Archive({
-      flipbookId: flipbook._id,
-      version: req.body.version || `v${Date.now()}`,
-      pages: flipbook.pages,
-    });
-    await archive.save();
 
     // Remove the page
     flipbook.pages.splice(pageIndex, 1);
@@ -219,9 +218,24 @@ export const deletePage = async (req, res) => {
   }
 };
 
+//get archived version by ID
+export const getArchivedVersionById = async (req, res) => {
+  try {
+    const { archiveId } = req.params;
+    const archive = await Archive.findById(archiveId);
+    if (!archive) {
+      return res.status(404).json({ message: "Archived version not found." });
+    }
+    res.status(200).json(archive);
+  } catch (error) {
+    console.error("Error fetching archived version:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 // Archive the current flipbook version
 export const archiveVersion = async (req, res) => {
   const { version } = req.body;
+  const { name } = req.body;
   const { flipbookId } = req.params; // Extract flipbookId from URL params
 
   try {
@@ -248,6 +262,7 @@ export const archiveVersion = async (req, res) => {
 
     // Create a new Archive entry
     const archive = new Archive({
+      name,
       flipbook: flipbook._id,
       version: version || `v${Date.now()}`, // Default version if not provided
       pages: flipbook.pages, // Copy all pages from the flipbook
@@ -276,13 +291,14 @@ export const getArchivedVersions = async (req, res) => {
   }
 };
 
+//////////////////////publish/////////////////////////////////
+
 // Publish a specific archived version
 export const publishArchivedVersion = async (req, res) => {
-  const { version } = req.params;
-
+  const { flipbookId, version } = req.params;
   try {
     const archive = await Archive.findOne({
-      flipbookId: req.params.flipbookId,
+      flipbookId,
       version,
     });
     if (!archive) {
@@ -300,6 +316,96 @@ export const publishArchivedVersion = async (req, res) => {
       .json({ message: "Archived version published successfully.", flipbook });
   } catch (error) {
     console.error("Error publishing archived version:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Publish a specific Flipbbok
+export const publishFlipbook = async (req, res) => {
+  const { flipbookId } = req.params;
+  const { name } = req.body;
+  const { issueName } = req.body;
+
+  try {
+    // Find the Flipbook by ID
+    const flipbook = await Flipbook.findById(flipbookId);
+    if (!flipbook) {
+      return res.status(404).json({ message: "Flipbook not found." });
+    }
+
+    // Create a new PublishedFlipbook
+    const publishedFlipbook = new PublishedFlipbook({
+      name,
+      flipbook: flipbook._id,
+      pages: flipbook.pages,
+      issue: issueName,
+    });
+
+    // Save the PublishedFlipbook
+    await publishedFlipbook.save();
+
+    // Mark the Flipbook as published
+    flipbook.isPublished = true;
+    await flipbook.save();
+
+    // Respond with success
+    res.status(200).json({
+      message: "Flipbook published successfully.",
+      publishedFlipbook,
+    });
+  } catch (error) {
+    console.error("Error publishing flipbook:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//////////////////////////////////////////get published flipbook////////////////////////////////////
+
+export const getPublishedFlipbook = async (req, res) => {
+  const { flipbookId } = req.params;
+  try {
+    const flipbook = await PublishedFlipbook.findById(flipbookId);
+    if (!flipbook) {
+      return res.status(404).json({ message: "Flipbook not found." });
+    }
+    res.status(200).json(flipbook);
+  } catch (error) {
+    console.error("Error getting flipbook:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllPublishedFlipbooks = async (req, res) => {
+  try {
+    const flipbooks = await PublishedFlipbook.find();
+
+    if (!flipbooks || flipbooks.length === 0) {
+      console.log("No flipbooks found.");
+      return res.status(404).json({ message: "No Published Flipbooks found." });
+    }
+
+    res.status(200).json(flipbooks);
+  } catch (error) {
+    console.error("Error getting flipbooks:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const togglePublishedFlipbook = async (req, res) => {
+  const { flipbookId } = req.params;
+  try {
+    const flipbook = await PublishedFlipbook.findById(flipbookId);
+
+    if (!flipbook) {
+      return res.status(404).json({ message: "Flipbook not found." });
+    }
+
+    flipbook.isPublished = !flipbook.isPublished;
+    await flipbook.save();
+    
+    res.status(200).json(`Publication Status: ${flipbook.isPublished}`);
+  } catch (error) {
+    console.error("Error getting flipbooks:", error);
     res.status(500).json({ message: error.message });
   }
 };

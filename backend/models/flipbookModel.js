@@ -13,8 +13,14 @@ const pageSchema = new mongoose.Schema({
 });
 
 const flipbookSchema = new mongoose.Schema({
-  pages: [pageSchema],
-  currentVersion: { type: String, default: "1.0" }, // e.g., versioning
+  pages: [pageSchema], // Stores current pages of the flipbook
+  currentVersion: { type: String, default: "1.0" }, // The current version of the flipbook
+  archivedVersions: [
+    {
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Archive", // References the Archive model
+    },
+  ],
 });
 
 export const Flipbook = mongoose.model("Flipbook", flipbookSchema);

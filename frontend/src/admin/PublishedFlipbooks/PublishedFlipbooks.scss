@@ -1,0 +1,73 @@
+.published-flipbooks {
+  padding: 1rem;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .error {
+    color: red;
+    font-weight: bold;
+  }
+
+  .flipbooks-list {
+    display: grid;
+    gap: 1rem;
+
+    .flipbook-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+      .flipbook-info {
+        display: flex;
+        flex-direction: column;
+
+        .flipbook-title {
+          font-size: 1.1rem;
+          font-weight: bold;
+        }
+
+        .flipbook-date {
+          font-size: 0.9rem;
+          color: gray;
+        }
+      }
+
+      .buttons {
+        display: flex;
+        gap: 0.5rem;
+
+        .view-button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          width: 100px;
+          background-color: #4caf50;
+          color: white;
+        }
+
+        .toggle-button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          width: 100px;
+          color: white;
+          &.unpublish {
+            background-color: #f44336;
+          }
+          &.publish {
+            background-color: #3c86dc;
+          }
+        }
+      }
+    }
+  }
+}
