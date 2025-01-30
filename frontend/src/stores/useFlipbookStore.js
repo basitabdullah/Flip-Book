@@ -305,8 +305,77 @@ const useFlipbookStore = create((set) => ({
       throw errorMessage;
     }
   },
-  
-  
+
+  updatePublishedFlipbook: async (flipbookId, pageId, pageData) => {
+    try {
+      set({ loading: true, error: null });
+      const { version, ...updateData } = pageData;
+
+      const response = await axiosInstance.put(
+        `/flipbook/published/${flipbookId}/pages/${pageId}`,
+        updateData
+      );
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      set({ 
+        publishedFlipbook: response.data.publishedFlipbook, 
+        loading: false 
+      });
+      
+      toast.success("Published page updated successfully");
+      return response.data;
+    } catch (error) {
+      console.error("Error updating published page:", error.response || error);
+      const errorMessage = error.response?.data?.message || error.message;
+      
+      set({
+        loading: false,
+        error: errorMessage
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  deletePublishedFlipbook: async (flipbookId) => {
+    try {
+      set({ loading: true, error: null });
+
+      const response = await axiosInstance.delete(
+        `/flipbook/published/${flipbookId}`
+      );
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      // Remove the deleted flipbook from the state
+      set((state) => ({
+        publishedFlipbooks: state.publishedFlipbooks.filter(
+          (flipbook) => flipbook._id !== flipbookId
+        ),
+        loading: false
+      }));
+
+      toast.success("Published flipbook deleted successfully");
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting published flipbook:", error.response || error);
+      const errorMessage = error.response?.data?.message || error.message;
+      
+      set({
+        loading: false,
+        error: errorMessage
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
 }));
 
 export default useFlipbookStore;

@@ -8,7 +8,8 @@ import Footer from "./components/Footer/Footer";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import { Toaster } from "react-hot-toast";
-import ArchiveEditor from "./admin/ArchiveEditor/ArchiveEditor";
+import PublishedEditor from './admin/PublishedEditor/PublishedEditor';
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -18,7 +19,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/admin/admin-dashboard" element={<Dashboard />} />
         <Route path="/admin/archived-versions" element={<ArchivedVersions />} />
-        <Route path="/admin/archive-editor/:archiveId" element={<ArchiveEditor />} />
+        <Route path="/published-editor/:flipbookId" element={<PublishedEditor />} />
       </Routes>
       <Footer />
       <Toaster />

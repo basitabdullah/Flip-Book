@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./PublishedFlipbooks.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore";
-import { Link } from "react-router-dom";
-import { FaTrashAlt } from 'react-icons/fa'; 
+import { Link, useNavigate } from "react-router-dom";
+import { FaTrashAlt, FaEdit } from 'react-icons/fa';
+
 const PublishedFlipbooks = () => {
   const {
     getPublishedFlipbooks,
@@ -10,7 +11,11 @@ const PublishedFlipbooks = () => {
     loading,
     error,
     togglePublishedFlipbook,
+    updatePublishedFlipbook,
+    deletePublishedFlipbook,
   } = useFlipbookStore();
+
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFlipbook, setSelectedFlipbook] = useState(null);
@@ -35,6 +40,21 @@ const PublishedFlipbooks = () => {
       await togglePublishedFlipbook(selectedFlipbook._id);
     }
     handleCloseModal();
+  };
+
+  const handleViewFlipbook = (flipbookId) => {
+    navigate(`/published-editor/${flipbookId}`);
+  };
+
+  const handleDelete = async (flipbookId) => {
+    if (window.confirm("Are you sure you want to delete this published flipbook?")) {
+      try {
+        await deletePublishedFlipbook(flipbookId);
+        // The store will automatically update the UI
+      } catch (error) {
+        console.error("Failed to delete published flipbook:", error);
+      }
+    }
   };
 
   return (
@@ -73,25 +93,28 @@ const PublishedFlipbooks = () => {
                     </span>
                   </div>
                   <div className="buttons">
-                <select
-                  className="dropdown-button"
-                  value={flipbook.isPublished ? "Publish" : "Unpublish"}
-                  onChange={(e) => handleOpenModal(flipbook, e.target.value)}
-                >
-                  <option value="Unpublish">Unpublish</option>
-                  <option value="Publish">Publish</option>
-                </select>
-                <Link to={`/flipbooks/${flipbook._id}`}>
-                  <button className="view-button">View</button>
-                </Link>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(flipbook._id)} // Assuming handleDelete is the delete function
-                >
-                  <FaTrashAlt /> {/* Trash icon */}
-                  Delete
-                </button>
-              </div>
+                    <select
+                      className="dropdown-button"
+                      value={flipbook.isPublished ? "Publish" : "Unpublish"}
+                      onChange={(e) => handleOpenModal(flipbook, e.target.value)}
+                    >
+                      <option value="Unpublish">Unpublish</option>
+                      <option value="Publish">Publish</option>
+                    </select>
+                    <button 
+                      className="view-button"
+                      onClick={() => handleViewFlipbook(flipbook._id)}
+                    >
+                      <FaEdit /> Edit
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDelete(flipbook._id)}
+                    >
+                      <FaTrashAlt />
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))
           ) : (

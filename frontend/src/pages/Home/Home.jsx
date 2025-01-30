@@ -15,38 +15,34 @@ const Home = () => {
 
   // Destructure the necessary state and actions from the store
   const {
-    pages,
     loading,
     error,
-    getPages,
     publishedFlipbooks,
     getPublishedFlipbooks,
   } = useFlipbookStore();
 
   // Fetch pages and published flipbooks when the component mounts
   useEffect(() => {
-    getPages();
     getPublishedFlipbooks();
-  }, [getPages, getPublishedFlipbooks]);
+  }, [getPublishedFlipbooks]);
 
 
 
-  // Log published flipbooks to the console (for debugging)
-  useEffect(() => {
-    if (publishedFlipbooks) {
-      console.log("Published Flipbooks:", publishedFlipbooks);
-    }
-  }, [publishedFlipbooks]);
 
 
-  const filteredPublishedFlipbooks = publishedFlipbooks
-  ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
-  : [];
 
-  console.log("Filtered Published Flipbooks:", filteredPublishedFlipbooks);
+  // Safely filter published flipbooks with null check
+  const filteredPublishedFlipbooks = Array.isArray(publishedFlipbooks)
+    ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
+    : [];
+
+  // Get the pages from the first published flipbook (if any exist)
+  const publishedPages = filteredPublishedFlipbooks.length > 0 
+    ? filteredPublishedFlipbooks[0].pages 
+    : [];
 
 
-  // console.log("Filtered Published Pages:", filteredPublishedFlipbooks[0].pages);
+
 
 
   const getYouTubeEmbedUrl = (url) => {
@@ -207,8 +203,8 @@ const Home = () => {
             <IndexPage goToPage={goToPage} />
           </div>
 
-          {Array.isArray(pages) &&
-           pages
+          {Array.isArray(publishedPages) && publishedPages.length > 0 ? (
+            publishedPages
               .sort((a, b) => a.pageNumber - b.pageNumber)
               .map((page) => (
                 <div
@@ -223,7 +219,16 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+          ) : (
+            <div key="empty" className="page">
+              <div className="page-content">
+                <div className="content">
+                  <h1>No pages available</h1>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div key="twocol" className="page page-content">
             <div className="content">
@@ -231,8 +236,6 @@ const Home = () => {
                 title="About Our Journey"
                 textContent={[
                   "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
-                  "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                  "As you flip through these pages, you'll discover stories",
                   "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
                   "As you flip through these pages, you'll discover stories",
                 ]}
