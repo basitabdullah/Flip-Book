@@ -116,7 +116,7 @@ export const createPage = async (req, res) => {
 
 // Update an existing page
 export const updatePage = async (req, res) => {
-  const { title, description, content, pageNumber, version, contentType } =
+  const { title, description, content, pageNumber, contentType } =
     req.body;
   const { pageId } = req.params;
   const { flipbookId } = req.params;
@@ -427,3 +427,133 @@ export const togglePublishedFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updatePublishedFlipbook = async (req, res) => {
+  const { title, description, content, pageNumber, contentType } = req.body;
+  const { pageId, flipbookId } = req.params;
+
+  console.log("Received request to update published flipbook:", {
+    flipbookId,
+    pageId,
+    body: req.body,
+  });
+
+  // Validate MongoDB ObjectId format
+  if (
+    !mongoose.Types.ObjectId.isValid(flipbookId) ||
+    !mongoose.Types.ObjectId.isValid(pageId)
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Invalid flipbook or page ID format" });
+  }
+
+  try {
+    // Find the specific published flipbook by ID
+    const publishedFlipbook = await PublishedFlipbook.findById(flipbookId);
+    console.log("Published Flipbook query result:", publishedFlipbook);
+
+    if (!publishedFlipbook) {
+      return res.status(404).json({ message: "Published Flipbook not found." });
+    }
+
+    // Find the page by ID within the published flipbook's pages array
+    const pageIndex = publishedFlipbook.pages.findIndex(
+      (p) => p._id.toString() === pageId
+    );
+    console.log("Page search result:", {
+      pageIndex,
+      availablePages: publishedFlipbook.pages.map((p) => p._id.toString()),
+    });
+
+    if (pageIndex === -1) {
+      return res.status(404).json({ message: "Page not found." });
+    }
+
+    // Check if the new page number already exists (if pageNumber is being changed)
+    if (pageNumber && pageNumber !== publishedFlipbook.pages[pageIndex].pageNumber) {
+      const pageExists = publishedFlipbook.pages.some(
+        (p, idx) => idx !== pageIndex && p.pageNumber === pageNumber
+      );
+      if (pageExists) {
+        return res.status(400).json({ message: "Page number already exists." });
+      }
+    }
+
+    // Update the page
+    publishedFlipbook.pages[pageIndex] = {
+      ...publishedFlipbook.pages[pageIndex],
+      title: title || publishedFlipbook.pages[pageIndex].title,
+      description: description || publishedFlipbook.pages[pageIndex].description,
+      content: content || publishedFlipbook.pages[pageIndex].content,
+      contentType: contentType || publishedFlipbook.pages[pageIndex].contentType,
+      pageNumber: pageNumber || publishedFlipbook.pages[pageIndex].pageNumber,
+    };
+
+    await publishedFlipbook.save();
+
+    res.status(200).json({ 
+      message: "Published flipbook page updated successfully.", 
+      publishedFlipbook 
+    });
+  } catch (error) {
+    console.error("Error updating published flipbook page:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deletePublishedFlipbook = async (req, res) => {
+  const { flipbookId } = req.params;
+  let latestFlipbooks = []; // Declare the variable here
+
+  try {
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(flipbookId)) {
+      return res.status(400).json({ message: "Invalid flipbook ID format" });
+    }
+
+    // Find the flipbook to be deleted
+    const flipbookToDelete = await PublishedFlipbook.findById(flipbookId);
+    
+    if (!flipbookToDelete) {
+      return res.status(404).json({ message: "Published flipbook not found" });
+    }
+
+    // If the flipbook being deleted was published, find the latest flipbook to publish
+    if (flipbookToDelete.isPublished) {
+      // Get all published flipbooks sorted by publishedAt in descending order
+      latestFlipbooks = await PublishedFlipbook.find({
+        _id: { $ne: flipbookId } // Exclude the one being deleted
+      }).sort({ publishedAt: -1 });
+
+      // If there are other flipbooks, publish the latest one
+      if (latestFlipbooks.length > 0) {
+        const latestFlipbook = latestFlipbooks[0];
+        latestFlipbook.isPublished = true;
+        await latestFlipbook.save();
+      }
+    }
+
+    // Delete the flipbook
+    const deletedFlipbook = await PublishedFlipbook.findByIdAndDelete(flipbookId);
+
+    // Update the original flipbook's isPublished status
+    if (deletedFlipbook.flipbook) {
+      await Flipbook.findByIdAndUpdate(
+        deletedFlipbook.flipbook,
+        { isPublished: false }
+      );
+    }
+
+    res.status(200).json({ 
+      message: "Published flipbook deleted successfully",
+      deletedFlipbook,
+      newPublishedFlipbook: latestFlipbooks[0] || null
+    });
+  } catch (error) {
+    console.error("Error deleting published flipbook:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+

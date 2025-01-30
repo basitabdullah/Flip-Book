@@ -14,7 +14,9 @@ import {
   publishFlipbook,
   getPublishedFlipbook,
   getAllPublishedFlipbooks,
-  togglePublishedFlipbook
+  togglePublishedFlipbook,
+  updatePublishedFlipbook,
+  deletePublishedFlipbook
 } from "../controllers/flipbookController.js";
 
 const router = express.Router();
@@ -38,5 +40,7 @@ router.post("/instantpublish/:flipbookId", publishFlipbook);
 router.get("/published/get-published-flipbook/:flipbookId", getPublishedFlipbook);
 router.get("/published/get-published-flipbooks", getAllPublishedFlipbooks);
 router.get("/published/toggle-published/:flipbookId", togglePublishedFlipbook);
+router.put("/published/:flipbookId/pages/:pageId", updatePublishedFlipbook);
+router.delete("/published/:flipbookId", deletePublishedFlipbook);
 
 export default router;
