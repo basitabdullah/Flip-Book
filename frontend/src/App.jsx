@@ -4,7 +4,7 @@ import Home from "./pages/Home/Home";
 import "./styles/global.scss";
 import Dashboard from "./admin/Dashboard/Dashboard";
 import ArchivedVersions from "./admin/ArchivedVersions/ArchivedVersion";
-import Footer from "./components/footer/Footer";
+import Footer from "./components/Footer/Footer";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import { Toaster } from "react-hot-toast";
@@ -27,6 +27,6 @@ const App = () => {
 };
 
 export default App;
-
+//added Capital F
 
 ////id in flipbook store////////
