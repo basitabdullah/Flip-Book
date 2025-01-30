@@ -6,20 +6,24 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import flipbookRoutes from "./routes/flipbookRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-const app = express();
+
 dotenv.config();
+const app = express();
+
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
+
 const corsOptions = {
   origin: process.env.CLIENT_URL, // Specify exact origin
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
 app.use(cors(corsOptions));
 
-//ROUTES
+// ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/flipbook", flipbookRoutes);
 
@@ -27,15 +31,12 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use(express.static(path.join(__dirname, "build")));
+// Connect to database (run only once)
+connectDB();
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
+// ❌ REMOVE app.listen() (Vercel handles routing itself)
+// app.listen(process.env.PORT, () => {
+//   console.log(`Listening on port ${process.env.PORT}`);
+// });
 
-
-
-app.listen(process.env.PORT, () => {
-  console.log(`Listening on port ${process.env.PORT}`);
-  connectDB();
-});
+export default app;
