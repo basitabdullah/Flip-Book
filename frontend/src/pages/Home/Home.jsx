@@ -6,16 +6,48 @@ import Navigation from "../../components/Navigation/Navigation";
 import html2canvas from "html2canvas";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import TwoColText from "../TwoColText/TwoColText";
+
 const Home = () => {
   const bookRef = useRef(null);
   const [isSnipping, setIsSnipping] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
-  const { pages, loading, error, getPages } = useFlipbookStore();
 
+  // Destructure the necessary state and actions from the store
+  const {
+    pages,
+    loading,
+    error,
+    getPages,
+    publishedFlipbooks,
+    getPublishedFlipbooks,
+  } = useFlipbookStore();
+
+  // Fetch pages and published flipbooks when the component mounts
   useEffect(() => {
     getPages();
-  }, [getPages]);
+    getPublishedFlipbooks();
+  }, [getPages, getPublishedFlipbooks]);
+
+
+
+  // Log published flipbooks to the console (for debugging)
+  useEffect(() => {
+    if (publishedFlipbooks) {
+      console.log("Published Flipbooks:", publishedFlipbooks);
+    }
+  }, [publishedFlipbooks]);
+
+
+  const filteredPublishedFlipbooks = publishedFlipbooks
+  ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
+  : [];
+
+  console.log("Filtered Published Flipbooks:", filteredPublishedFlipbooks);
+
+
+  // console.log("Filtered Published Pages:", filteredPublishedFlipbooks[0].pages);
+
 
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return "";
@@ -176,7 +208,7 @@ const Home = () => {
           </div>
 
           {Array.isArray(pages) &&
-            pages
+           pages
               .sort((a, b) => a.pageNumber - b.pageNumber)
               .map((page) => (
                 <div
@@ -195,13 +227,14 @@ const Home = () => {
 
           <div key="twocol" className="page page-content">
             <div className="content">
-              <TwoColText 
+              <TwoColText
                 title="About Our Journey"
                 textContent={[
                   "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
                   "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                  "As you flip through these pages, you'll discover stories","Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                  "As you flip through these pages, you'll discover stories"
+                  "As you flip through these pages, you'll discover stories",
+                  "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
+                  "As you flip through these pages, you'll discover stories",
                 ]}
                 imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
                 imageAlt="Journey illustration showing a path through mountains"

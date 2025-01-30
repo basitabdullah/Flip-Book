@@ -11,6 +11,7 @@ const useFlipbookStore = create((set) => ({
   pages: [],
   archives: null,
   publishedFlipbook: null,
+  publishedFlipbooks: null,
 
   getFlipbookById: async () => {
     set({ loading: true, error: null });
@@ -239,6 +240,25 @@ const useFlipbookStore = create((set) => ({
         `/flipbook/published/get-published-flipbooks`
       );
 
+      set({ publishedFlipbooks: response.data, loading: false });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+
+      throw errorMessage;
+    }
+  },
+  getPublishedFlipbook: async (flipbookId) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.get(
+        `/flipbook/published/get-published-flipbook/${flipbookId}`
+      );
+
       set({ publishedFlipbook: response.data, loading: false });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
@@ -251,27 +271,42 @@ const useFlipbookStore = create((set) => ({
       throw errorMessage;
     }
   },
-
   togglePublishedFlipbook: async (flipbookId) => {
     try {
       set({ loading: true, error: null });
+  
+      // Call the backend API to toggle the published status
       const response = await axiosInstance.get(
         `/flipbook/published/toggle-published/${flipbookId}`
       );
-
-      set({ loading: false });
-      toast.success(`Flipbook Publication Status Changed to ${response.data}`);
+  
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Failed to toggle flipbook.");
+      }
+  
+      // Access getPublishedFlipbooks from the store itself
+      const { getPublishedFlipbooks } = useFlipbookStore.getState();
+      
+      // Refetch the published flipbooks to reflect the updated status
+      await getPublishedFlipbooks();
+  
+      toast.success(`Flipbook ${flipbookId} status updated.`);
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message;
-
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred.";
+  
       set({
         loading: false,
         error: errorMessage,
       });
-
+  
+      toast.error(errorMessage);
+  
       throw errorMessage;
     }
   },
+  
+  
 }));
 
 export default useFlipbookStore;

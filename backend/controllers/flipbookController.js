@@ -393,19 +393,37 @@ export const getAllPublishedFlipbooks = async (req, res) => {
 
 export const togglePublishedFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
+
   try {
+    // Find the flipbook by its ID
     const flipbook = await PublishedFlipbook.findById(flipbookId);
 
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
 
+    // Toggle the publication status of the selected flipbook
     flipbook.isPublished = !flipbook.isPublished;
+
+    // If we are setting this flipbook to be published, make sure other flipbooks are unpublished
+    if (flipbook.isPublished) {
+      // Unpublish all other flipbooks
+      await PublishedFlipbook.updateMany(
+        { _id: { $ne: flipbookId } },
+        { isPublished: false }
+      );
+    }
+
+    // Save the updated flipbook status
     await flipbook.save();
-    
-    res.status(200).json(`Publication Status: ${flipbook.isPublished}`);
+
+    // Send a response with the updated status
+    res.status(200).json({
+      message: `Flipbook ${flipbookId} publication status toggled successfully.`,
+      updatedFlipbookStatus: flipbook.isPublished,
+    });
   } catch (error) {
-    console.error("Error getting flipbooks:", error);
+    console.error("Error toggling flipbook publication status:", error);
     res.status(500).json({ message: error.message });
   }
 };

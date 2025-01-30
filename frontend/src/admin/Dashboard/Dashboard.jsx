@@ -4,6 +4,8 @@ import ArchivedVersion from "../ArchivedVersions/ArchivedVersion";
 import useFlipbookStore from "../../stores/useFlipbookStore"; // Import the Zustand store
 import { Link } from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
+
+
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState("InstantEditor");
@@ -130,7 +132,7 @@ function FlipbookEditor({
 
       <div className="publish-buttons">
         <button onClick={() => setOpenPublishModal(true)} className="publish">
-          Instant Publish
+          Add New Issue
         </button>
         <p>or</p>
         <button onClick={() => setOpenModal(true)} className="create-archive">
@@ -144,13 +146,13 @@ function FlipbookEditor({
 
             {/* Input for Publish Name */}
             <div className="input-group">
-              <label htmlFor="archive-name">Publish Name</label>
+              <label htmlFor="archive-name">Publication Name</label>
               <input
                 id="publish-name"
                 type="text"
                 value={publishName}
                 onChange={(e) => setPublishName(e.target.value)}
-                placeholder="Enter publish name"
+                placeholder="Enter Publication name"
               />
             </div>
 
