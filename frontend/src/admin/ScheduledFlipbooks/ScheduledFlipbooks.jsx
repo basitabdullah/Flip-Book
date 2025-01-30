@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import './ScheduledFlipbooks.scss';
-
+import Loader from '../../components/Loader/Loader';
 const ScheduledFlipbooks = () => {
   const scheduledFlipbooks = useFlipbookStore(state => state.scheduledFlipbooks);
   const getScheduledFlipbooks = useFlipbookStore(state => state.getScheduledFlipbooks);
@@ -22,8 +22,9 @@ const ScheduledFlipbooks = () => {
     }
   };
 
-  if (loading) return <div className="scheduled-flipbooks-loading">Loading...</div>;
+  if (loading) return <Loader />;
   if (error) return <div className="scheduled-flipbooks-error">Error: {error}</div>;
+
 
   return (
     <div className="scheduled-flipbooks">

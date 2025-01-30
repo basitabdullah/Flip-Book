@@ -7,7 +7,7 @@ import html2canvas from "html2canvas";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import TwoColText from "../TwoColText/TwoColText";
 import pageFlipSound from "../../assets/page-flip-sound.mp3";
-
+import Loader from "../../components/Loader/Loader";
 const Home = () => {
   const bookRef = useRef(null);
   const audioRef = useRef(new Audio(pageFlipSound));
@@ -41,8 +41,8 @@ const Home = () => {
     : [];
 
   // Get the pages from the first published flipbook (if any exist)
-  const publishedPages = filteredPublishedFlipbooks.length > 0 
-    ? filteredPublishedFlipbooks[0].pages 
+  const publishedPages = filteredPublishedFlipbooks.length > 0
+    ? filteredPublishedFlipbooks[0].pages
     : [];
 
   const getYouTubeEmbedUrl = (url) => {
@@ -175,104 +175,117 @@ const Home = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      style={{
-        userSelect: "none",
-        WebkitUserSelect: "none",
-        MozUserSelect: "none",
-        msUserSelect: "none",
-      }}
-    >
-      <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
-      <div className="home">
-        <HTMLFlipBook
-          width={450}
-          height={620}
-          ref={bookRef}
-          showCover={true}
-          useMouseEvents={false}
-          onFlip={() => audioRef.current.play()}
-        >
-          <div key="index" className="page">
-            <div className="page-content">
-              <IndexPage goToPage={goToPage} />
-              <div className="page-number">i</div>
-            </div>
-          </div>
-
-          {Array.isArray(publishedPages) && publishedPages.length > 0 ? (
-            publishedPages
-              .sort((a, b) => a.pageNumber - b.pageNumber)
-              .map((page) => (
-                <div
-                  key={page._id || `page-${page.pageNumber}`}
-                  className="page"
-                >
+    <>
+      {
+        loading ? (
+          <Loader />
+        ) : (
+          <div
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            style={{
+              userSelect: "none",
+              WebkitUserSelect: "none",
+              MozUserSelect: "none",
+              msUserSelect: "none",
+            }}
+          >
+            <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
+            <div className="home">
+              <HTMLFlipBook
+                width={450}
+                height={620}
+                ref={bookRef}
+                showCover={true}
+                useMouseEvents={false}
+                onFlip={() => audioRef.current.play()}
+                style={{
+                  filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))',
+                }}
+              >
+                <div key="index" className="page">
                   <div className="page-content">
-                    <div className="content">
-                      <h1>{page.title}</h1>
-                      {renderContent(page)}
-                      <p>{page.description}</p>
-                    </div>
-                    <div className="page-number">{page.pageNumber}</div>
+                    <IndexPage goToPage={goToPage} />
+                    <div className="page-number">i</div>
                   </div>
                 </div>
-              ))
-          ) : (
-            <div key="empty" className="page">
-              <div className="page-content">
-                <div className="content">
-                  <h1>No pages available</h1>
+
+                {Array.isArray(publishedPages) && publishedPages.length > 0 ? (
+                  publishedPages
+                    .sort((a, b) => a.pageNumber - b.pageNumber)
+                    .map((page) => (
+                      <div
+                        key={page._id || `page-${page.pageNumber}`}
+                        className="page"
+                      >
+                        <div className="page-content">
+                          <div className="content">
+                            <h1>{page.title}</h1>
+                            {renderContent(page)}
+                            <p>{page.description}</p>
+                          </div>
+                          <div className="page-number">{page.pageNumber}</div>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <div key="empty" className="page">
+                    <div className="page-content">
+                      <div className="content">
+                        <h1>No pages available</h1>
+                      </div>
+                      <div className="page-number">1</div>
+                    </div>
+                  </div>
+                )}
+
+                <div key="twocol" className="page">
+                  <div className="page-content">
+                    <div className="content">
+                      <TwoColText
+                        title="About Our Journey"
+                        textContent={[
+                          "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
+                          "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
+                          "As you flip through these pages, you'll discover stories",
+                        ]}
+                        imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
+                        imageAlt="Journey illustration showing a path through mountains"
+                        imageCaption="A journey of a thousand miles begins with a single step"
+                      />
+                    </div>
+                    <div className="page-number">{publishedPages.length + 1}</div>
+                  </div>
                 </div>
-                <div className="page-number">1</div>
-              </div>
+              </HTMLFlipBook>
             </div>
-          )}
 
-          <div key="twocol" className="page">
-            <div className="page-content">
-              <div className="content">
-                <TwoColText
-                  title="About Our Journey"
-                  textContent={[
-                    "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
-                    "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                    "As you flip through these pages, you'll discover stories",
-                  ]}
-                  imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
-                  imageAlt="Journey illustration showing a path through mountains"
-                  imageCaption="A journey of a thousand miles begins with a single step"
-                />
-              </div>
-              <div className="page-number">{publishedPages.length + 1}</div>
-            </div>
+            {isSnipping && startPoint && endPoint && (
+              <div
+                style={{
+                  position: "fixed",
+                  left: Math.min(startPoint.x, endPoint.x),
+                  top: Math.min(startPoint.y, endPoint.y),
+                  width: Math.abs(endPoint.x - startPoint.x),
+                  height: Math.abs(endPoint.y - startPoint.y),
+                  border: "2px dashed #000",
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  pointerEvents: "none",
+                  zIndex: 9999,
+                }}
+              />
+            )}
           </div>
-        </HTMLFlipBook>
-      </div>
+        )
+      }
 
-      {isSnipping && startPoint && endPoint && (
-        <div
-          style={{
-            position: "fixed",
-            left: Math.min(startPoint.x, endPoint.x),
-            top: Math.min(startPoint.y, endPoint.y),
-            width: Math.abs(endPoint.x - startPoint.x),
-            height: Math.abs(endPoint.y - startPoint.y),
-            border: "2px dashed #000",
-            backgroundColor: "rgba(0, 0, 0, 0.1)",
-            pointerEvents: "none",
-            zIndex: 9999,
-          }}
-        />
-      )}
-    </div>
+
+
+    </>
   );
 };
 

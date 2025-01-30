@@ -3,7 +3,7 @@ import "./PublishedFlipbooks.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import { Link, useNavigate } from "react-router-dom";
 import { FaTrashAlt, FaEdit } from 'react-icons/fa';
-
+import Loader from "../../components/Loader/Loader";
 const PublishedFlipbooks = () => {
   const {
     getPublishedFlipbooks,
@@ -11,7 +11,6 @@ const PublishedFlipbooks = () => {
     loading,
     error,
     togglePublishedFlipbook,
-    updatePublishedFlipbook,
     deletePublishedFlipbook,
   } = useFlipbookStore();
 
@@ -61,7 +60,7 @@ const PublishedFlipbooks = () => {
     <div className="published-flipbooks">
       <h2>Published Flipbooks</h2>
       {loading ? (
-        <p>Loading...</p>
+        <Loader />
       ) : error ? (
         <p className="error">{error}</p>
       ) : (

@@ -10,7 +10,9 @@
 
   .page {
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+      inset -5px 0 20px -7px rgba(0, 0, 0, 0.2),
+      inset 5px 0 20px -7px rgba(0, 0, 0, 0.2);
     
     .page-content {
       padding: 20px;
@@ -58,6 +60,23 @@
           border-radius: 4px;
         }
       }
+
+      // Lighter inner shadow for subtle depth
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    // Lighter shadow for right pages
+    &.--right {
+      box-shadow: 
+        inset -10px 0 20px -10px rgba(0, 0, 0, 0.2),
+        3px 0 20px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    // Lighter shadow for left pages
+    &.--left {
+      box-shadow: 
+        inset 10px 0 20px -10px rgba(0, 0, 0, 0.2),
+        -3px 0 20px -3px rgba(0, 0, 0, 0.1);
     }
   }
 }

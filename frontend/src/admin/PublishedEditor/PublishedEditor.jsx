@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import './PublishedEditor.scss';
-
+import Loader from '../../components/Loader/Loader';
 const PublishedEditor = () => {
   const { flipbookId } = useParams();
   const [currentPage, setCurrentPage] = useState(null);
@@ -92,9 +92,10 @@ const PublishedEditor = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loader />;
   if (error) return <div>Error: {error}</div>;
   if (!publishedFlipbook) return <div>No flipbook found</div>;
+
 
   return (
     <div className="published-editor">
