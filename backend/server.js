@@ -12,7 +12,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://localhost:5173", // Specify exact origin
+  origin: process.env.CLIENT_URL, // Specify exact origin
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
