@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Dashboard.scss";
-import ArchivedVersion from "../ArchivedVersions/ArchivedVersion";
 import useFlipbookStore from "../../stores/useFlipbookStore"; // Import the Zustand store
 import { Link } from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
-
+import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
+import { toast } from 'react-hot-toast';
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,8 +14,8 @@ function Dashboard() {
     getFlipbookById,
     loading,
     error,
-    createArchive,
     publishFlipbook,
+    scheduleFlipbook,
   } = useFlipbookStore();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function Dashboard() {
 
       <div className="main-content">
         <div className="header">
-          <h1>Instant Flipbook Editor</h1>
+          <h1>Flipbook Content Manager</h1>
           <div
             className="mobile-menu-toggle"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -47,12 +47,12 @@ function Dashboard() {
             flipbook={flipbook}
             loading={loading}
             error={error}
-            createArchive={createArchive}
             publishFlipbook={publishFlipbook}
+            scheduleFlipbook={scheduleFlipbook}
           />
         )}
 
-        {currentView === "archivedVersions" && <ArchivedVersion />}
+        {currentView === "scheduledFlipbooks" && <ScheduledFlipbooks />}
         {currentView === "addPage" && <AddPage />}
         {currentView === "publishedFlipbooks" && <PublishedFlipbooks />}
       </div>
@@ -64,33 +64,59 @@ function FlipbookEditor({
   flipbook,
   loading,
   error,
-  createArchive,
   publishFlipbook,
+  scheduleFlipbook,
 }) {
   const [openModal, setOpenModal] = useState(false);
   const [openPublishModal, setOpenPublishModal] = useState(false);
-  const [archiveName, setArchiveName] = useState("");
-  const [archiveVersion, setArchiveVersion] = useState("");
   const [publishName, setPublishName] = useState("");
   const [publishIssueName, setPublishIssueName] = useState("");
-  const handleCreateArchive = async () => {
-    if (!archiveName || !archiveVersion) {
-      alert("Please fill in both name and version fields.");
-      return;
-    }
-    await createArchive(flipbook._id, {
-      name: archiveName,
-      version: archiveVersion,
-    });
-    setOpenModal(false); // Close the modal after creating the archive
-    setArchiveName(""); // Reset the name field
-    setArchiveVersion(""); // Reset the version field
-  };
+  const [scheduleDate, setScheduleDate] = useState(new Date());
+  const [isScheduling, setIsScheduling] = useState(false);
+
 
   const handlePublishFlipbook = async (id, name, issueName) => {
     console.log(issueName);
     await publishFlipbook(id, name, issueName);
-    
+
+  };
+
+  const handleSchedulePublish = async () => {
+    try {
+      if (!publishName || !publishIssueName || !scheduleDate) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      await scheduleFlipbook(
+        flipbook._id,
+        publishName,
+        publishIssueName,
+        scheduleDate
+      );
+
+      // Reset form
+      setPublishName("");
+      setPublishIssueName("");
+      setScheduleDate(new Date());
+      setIsScheduling(false);
+    } catch (error) {
+      console.error("Failed to schedule flipbook:", error);
+    }
+  };
+
+  // Helper function to convert UTC to IST
+  const getISTDateTime = (date) => {
+    // Create a new date object and format it to IST string
+    return new Date(date).toLocaleString('en-US', {
+      timeZone: 'Asia/Kolkata'
+    }).replace(/\//g, '-');
+  };
+
+  // Helper function to convert IST to UTC
+  const getUTCFromIST = (dateString) => {
+    // Create a date object treating the input as IST
+    return new Date(dateString.replace('T', ' '));
   };
 
   return (
@@ -135,8 +161,8 @@ function FlipbookEditor({
           Add New Issue
         </button>
         <p>or</p>
-        <button onClick={() => setOpenModal(true)} className="create-archive">
-          Create an Archive
+        <button onClick={() => setIsScheduling(!isScheduling)} className="create-archive">
+          Schedule Publish
         </button>
       </div>
       {openPublishModal && (
@@ -187,41 +213,58 @@ function FlipbookEditor({
       )}
 
       {/* Modal */}
-      {openModal && (
+      {isScheduling && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>Create Archive</h2>
+            <h2>Schedule Publication</h2>
 
-            {/* Input for Archive Name */}
             <div className="input-group">
-              <label htmlFor="archive-name">Archive Name</label>
+              <label htmlFor="publication-name">Publication Name</label>
               <input
-                id="archive-name"
+                id="publication-name"
                 type="text"
-                value={archiveName}
-                onChange={(e) => setArchiveName(e.target.value)}
-                placeholder="Enter archive name"
+                value={publishName}
+                onChange={(e) => setPublishName(e.target.value)}
+                placeholder="Enter publication name"
               />
             </div>
 
-            {/* Input for Archive Version */}
             <div className="input-group">
-              <label htmlFor="archive-version">Archive Version</label>
+              <label htmlFor="issue-name">Issue Name</label>
               <input
-                id="archive-version"
+                id="issue-name"
                 type="text"
-                value={archiveVersion}
-                onChange={(e) => setArchiveVersion(e.target.value)}
-                placeholder="Enter archive version"
+                value={publishIssueName}
+                onChange={(e) => setPublishIssueName(e.target.value)}
+                placeholder="Enter issue name"
               />
             </div>
 
-            {/* Buttons */}
+            <div className="input-group">
+              <label>Schedule Date & Time (IST)</label>
+              <input
+                type="datetime-local"
+                onChange={(e) => setScheduleDate(e.target.value)}
+                value={scheduleDate.toLocaleString('en-CA', {
+                  timeZone: 'Asia/Kolkata'
+                }).replace(/,/g, '').slice(0, 16)}
+                min={new Date().toLocaleString('en-CA', {
+                  timeZone: 'Asia/Kolkata'
+                }).replace(/,/g, '').slice(0, 16)}
+              />
+            </div>
+
             <div className="modal-actions">
-              <button onClick={handleCreateArchive} className="create-btn">
-                Create Archive
+              <button
+                onClick={handleSchedulePublish}
+                className="create-btn"
+              >
+                Schedule Publication
               </button>
-              <button onClick={() => setOpenModal(false)} className="close-btn">
+              <button
+                onClick={() => setIsScheduling(false)}
+                className="close-btn"
+              >
                 Close
               </button>
             </div>
@@ -612,10 +655,10 @@ function Sidebar({ isOpen, onClose, onNavClick }) {
         </div>
         <div
           className="nav-item"
-          onClick={() => onNavClick("archivedVersions")}
+          onClick={() => onNavClick("scheduledFlipbooks")}
         >
           <span className="icon">📄</span>
-          Archived Versions
+          Scheduled Flipbooks
         </div>
         <div
           className="nav-item"

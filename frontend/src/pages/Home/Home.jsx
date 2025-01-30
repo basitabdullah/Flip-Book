@@ -6,9 +6,11 @@ import Navigation from "../../components/Navigation/Navigation";
 import html2canvas from "html2canvas";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import TwoColText from "../TwoColText/TwoColText";
+import pageFlipSound from "../../assets/page-flip-sound.mp3";
 
 const Home = () => {
   const bookRef = useRef(null);
+  const audioRef = useRef(new Audio(pageFlipSound));
   const [isSnipping, setIsSnipping] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
@@ -26,10 +28,12 @@ const Home = () => {
     getPublishedFlipbooks();
   }, [getPublishedFlipbooks]);
 
-
-
-
-
+  // Add this effect to configure audio
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.5; // Adjust volume as needed
+    }
+  }, []);
 
   // Safely filter published flipbooks with null check
   const filteredPublishedFlipbooks = Array.isArray(publishedFlipbooks)
@@ -40,10 +44,6 @@ const Home = () => {
   const publishedPages = filteredPublishedFlipbooks.length > 0 
     ? filteredPublishedFlipbooks[0].pages 
     : [];
-
-
-
-
 
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return "";
@@ -198,9 +198,13 @@ const Home = () => {
           ref={bookRef}
           showCover={true}
           useMouseEvents={false}
+          onFlip={() => audioRef.current.play()}
         >
           <div key="index" className="page">
-            <IndexPage goToPage={goToPage} />
+            <div className="page-content">
+              <IndexPage goToPage={goToPage} />
+              <div className="page-number">i</div>
+            </div>
           </div>
 
           {Array.isArray(publishedPages) && publishedPages.length > 0 ? (
@@ -217,6 +221,7 @@ const Home = () => {
                       {renderContent(page)}
                       <p>{page.description}</p>
                     </div>
+                    <div className="page-number">{page.pageNumber}</div>
                   </div>
                 </div>
               ))
@@ -226,23 +231,27 @@ const Home = () => {
                 <div className="content">
                   <h1>No pages available</h1>
                 </div>
+                <div className="page-number">1</div>
               </div>
             </div>
           )}
 
-          <div key="twocol" className="page page-content">
-            <div className="content">
-              <TwoColText
-                title="About Our Journey"
-                textContent={[
-                  "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
-                  "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                  "As you flip through these pages, you'll discover stories",
-                ]}
-                imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
-                imageAlt="Journey illustration showing a path through mountains"
-                imageCaption="A journey of a thousand miles begins with a single step"
-              />
+          <div key="twocol" className="page">
+            <div className="page-content">
+              <div className="content">
+                <TwoColText
+                  title="About Our Journey"
+                  textContent={[
+                    "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
+                    "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
+                    "As you flip through these pages, you'll discover stories",
+                  ]}
+                  imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
+                  imageAlt="Journey illustration showing a path through mountains"
+                  imageCaption="A journey of a thousand miles begins with a single step"
+                />
+              </div>
+              <div className="page-number">{publishedPages.length + 1}</div>
             </div>
           </div>
         </HTMLFlipBook>

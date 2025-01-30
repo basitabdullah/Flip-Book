@@ -129,29 +129,35 @@ $border-radius: 8px;
   .page-card {
     .form-group {
       width: 100%;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
 
       label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 6px;
+        font-size: 0.813rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
       }
 
       textarea {
         width: 100%;
-        min-height: 100px;
-        padding: 8px;
+        min-height: 80px;
+        padding: 6px;
         box-sizing: border-box;
         display: block;
         resize: vertical !important;
         border: 1px solid #ccc;
         border-radius: 4px;
 
-        // Reset any inherited styles
-        max-width: none;
-        position: static;
-
         &::-webkit-resizer {
-          display: block; // Show resize handle explicitly
+          display: block;
         }
       }
     }
@@ -204,9 +210,9 @@ $border-radius: 8px;
   }
 
   .page-number {
-    font-size: 22px;
+    font-size: 0.875rem;
     color: $secondary-color;
-    margin-bottom: 20px;
+    margin-bottom: 0.5rem;
     font-weight: 700;
     padding-bottom: 12px;
     border-bottom: 2px solid $gray-light;
@@ -235,6 +241,7 @@ $border-radius: 8px;
     overflow: hidden;
     background: $gray-light;
     transition: border-color 0.2s ease;
+    font-size: 0.813rem;
 
     &:hover {
       border-color: $primary-color;
@@ -676,6 +683,11 @@ $border-radius: 8px;
   display: flex;
   gap: 10px;
   margin-top: 10px;
+
+  button {
+    font-size: 0.813rem;
+    padding: 6px 12px;
+  }
 }
 
 .delete-button {
@@ -720,53 +732,167 @@ $border-radius: 8px;
   > h2 {
     margin-bottom: 20px;
   }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .create-btn {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .create-btn:hover {
+    background-color: #45a049;
+  }
+
+  .close-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .close-btn:hover {
+    background-color: #d32f2f;
+  }
+
+  .input-group {
+    .schedule-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      
+      &:focus {
+        border-color: #4CAF50;
+        outline: none;
+      }
+    }
+
+    .schedule-datetime-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      
+      &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+      }
+      
+      &:focus {
+        border-color: #4CAF50;
+        outline: none;
+      }
+    }
+  }
+
+  .modal-actions {
+    .schedule-submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      
+      &:hover {
+        background-color: #45a049;
+      }
+    }
+
+    .schedule-cancel-btn {
+      background-color: #f44336;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+      
+      &:hover {
+        background-color: #da190b;
+      }
+    }
+  }
 }
 
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.input-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
+.schedule-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
+  
+  .schedule-input {
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .schedule-date-picker {
+    margin-bottom: 1rem;
+    
+    .react-datetime-picker__wrapper {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.5rem;
+    }
+  }
+  
+  .confirm-schedule-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: #45a049;
+    }
+  }
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.create-btn {
-  background-color: #4caf50;
+.schedule-btn {
+  background-color: #2196F3;
   color: white;
+  padding: 0.5rem 1rem;
   border: none;
-  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.create-btn:hover {
-  background-color: #45a049;
-}
-
-.close-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  background-color: #d32f2f;
+  margin-right: 1rem;
+  
+  &:hover {
+    background-color: #1976D2;
+  }
 }

@@ -12,6 +12,7 @@ const useFlipbookStore = create((set) => ({
   archives: null,
   publishedFlipbook: null,
   publishedFlipbooks: null,
+  scheduledFlipbooks: [],
 
   getFlipbookById: async () => {
     set({ loading: true, error: null });
@@ -372,6 +373,88 @@ const useFlipbookStore = create((set) => ({
         error: errorMessage
       });
 
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  getScheduledFlipbooks: async () => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.get('/scheduled-flipbooks');
+      set({ scheduledFlipbooks: response.data, loading: false });
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({
+        loading: false,
+        error: errorMessage,
+        scheduledFlipbooks: []
+      });
+      throw errorMessage;
+    }
+  },
+
+  scheduleFlipbook: async (flipbookId, name, issueName, scheduledDate) => {
+    try {
+      set({ loading: true, error: null });
+      
+      // Validate the scheduled date is in the future
+      const now = new Date();
+      const scheduleTime = new Date(scheduledDate);
+      
+      if (scheduleTime <= now) {
+        throw new Error("Scheduled time must be in the future");
+      }
+
+      // Fix the API endpoint URL to match backend route
+      const response = await axiosInstance.post(`/scheduled-flipbooks/${flipbookId}`, {
+        name,
+        issue: issueName,
+        scheduledDate: scheduleTime
+      });
+      
+      // Update only the scheduled flipbooks list
+      set((state) => ({
+        scheduledFlipbooks: [...(state.scheduledFlipbooks || []), response.data],
+        loading: false
+      }));
+      
+      toast.success("Flipbook scheduled successfully for " + 
+        new Date(scheduledDate).toLocaleString('en-IN', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })
+      );
+
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({ loading: false, error: errorMessage });
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  cancelScheduledPublish: async (scheduleId) => {
+    try {
+      set({ loading: true, error: null });
+      await axiosInstance.delete(`/scheduled-flipbooks/${scheduleId}`);
+      
+      set((state) => ({
+        scheduledFlipbooks: state.scheduledFlipbooks.filter(
+          schedule => schedule._id !== scheduleId
+        ),
+        loading: false
+      }));
+      
+      toast.success("Schedule cancelled successfully!");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({ loading: false, error: errorMessage });
       toast.error(errorMessage);
       throw errorMessage;
     }
