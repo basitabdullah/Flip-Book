@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
 import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
 import { toast } from 'react-hot-toast';
+import AddFlipbook from "../AddFlipbook/AddFlipbook";
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,6 +56,7 @@ function Dashboard() {
         {currentView === "scheduledFlipbooks" && <ScheduledFlipbooks />}
         {currentView === "addPage" && <AddPage />}
         {currentView === "publishedFlipbooks" && <PublishedFlipbooks />}
+        {currentView === "addFlipbook" && <AddFlipbook />}
       </div>
     </div>
   );
@@ -644,6 +646,14 @@ function Sidebar({ isOpen, onClose, onNavClick }) {
           <span className="icon">🏠</span>
           Home
         </Link>
+
+        <div
+          className="nav-item"
+          onClick={() => onNavClick("addFlipbook")}
+        >
+          <span className="icon">+</span>
+          Flipbook Manager
+        </div>
         <div className="nav-item" onClick={() => onNavClick("InstantEditor")}>
           <span className="icon">📊</span>
           Instant Editor
@@ -667,6 +677,7 @@ function Sidebar({ isOpen, onClose, onNavClick }) {
           <span className="icon">⚠️</span>
           Published Versions
         </div>
+        
       </nav>
     </div>
   );
