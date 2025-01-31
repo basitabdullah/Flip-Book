@@ -5,12 +5,8 @@ import {
   createPage,
   updatePage,
   deletePage,
-  archiveVersion,
-  getArchivedVersions,
-  publishArchivedVersion,
   getFlipbookById,
   createFlipbook,
-  getArchivedVersionById,
   publishFlipbook,
   getPublishedFlipbook,
   getAllPublishedFlipbooks,
@@ -30,12 +26,8 @@ router.put("/:flipbookId/pages/:pageId", updatePage);
 router.delete("/pages/:pageId", deletePage);
 router.post("/", createFlipbook);
 router.get("/:id", getFlipbookById);
-// Archive routes
-router.post("/archive/:flipbookId", archiveVersion);//create an archived version
-router.get("/archive/:flipbookId", getArchivedVersions); //get all archived versions
-router.get("/singleArchive/:archiveId", getArchivedVersionById);
 
-router.post("/publish/:flipbookId/:version", publishArchivedVersion);
+//Publish Routes
 router.post("/instantpublish/:flipbookId", publishFlipbook);
 router.get("/published/get-published-flipbook/:flipbookId", getPublishedFlipbook);
 router.get("/published/get-published-flipbooks", getAllPublishedFlipbooks);

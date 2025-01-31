@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { Flipbook } from "../models/flipbookModel.js";
-import { Archive } from "../models/archiveModel.js";
 import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
 // Get a flipbook by ID
 
@@ -218,107 +217,13 @@ export const deletePage = async (req, res) => {
   }
 };
 
-//get archived version by ID
-export const getArchivedVersionById = async (req, res) => {
-  try {
-    const { archiveId } = req.params;
-    const archive = await Archive.findById(archiveId);
-    if (!archive) {
-      return res.status(404).json({ message: "Archived version not found." });
-    }
-    res.status(200).json(archive);
-  } catch (error) {
-    console.error("Error fetching archived version:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
-// Archive the current flipbook version
-export const archiveVersion = async (req, res) => {
-  const { version } = req.body;
-  const { name } = req.body;
-  const { flipbookId } = req.params; // Extract flipbookId from URL params
 
-  try {
-    // Validate flipbookId
-    if (!flipbookId) {
-      return res.status(400).json({ message: "Flipbook ID is required." });
-    }
 
-    // Find the flipbook by ID
-    const flipbook = await Flipbook.findById(flipbookId);
-    if (!flipbook) {
-      return res.status(404).json({ message: "Flipbook not found." });
-    }
 
-    // Check if the version already exists in the Archive
-    const existingArchive = await Archive.findOne({
-      flipbookId: flipbook._id,
-      version,
-    });
-
-    if (existingArchive) {
-      return res.status(400).json({ message: "Version already exists." });
-    }
-
-    // Create a new Archive entry
-    const archive = new Archive({
-      name,
-      flipbook: flipbook._id,
-      version: version || `v${Date.now()}`, // Default version if not provided
-      pages: flipbook.pages, // Copy all pages from the flipbook
-    });
-
-    await archive.save();
-
-    res
-      .status(201)
-      .json({ message: "Version archived successfully.", archive });
-  } catch (error) {
-    console.error("Error archiving version:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Retrieve all archived versions
-export const getArchivedVersions = async (req, res) => {
-  try {
-    const archives = await Archive.find();
-
-    res.status(200).json(archives);
-  } catch (error) {
-    console.error("Error fetching archives:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
 
 //////////////////////publish/////////////////////////////////
 
-// Publish a specific archived version
-export const publishArchivedVersion = async (req, res) => {
-  const { flipbookId, version } = req.params;
-  try {
-    const archive = await Archive.findOne({
-      flipbookId,
-      version,
-    });
-    if (!archive) {
-      return res.status(404).json({ message: "Archived version not found." });
-    }
 
-    const flipbook = await Flipbook.findOneAndUpdate(
-      { _id: req.params.flipbookId },
-      { pages: archive.pages },
-      { new: true }
-    );
-
-    res
-      .status(200)
-      .json({ message: "Archived version published successfully.", flipbook });
-  } catch (error) {
-    console.error("Error publishing archived version:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // Publish a specific Flipbbok
 export const publishFlipbook = async (req, res) => {

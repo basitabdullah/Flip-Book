@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const publishedFlipbookSchema = new mongoose.Schema({
   issue: { type: String, required: true, unique: true },
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   flipbook: { type: mongoose.Schema.Types.ObjectId, unique: false, ref: "Flipbook" },
   isPublished: { type: Boolean, default: false },
   pages: [{
