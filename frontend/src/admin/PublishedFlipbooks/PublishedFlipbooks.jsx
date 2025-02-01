@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./PublishedFlipbooks.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTrashAlt, FaEdit } from 'react-icons/fa';
+import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import Loader from "../../components/Loader/Loader";
 const PublishedFlipbooks = () => {
   const {
@@ -46,7 +46,9 @@ const PublishedFlipbooks = () => {
   };
 
   const handleDelete = async (flipbookId) => {
-    if (window.confirm("Are you sure you want to delete this published flipbook?")) {
+    if (
+      window.confirm("Are you sure you want to delete this published flipbook?")
+    ) {
       try {
         await deletePublishedFlipbook(flipbookId);
         // The store will automatically update the UI
@@ -92,15 +94,18 @@ const PublishedFlipbooks = () => {
                     </span>
                   </div>
                   <div className="buttons">
-                    <select
+                    <button
                       className="dropdown-button"
-                      value={flipbook.isPublished ? "Publish" : "Unpublish"}
-                      onChange={(e) => handleOpenModal(flipbook, e.target.value)}
+                      onClick={() =>
+                        handleOpenModal(
+                          flipbook,
+                          flipbook.isPublished ? "Unpublish" : "Publish"
+                        )
+                      }
                     >
-                      <option value="Unpublish">Unpublish</option>
-                      <option value="Publish">Publish</option>
-                    </select>
-                    <button 
+                      {flipbook.isPublished ? "Unpublish" : "Publish"}
+                    </button>
+                    <button
                       className="view-button"
                       onClick={() => handleViewFlipbook(flipbook._id)}
                     >

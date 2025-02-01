@@ -8,7 +8,6 @@ export const getScheduledFlipbooks = async (req, res) => {
       status: 'scheduled' // Only get flipbooks that haven't been published yet
     }).populate('flipbook');
 
-    console.log('Found scheduled flipbooks:', scheduledFlipbooks); // Debug log
     res.status(200).json(scheduledFlipbooks);
   } catch (error) {
     console.error("Error getting scheduled flipbooks:", error);
