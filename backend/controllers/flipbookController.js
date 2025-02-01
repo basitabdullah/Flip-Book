@@ -167,10 +167,7 @@ export const updatePage = async (req, res) => {
     const pageIndex = flipbook.pages.findIndex(
       (p) => p._id.toString() === pageId
     );
-    console.log("Page search result:", {
-      pageIndex,
-      availablePages: flipbook.pages.map((p) => p._id.toString()),
-    });
+  
 
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });

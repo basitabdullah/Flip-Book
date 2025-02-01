@@ -42,17 +42,16 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
         <div className="button" title="Share">
           <FaShareAlt />
         </div>
-        <div className="button" title="Search">
-          <IoSearch />
-        </div>
-        <Link to="/login" className="button" title="Search">
+       
+        <Link to="/login" className="button" title="login">
           <CgProfile />
         </Link>
         {user.role === "admin" && (
-          <Link to="/admin/admin-dashboard" className="button" title="Search">
+          <Link to="/admin/admin-dashboard/flipbooks" className="button" title="Search">
             <FaLock />
           </Link>
         )}
+
         <div className="button" title="Take Screenshot">
           <BiScreenshot onClick={onStartSnipping} />
         </div>

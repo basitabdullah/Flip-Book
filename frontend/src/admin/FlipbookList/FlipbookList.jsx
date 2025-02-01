@@ -92,11 +92,12 @@ const FlipbookList = () => {
               </div>
               <div className="flipbook-actions">
                 <Link 
-                  to={`/admin/flipbook/${flipbook._id}`} 
+                  to={`/admin/admin-dashboard/${flipbook._id}`} 
                   className="edit-btn"
                 >
                   Edit
                 </Link>
+                
                 <button className="delete-btn">Delete</button>
               </div>
             </div>

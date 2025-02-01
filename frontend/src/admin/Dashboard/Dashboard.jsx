@@ -1,15 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Dashboard.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore"; // Import the Zustand store
-import { Link } from "react-router-dom";
+import { Link, Routes, Route, useParams, useNavigate, useLocation } from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
 import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
 import { toast } from 'react-hot-toast';
 import FlipbookList from "../FlipbookList/FlipbookList";
 import AddPage from "../AddPage/AddPage";
+import { IoBookOutline } from "react-icons/io5";
+import { IoTimeOutline } from "react-icons/io5";
+import { IoAddOutline } from "react-icons/io5";
+import { IoArrowBackOutline } from "react-icons/io5";
+
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState("InstantEditor");
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     flipbook,
     getFlipbookById,
@@ -19,44 +25,57 @@ function Dashboard() {
     scheduleFlipbook,
   } = useFlipbookStore();
 
-  useEffect(() => {
-    getFlipbookById(""); // No need to pass ID anymore
-  }, [getFlipbookById]);
+  // Only show back button if not on the main flipbook list
+  const showBackButton = !location.pathname.endsWith('/flipbooks');
 
   return (
     <div className="dashboard">
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
-        onNavClick={(view) => setCurrentView(view)}
       />
 
       <div className="main-content">
         <div className="header">
-          <h1>Flipbook Content Manager</h1>
-          <div
-            className="mobile-menu-toggle"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            ☰
+          <div className="header-content">
+            {showBackButton && (
+              <button 
+                onClick={() => navigate(-1)} 
+                className="back-button"
+                aria-label="Go back"
+              >
+                <IoArrowBackOutline />
+              </button>
+            )}
+            <h1>Flipbook Content Manager</h1>
+            <div
+              className="mobile-menu-toggle"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              ☰
+            </div>
           </div>
         </div>
 
-        {/* Conditionally render components based on currentView */}
-        {currentView === "InstantEditor" && (
-          <FlipbookEditor
-            flipbook={flipbook}
-            loading={loading}
-            error={error}
-            publishFlipbook={publishFlipbook}
-            scheduleFlipbook={scheduleFlipbook}
+        <Routes>
+          <Route
+            path="/:id"
+            element={
+              <FlipbookEditor
+                flipbook={flipbook}
+                loading={loading}
+                error={error}
+                publishFlipbook={publishFlipbook}
+                scheduleFlipbook={scheduleFlipbook}
+                getFlipbookById={getFlipbookById}
+              />
+            }
           />
-        )}
-
-        {currentView === "scheduledFlipbooks" && <ScheduledFlipbooks />}
-        {currentView === "addPage" && <AddPage />}
-        {currentView === "publishedFlipbooks" && <PublishedFlipbooks />}
-        {currentView === "flipbookList" && <FlipbookList />}
+          <Route path="/scheduled" element={<ScheduledFlipbooks />} />
+          <Route path="/add-page/:id" element={<AddPage />} />
+          <Route path="/published" element={<PublishedFlipbooks />} />
+          <Route path="/flipbooks" element={<FlipbookList />} />
+        </Routes>
       </div>
     </div>
   );
@@ -68,19 +87,24 @@ function FlipbookEditor({
   error,
   publishFlipbook,
   scheduleFlipbook,
+  getFlipbookById
 }) {
-  const [openModal, setOpenModal] = useState(false);
+  const { id } = useParams();
+
   const [openPublishModal, setOpenPublishModal] = useState(false);
   const [publishName, setPublishName] = useState("");
   const [publishIssueName, setPublishIssueName] = useState("");
   const [scheduleDate, setScheduleDate] = useState(new Date());
   const [isScheduling, setIsScheduling] = useState(false);
 
+  useEffect(() => {
+    if (id) {
+      getFlipbookById(id);
+    }
+  }, [id, getFlipbookById]);
 
   const handlePublishFlipbook = async (id, name, issueName) => {
-    console.log(issueName);
     await publishFlipbook(id, name, issueName);
-
   };
 
   const handleSchedulePublish = async () => {
@@ -107,38 +131,50 @@ function FlipbookEditor({
     }
   };
 
-  // Helper function to convert UTC to IST
-  const getISTDateTime = (date) => {
-    // Create a new date object and format it to IST string
-    return new Date(date).toLocaleString('en-US', {
-      timeZone: 'Asia/Kolkata'
-    }).replace(/\//g, '-');
-  };
-
-  // Helper function to convert IST to UTC
-  const getUTCFromIST = (dateString) => {
-    // Create a date object treating the input as IST
-    return new Date(dateString.replace('T', ' '));
-  };
-
   return (
     <>
-      <div className="flipbook-editor">
-        {loading && (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Loading flipbook...</p>
-          </div>
-        )}
-        {error && (
-          <div className="error-state">
-            <span className="error-icon">⚠️</span>
-            <p className="error-message">{error}</p>
-          </div>
-        )}
-        {flipbook && flipbook.pages ? (
-          <>
-            {flipbook.pages.length > 0 ? (
+      <div className="publish-buttons">
+        <button onClick={() => setOpenPublishModal(true)} className="action-button primary">
+          <IoBookOutline className="icon" />
+          Add New Issue
+        </button>
+        <div className="divider">|</div>
+        <button onClick={() => setIsScheduling(!isScheduling)} className="action-button secondary">
+          <IoTimeOutline className="icon" />
+          Schedule Publish
+        </button>
+        <div className="divider">|</div>
+        <Link
+          to={`/admin/admin-dashboard/add-page/${id}`}
+          className="action-button tertiary"
+        >
+          <IoAddOutline className="icon" />
+          Add New Page
+        </Link>
+      </div>
+
+      {flipbook && (
+        <>
+          <div className="flipbook-editor">
+            {loading && (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading flipbook...</p>
+              </div>
+            )}
+            {error && (
+              <div className="error-state">
+                <span className="error-icon">⚠️</span>
+                <p className="error-message">{error}</p>
+              </div>
+            )}
+            {(!flipbook.pages || flipbook.pages.length === 0) && (
+              <div className="no-pages-state">
+                <p>No pages available</p>
+                <p>Click "Add New Page" to get started</p>
+              </div>
+            )}
+            {flipbook.pages && flipbook.pages.length > 0 && (
               [...flipbook.pages]
                 .sort((a, b) => a.pageNumber - b.pageNumber)
                 .map((page) => (
@@ -147,26 +183,14 @@ function FlipbookEditor({
                     pageData={page}
                     pageNumber={page.pageNumber}
                     loading={loading}
+                    flipbookId={id}
                   />
                 ))
-            ) : (
-              <p>No pages available</p>
             )}
-          </>
-        ) : (
-          <p>No flipbook data available</p>
-        )}
-      </div>
+          </div>
+        </>
+      )}
 
-      <div className="publish-buttons">
-        <button onClick={() => setOpenPublishModal(true)} className="publish">
-          Add New Issue
-        </button>
-        <p>or</p>
-        <button onClick={() => setIsScheduling(!isScheduling)} className="create-archive">
-          Schedule Publish
-        </button>
-      </div>
       {openPublishModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -277,7 +301,7 @@ function FlipbookEditor({
   );
 }
 
-function PageCard({ pageData, pageNumber, loading }) {
+function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const updatePage = useFlipbookStore((state) => state.updatePage);
   const deletePage = useFlipbookStore((state) => state.deletePage);
   const [title, setTitle] = useState(pageData.title || "");
@@ -297,7 +321,7 @@ function PageCard({ pageData, pageNumber, loading }) {
     };
 
     try {
-      await updatePage(pageData._id, updateData);
+      await updatePage(pageData._id, updateData, flipbookId);
     } catch (error) {
       console.error("Failed to update page:", error);
     }
@@ -473,9 +497,7 @@ function PageCard({ pageData, pageNumber, loading }) {
   );
 }
 
-
-
-function Sidebar({ isOpen, onClose, onNavClick }) {
+function Sidebar({ isOpen, onClose }) {
   return (
     <div className={`sidebar ${isOpen ? "active" : ""}`}>
       <div className="logo">Flipbook Admin</div>
@@ -485,37 +507,20 @@ function Sidebar({ isOpen, onClose, onNavClick }) {
           Home
         </Link>
 
-        <div
-          className="nav-item"
-          onClick={() => onNavClick("flipbookList")}
-        >
+        <Link to="/admin/admin-dashboard/flipbooks" className="nav-item">
           <span className="icon">📚</span>
           Flipbook List
-        </div>
-        <div className="nav-item" onClick={() => onNavClick("InstantEditor")}>
-          <span className="icon">📊</span>
-          Instant Editor
-        </div>
+        </Link>
 
-        <div className="nav-item" onClick={() => onNavClick("addPage")}>
-          <span className="icon">➕</span>
-          Add Page
-        </div>
-        <div
-          className="nav-item"
-          onClick={() => onNavClick("scheduledFlipbooks")}
-        >
+        <Link to="/admin/admin-dashboard/scheduled" className="nav-item">
           <span className="icon">📄</span>
           Scheduled Flipbooks
-        </div>
-        <div
-          className="nav-item"
-          onClick={() => onNavClick("publishedFlipbooks")}
-        >
+        </Link>
+
+        <Link to="/admin/admin-dashboard/published" className="nav-item">
           <span className="icon">⚠️</span>
           Published Versions
-        </div>
-        
+        </Link>
       </nav>
     </div>
   );

@@ -1,13 +1,11 @@
 import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance"; // Assuming you have this setup already
 import { toast } from "react-hot-toast";
-const FLIPBOOK_ID = "679dd32ceae1a7f29a8c34c2"; // Define the static ID at the top
 
 const useFlipbookStore = create((set) => ({
   flipbook: null,
   loading: false,
   error: null,
-  flipbookId: FLIPBOOK_ID,
   pages: [],
   archives: null,
   publishedFlipbook: null,
@@ -42,13 +40,13 @@ const useFlipbookStore = create((set) => ({
     }
   },
 
-  updatePage: async (pageId, pageData) => {
+  updatePage: async (pageId, pageData, flipbookId) => {
     try {
       set({ loading: true });
       const { version, ...updateData } = pageData;
 
       const response = await axiosInstance.put(
-        `/flipbook/${FLIPBOOK_ID}/pages/${pageId}`,
+        `/flipbook/${flipbookId}/pages/${pageId}`,
         updateData
       );
 
@@ -487,11 +485,11 @@ const useFlipbookStore = create((set) => ({
       throw error;
     }
   },
-  getFlipbookById: async () => {
+  getFlipbookById: async (flipbookId) => {
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.get(
-        `/flipbook/singleflipbook/${FLIPBOOK_ID}`
+        `/flipbook/singleflipbook/${flipbookId}`
       );
 
       if (!response.data) {

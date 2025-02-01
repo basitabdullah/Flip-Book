@@ -1,70 +1,68 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "../../styles/Login-Register.scss";
-function Login() {
+import React, { useState } from 'react';
+import { IoArrowBack } from 'react-icons/io5';
+import './Login.scss';
+
+const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));  
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle login logic here
-    console.log("Login attempt:", formData);
-  };
-
-/*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Handles change events for the login form. Updates the formData state
-   * with the new values from the form fields.
-   * @param {React.ChangeEvent<HTMLInputElement>} e - The change event.
-   */
-/******  930b8648-183d-4fd8-a332-5ffb6b64cd6d  *******/  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    console.log('Login attempted with:', formData);
   };
 
   return (
-    <>
-    <Link className="back-button" to={"/"}>Back</Link>
-      <div className="auth-container">
-        <h2>Login</h2>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="form__group">
-            <label htmlFor="email">Email</label>
+    <div className="login-container">
+      <a href="/" className="back-button">
+        <IoArrowBack /> Back
+      </a>
+      <div className="login-box">
+        <h2>Welcome Back</h2>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="Email"
             />
           </div>
-          <div className="form__group">
-            <label htmlFor="password">Password</label>
+          <div className="form-group">
             <input
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
+              placeholder="Password"
             />
           </div>
-          <button type="submit" className="form__button">
+          <button type="submit" className="login-button">
             Login
           </button>
-          <div className="form__link">
-            Don't have an account? <Link to="/register">Register</Link>
-          </div>
         </form>
+        <p className="forgot-password">
+          <a href="#">Forgot Password?</a>
+        </p>
+        <p className="register-link">
+          Don't have an account? <a href="/register">Register here</a>
+        </p>
       </div>
-    </>
+    </div>
   );
-}
+};
 
 export default Login;
