@@ -1,0 +1,132 @@
+.flipbook-list {
+  padding: 20px;
+
+  .flipbook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .flipbook-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .flipbook-stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .flipbook-actions {
+      display: flex;
+      gap: 10px;
+
+      .edit-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        text-align: center;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+
+      .delete-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        background: #dc3545;
+        color: white;
+
+        &:hover {
+          background: #c82333;
+        }
+      }
+    }
+  }
+
+  .create-flipbook-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 100%;
+
+    h3 {
+      margin-top: 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+
+      button {
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+
+        &.confirm-btn {
+          background: #28a745;
+          color: white;
+
+          &:hover {
+            background: #218838;
+          }
+        }
+
+        &.cancel-btn {
+          background: #6c757d;
+          color: white;
+
+          &:hover {
+            background: #5a6268;
+          }
+        }
+      }
+    }
+  }
+} 

@@ -3,6 +3,23 @@ import { Flipbook } from "../models/flipbookModel.js";
 import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
 // Get a flipbook by ID
 
+export const getAllFlipbooks = async (req, res) => {
+  try {
+    const flipbooks = await Flipbook.find()
+      .sort({ createdAt: -1 }); // Sort by creation date, newest first
+
+    if (!flipbooks || flipbooks.length === 0) {
+      return res.status(404).json({ message: "No flipbooks found" });
+    }
+
+    res.status(200).json(flipbooks);
+  } catch (error) {
+    console.error("Error in getAllFlipbooks:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const getFlipbookById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -460,5 +477,6 @@ export const deletePublishedFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 

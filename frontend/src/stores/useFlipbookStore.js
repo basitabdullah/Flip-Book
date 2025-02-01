@@ -13,6 +13,7 @@ const useFlipbookStore = create((set) => ({
   publishedFlipbook: null,
   publishedFlipbooks: null,
   scheduledFlipbooks: [],
+  flipbooks: [],
 
   getFlipbookById: async () => {
     set({ loading: true, error: null });
@@ -459,6 +460,39 @@ const useFlipbookStore = create((set) => ({
       throw errorMessage;
     }
   },
+
+  getFlipbooks: async () => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.get('/flipbooks');
+      set({ flipbooks: response.data, loading: false });
+    } catch (error) {
+      set({ 
+        loading: false, 
+        error: error.response?.data?.message || error.message 
+      });
+    }
+  },
+
+  createFlipbook: async () => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.post('/flipbook');
+      set((state) => ({ 
+        flipbooks: [...state.flipbooks, response.data.newFlipbook],
+        loading: false 
+      }));
+      toast.success('Flipbook created successfully');
+      return response.data;
+    } catch (error) {
+      set({ 
+        loading: false, 
+        error: error.response?.data?.message || error.message 
+      });
+      toast.error(error.response?.data?.message || error.message);
+      throw error;
+    }
+  }
 }));
 
 export default useFlipbookStore;

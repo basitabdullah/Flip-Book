@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
 import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
 import { toast } from 'react-hot-toast';
-import AddFlipbook from "../AddFlipbook/AddFlipbook";
-
+import FlipbookList from "../FlipbookList/FlipbookList";
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentView, setCurrentView] = useState("InstantEditor");
@@ -56,7 +55,7 @@ function Dashboard() {
         {currentView === "scheduledFlipbooks" && <ScheduledFlipbooks />}
         {currentView === "addPage" && <AddPage />}
         {currentView === "publishedFlipbooks" && <PublishedFlipbooks />}
-        {currentView === "addFlipbook" && <AddFlipbook />}
+        {currentView === "flipbookList" && <FlipbookList />}
       </div>
     </div>
   );
@@ -649,10 +648,10 @@ function Sidebar({ isOpen, onClose, onNavClick }) {
 
         <div
           className="nav-item"
-          onClick={() => onNavClick("addFlipbook")}
+          onClick={() => onNavClick("flipbookList")}
         >
-          <span className="icon">+</span>
-          Flipbook Manager
+          <span className="icon">📚</span>
+          Flipbook List
         </div>
         <div className="nav-item" onClick={() => onNavClick("InstantEditor")}>
           <span className="icon">📊</span>
