@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance"; // Assuming you have this setup already
 import { toast } from "react-hot-toast";
-const FLIPBOOK_ID = "677fb56e0ecae6e856a5c0cc"; // Define the static ID at the top
+const FLIPBOOK_ID = "679dd32ceae1a7f29a8c34c2"; // Define the static ID at the top
 
 const useFlipbookStore = create((set) => ({
   flipbook: null,
@@ -14,31 +14,6 @@ const useFlipbookStore = create((set) => ({
   publishedFlipbooks: null,
   scheduledFlipbooks: [],
   flipbooks: [],
-
-  getFlipbookById: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axiosInstance.get(`/flipbook/${FLIPBOOK_ID}`);
-
-      if (!response.data) {
-        throw new Error("No data received from server");
-      }
-
-      set({
-        flipbook: response.data,
-        pages: response.data.pages || [],
-        loading: false,
-      });
-    } catch (error) {
-      console.error("Error fetching flipbook:", error.response || error);
-      set({
-        error: error.response?.data?.message || error.message,
-        loading: false,
-        flipbook: null,
-        pages: [],
-      });
-    }
-  },
 
   getPages: async () => {
     set({ loading: true, error: null });
@@ -276,34 +251,34 @@ const useFlipbookStore = create((set) => ({
   togglePublishedFlipbook: async (flipbookId) => {
     try {
       set({ loading: true, error: null });
-  
+
       // Call the backend API to toggle the published status
       const response = await axiosInstance.get(
         `/flipbook/published/toggle-published/${flipbookId}`
       );
-  
+
       if (response.status !== 200) {
         throw new Error(response.data.message || "Failed to toggle flipbook.");
       }
-  
+
       // Access getPublishedFlipbooks from the store itself
       const { getPublishedFlipbooks } = useFlipbookStore.getState();
-      
+
       // Refetch the published flipbooks to reflect the updated status
       await getPublishedFlipbooks();
-  
+
       toast.success(`Flipbook ${flipbookId} status updated.`);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || error.message || "An error occurred.";
-  
+
       set({
         loading: false,
         error: errorMessage,
       });
-  
+
       toast.error(errorMessage);
-  
+
       throw errorMessage;
     }
   },
@@ -322,20 +297,20 @@ const useFlipbookStore = create((set) => ({
         throw new Error("No data received from server");
       }
 
-      set({ 
-        publishedFlipbook: response.data.publishedFlipbook, 
-        loading: false 
+      set({
+        publishedFlipbook: response.data.publishedFlipbook,
+        loading: false,
       });
-      
+
       toast.success("Published page updated successfully");
       return response.data;
     } catch (error) {
       console.error("Error updating published page:", error.response || error);
       const errorMessage = error.response?.data?.message || error.message;
-      
+
       set({
         loading: false,
-        error: errorMessage
+        error: errorMessage,
       });
 
       toast.error(errorMessage);
@@ -360,18 +335,21 @@ const useFlipbookStore = create((set) => ({
         publishedFlipbooks: state.publishedFlipbooks.filter(
           (flipbook) => flipbook._id !== flipbookId
         ),
-        loading: false
+        loading: false,
       }));
 
       toast.success("Published flipbook deleted successfully");
       return response.data;
     } catch (error) {
-      console.error("Error deleting published flipbook:", error.response || error);
+      console.error(
+        "Error deleting published flipbook:",
+        error.response || error
+      );
       const errorMessage = error.response?.data?.message || error.message;
-      
+
       set({
         loading: false,
-        error: errorMessage
+        error: errorMessage,
       });
 
       toast.error(errorMessage);
@@ -382,14 +360,14 @@ const useFlipbookStore = create((set) => ({
   getScheduledFlipbooks: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await axiosInstance.get('/scheduled-flipbooks');
+      const response = await axiosInstance.get("/scheduled-flipbooks");
       set({ scheduledFlipbooks: response.data, loading: false });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       set({
         loading: false,
         error: errorMessage,
-        scheduledFlipbooks: []
+        scheduledFlipbooks: [],
       });
       throw errorMessage;
     }
@@ -398,37 +376,44 @@ const useFlipbookStore = create((set) => ({
   scheduleFlipbook: async (flipbookId, name, issueName, scheduledDate) => {
     try {
       set({ loading: true, error: null });
-      
+
       // Validate the scheduled date is in the future
       const now = new Date();
       const scheduleTime = new Date(scheduledDate);
-      
+
       if (scheduleTime <= now) {
         throw new Error("Scheduled time must be in the future");
       }
 
       // Fix the API endpoint URL to match backend route
-      const response = await axiosInstance.post(`/scheduled-flipbooks/${flipbookId}`, {
-        name,
-        issue: issueName,
-        scheduledDate: scheduleTime
-      });
-      
+      const response = await axiosInstance.post(
+        `/scheduled-flipbooks/${flipbookId}`,
+        {
+          name,
+          issue: issueName,
+          scheduledDate: scheduleTime,
+        }
+      );
+
       // Update only the scheduled flipbooks list
       set((state) => ({
-        scheduledFlipbooks: [...(state.scheduledFlipbooks || []), response.data],
-        loading: false
+        scheduledFlipbooks: [
+          ...(state.scheduledFlipbooks || []),
+          response.data,
+        ],
+        loading: false,
       }));
-      
-      toast.success("Flipbook scheduled successfully for " + 
-        new Date(scheduledDate).toLocaleString('en-IN', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        })
+
+      toast.success(
+        "Flipbook scheduled successfully for " +
+          new Date(scheduledDate).toLocaleString("en-IN", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
       );
 
       return response.data;
@@ -444,14 +429,14 @@ const useFlipbookStore = create((set) => ({
     try {
       set({ loading: true, error: null });
       await axiosInstance.delete(`/scheduled-flipbooks/${scheduleId}`);
-      
+
       set((state) => ({
         scheduledFlipbooks: state.scheduledFlipbooks.filter(
-          schedule => schedule._id !== scheduleId
+          (schedule) => schedule._id !== scheduleId
         ),
-        loading: false
+        loading: false,
       }));
-      
+
       toast.success("Schedule cancelled successfully!");
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
@@ -464,35 +449,70 @@ const useFlipbookStore = create((set) => ({
   getFlipbooks: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await axiosInstance.get('/flipbooks');
+      const response = await axiosInstance.get("flipbook/allflipbooks");
       set({ flipbooks: response.data, loading: false });
     } catch (error) {
-      set({ 
-        loading: false, 
-        error: error.response?.data?.message || error.message 
+      set({
+        loading: false,
+        error: error.response?.data?.message || error.message,
       });
     }
   },
 
-  createFlipbook: async () => {
+  createFlipbook: async (name, image) => {
     try {
       set({ loading: true, error: null });
-      const response = await axiosInstance.post('/flipbook');
-      set((state) => ({ 
+
+      // Send a POST request with the required data (name and image)
+      const response = await axiosInstance.post("/flipbook/createflipbook", {
+        name,
+        image,
+      });
+        
+      // Update the state with the new flipbook
+      set((state) => ({
         flipbooks: [...state.flipbooks, response.data.newFlipbook],
-        loading: false 
+        loading: false,
       }));
-      toast.success('Flipbook created successfully');
+
+      // Show success message
+      toast.success("Flipbook created successfully");
       return response.data;
     } catch (error) {
-      set({ 
-        loading: false, 
-        error: error.response?.data?.message || error.message 
+      set({
+        loading: false,
+        error: error.response?.data?.message || error.message,
       });
       toast.error(error.response?.data?.message || error.message);
       throw error;
     }
-  }
+  },
+  getFlipbookById: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axiosInstance.get(
+        `/flipbook/singleflipbook/${FLIPBOOK_ID}`
+      );
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      set({
+        flipbook: response.data,
+        pages: response.data.pages || [],
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching flipbook:", error.response || error);
+      set({
+        error: error.response?.data?.message || error.message,
+        loading: false,
+        flipbook: null,
+        pages: [],
+      });
+    }
+  },
 }));
 
 export default useFlipbookStore;

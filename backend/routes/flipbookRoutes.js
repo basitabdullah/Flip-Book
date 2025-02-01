@@ -27,9 +27,9 @@ router.put("/:flipbookId/pages/:pageId", updatePage);
 router.delete("/pages/:pageId", deletePage);
 
 // Flipbook routes
-router.post("/", createFlipbook);
-router.get("/:id", getFlipbookById);
-router.get('/flipbooks', getAllFlipbooks);
+router.post("/createflipbook", createFlipbook);
+router.get("/singleflipbook/:id", getFlipbookById);
+router.get('/allflipbooks', getAllFlipbooks);
 
 //Publish Routes
 router.post("/instantpublish/:flipbookId", publishFlipbook);

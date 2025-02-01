@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 
 const FlipbookList = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const [name, setName] = useState('');
+  const [image, setImage] = useState('');
   const { 
     flipbooks,
     getFlipbooks,
@@ -17,72 +18,89 @@ const FlipbookList = () => {
   useEffect(() => {
     getFlipbooks();
   }, [getFlipbooks]);
+  
 
   const handleCreateFlipbook = async () => {
     try {
-      await createFlipbook();
-      setOpenModal(false);
+      // Pass name and image to createFlipbook
+      await createFlipbook(name, image);
+      setName(''); // Reset name
+      setImage(''); // Reset image
     } catch (error) {
       console.error('Failed to create flipbook:', error);
     }
   };
 
-  if (loading) return <Loader />;
-  // if (error) return <div className="error-message">{error}</div>;
-
   return (
     <div className="flipbook-list">
       <h2>All Flipbooks</h2>
-      
-      <div className="flipbook-grid">
-        {flipbooks && flipbooks.map((flipbook) => (
-          <div key={flipbook._id} className="flipbook-card">
-            <h3>Flipbook {flipbook.currentVersion}</h3>
-            <div className="flipbook-stats">
-              <span>{flipbook.pages?.length || 0} pages</span>
-              <span>Created: {new Date(flipbook.createdAt).toLocaleDateString()}</span>
-            </div>
-            <div className="flipbook-actions">
-              <Link 
-                to={`/admin/flipbook/${flipbook._id}`} 
-                className="edit-btn"
-              >
-                Edit
-              </Link>
-              <button className="delete-btn">Delete</button>
-            </div>
-          </div>
-        ))}
+
+      {/* Create Flipbook Form */}
+      <div className="create-flipbook-form">
+        <h3>Create New Flipbook</h3>
+        <div className="form-inputs">
+          <label htmlFor="name">Flipbook Name</label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter flipbook name"
+          />
+
+          <label htmlFor="image">Image URL</label>
+          <input
+            type="text"
+            id="image"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            placeholder="Enter image URL"
+          />
+        </div>
+        <button 
+          onClick={handleCreateFlipbook}
+          className="create-flipbook-btn"
+        >
+          Create Flipbook
+        </button>
       </div>
 
-      <button 
-        className="create-flipbook-btn"
-        onClick={() => setOpenModal(true)}
-      >
-        Create New Flipbook
-      </button>
+      {/* Loading State */}
+      {loading && <Loader />}
 
-      {openModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Create New Flipbook</h3>
-            <p>Are you sure you want to create a new flipbook?</p>
-            
-            <div className="modal-actions">
-              <button 
-                onClick={handleCreateFlipbook}
-                className="confirm-btn"
-              >
-                Create
-              </button>
-              <button 
-                onClick={() => setOpenModal(false)}
-                className="cancel-btn"
-              >
-                Cancel
-              </button>
+      {/* Error State */}
+      {error && <div className="error-message">{error}</div>}
+
+      {/* Flipbook Grid */}
+      {!loading && !error && (
+        <div className="flipbook-grid">
+          {flipbooks && flipbooks.map((flipbook) => (
+            <div key={flipbook._id} className="flipbook-card">
+              {/* Flipbook Image */}
+              {flipbook.image && (
+                <div className="flipbook-image">
+                  <img 
+                    src={flipbook.image} 
+                    alt={flipbook.name} 
+                  />
+                </div>
+              )}
+
+              <h3>{flipbook.name}</h3>
+              <div className="flipbook-stats">
+                <span>{flipbook.pages?.length || 0} pages</span>
+              </div>
+              <div className="flipbook-actions">
+                <Link 
+                  to={`/admin/flipbook/${flipbook._id}`} 
+                  className="edit-btn"
+                >
+                  Edit
+                </Link>
+                <button className="delete-btn">Delete</button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       )}
     </div>

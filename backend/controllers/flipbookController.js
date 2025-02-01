@@ -38,13 +38,14 @@ export const getFlipbookById = async (req, res) => {
 };
 
 export const createFlipbook = async (req, res) => {
-  const { currentVersion } = req.body;
+  const { name, image } = req.body;
 
   try {
     // Create a new flipbook
     const newFlipbook = new Flipbook({
+      name,
+      image,
       pages: [], // Initially no pages
-      currentVersion: currentVersion || "1.0", // Default version if not provided
     });
 
     await newFlipbook.save();
