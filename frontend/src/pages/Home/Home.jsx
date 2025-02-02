@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import HTMLFlipBook from "react-pageflip";
 import "./Home.scss";
 import IndexPage from "../IndexPage/IndexPage";
@@ -45,10 +45,12 @@ const Home = () => {
     ? filteredPublishedFlipbooks[0].pages
     : [];
 
-  const getYouTubeEmbedUrl = (url) => {
+  // Memoize the YouTube URL transformation and add lazy loading
+  const getYouTubeEmbedUrl = useCallback((url) => {
     if (!url) return "";
     if (url.includes("youtube.com/embed/")) {
-      return url;
+      // Add privacy-enhanced mode and other optimizations
+      return `${url}?rel=0&modestbranding=1&host=https://www.youtube-nocookie.com`;
     }
     let videoId = "";
     const watchUrlMatch = url.match(
@@ -57,40 +59,50 @@ const Home = () => {
     if (watchUrlMatch) {
       videoId = watchUrlMatch[1];
     }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
-  };
+    return videoId
+      ? `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`
+      : "";
+  }, []);
 
-  const renderContent = (page) => {
+  // Memoize the content renderer
+  const renderContent = useCallback((page) => {
     switch (page.contentType) {
       case "video":
         const youtubeEmbedUrl = getYouTubeEmbedUrl(page.content);
         return (
-          <iframe
-            src={youtubeEmbedUrl}
-            title={`YouTube video for page ${page.pageNumber}`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+          <div className="video-container">
+            <iframe
+              loading="lazy"
+              src={youtubeEmbedUrl}
+              title={`YouTube video for page ${page.pageNumber}`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              onLoad={(e) => {
+                // Add error handling for iframe loading
+                e.target.onerror = () => console.log('Failed to load video');
+              }}
+            />
+          </div>
         );
       case "image":
-        return <img src={page.content} alt={page.title} />;
+        return <img loading="lazy" src={page.content} alt={page.title} />; // Add lazy loading for images
       case "map":
         return (
           <iframe
+            loading="lazy"
             src={page.content}
             width="100%"
             height="315"
             style={{ border: 0 }}
             allowFullScreen=""
-            loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
         );
       default:
         return null;
     }
-  };
+  }, [getYouTubeEmbedUrl]);
 
   const handleStartSnipping = () => {
     setIsSnipping(true);
@@ -103,13 +115,12 @@ const Home = () => {
     setStartPoint({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseMove = (e) => {
+  // Optimize screenshot functionality
+  const handleMouseMove = useCallback((e) => {
     if (!isSnipping || !startPoint) return;
     e.preventDefault();
-    requestAnimationFrame(() => {
-      setEndPoint({ x: e.clientX, y: e.clientY });
-    });
-  };
+    setEndPoint({ x: e.clientX, y: e.clientY });
+  }, [isSnipping, startPoint]);
 
   const handleMouseUp = async () => {
     if (!isSnipping || !startPoint || !endPoint) return;
@@ -166,6 +177,21 @@ const Home = () => {
     setEndPoint(null);
   };
 
+  // Memoize sorted pages
+  const sortedPages = useMemo(() => {
+    return Array.isArray(publishedPages)
+      ? publishedPages
+        .filter(page => page !== null)
+        .sort((a, b) => a.pageNumber - b.pageNumber)
+      : [];
+  }, [publishedPages]);
+
+  // Optimize audio loading
+  useEffect(() => {
+    audioRef.current.preload = 'none'; // Only load audio when needed
+    audioRef.current.volume = 0.5;
+  }, []);
+
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
       console.log("Navigating to page:", pageIndex);
@@ -179,114 +205,114 @@ const Home = () => {
 
   return (
     <>
-      {
-        loading ? (
-          <Loader />
-        ) : (
-          <div
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            style={{
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              MozUserSelect: "none",
-              msUserSelect: "none",
-            }}
-          >
-            <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
-            <div className="home">
-              <HTMLFlipBook
-                width={450}
-                height={620}
-                ref={bookRef}
-                showCover={true}
-                useMouseEvents={false}
-                onFlip={() => audioRef.current.play()}
-                style={{
-                  filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))',
-                }}
-              >
-                <div key="index" className="page">
-                  <div className="page-content">
-                    <IndexPage goToPage={goToPage} />
-                    <div className="page-number">i</div>
-                  </div>
-                </div>
+      {loading ? (
+        <Loader />
+      ) : (
+        <div
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          style={{
+            userSelect: "none",
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+          }}
+        >
+          <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
+          <div className="home">
+            <HTMLFlipBook
+              width={450}
+              height={600}
+              ref={bookRef}
+              showCover={true}
+              useMouseEvents={false}
 
-                {Array.isArray(publishedPages) && publishedPages.length > 0 ? (
-                  publishedPages
-                    .sort((a, b) => a.pageNumber - b.pageNumber)
-                    .map((page) => (
-                      <div
-                        key={page._id || `page-${page.pageNumber}`}
-                        className="page"
-                      >
-                        <div className="page-content">
-                          <div className="content">
-                            <h1>{page.title}</h1>
-                            {renderContent(page)}
-                            <p>{page.description}</p>
-                          </div>
-                          <div className="page-number">{page.pageNumber}</div>
-                        </div>
-                      </div>
-                    ))
-                ) : (
-                  <div key="empty" className="page">
+              onFlip={() => {
+                if (!audioRef.current.src) {
+                  audioRef.current.src = pageFlipSound;
+                }
+                audioRef.current.play();
+              }}
+              maxShadowOpacity={0.5}
+              style={{
+                filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))',
+              }}
+            >
+              <div key="index" className="page">
+                <div className="page-content">
+                  <IndexPage goToPage={goToPage} />
+                  <div className="page-number">i</div>
+                </div>
+              </div>
+
+              {sortedPages.length > 0 ? (
+                sortedPages.map((page) => (
+                  <div
+                    key={page._id || `page-${page.pageNumber}`}
+                    className="page"
+                  >
                     <div className="page-content">
                       <div className="content">
-                        <h1>No pages available</h1>
+                        <h1>{page.title}</h1>
+                        {renderContent(page)}
+                        <p>{page.description}</p>
                       </div>
-                      <div className="page-number">1</div>
+                      <div className="page-number">{page.pageNumber}</div>
                     </div>
                   </div>
-                )}
-
-                <div key="twocol" className="page">
+                ))
+              ) : (
+                <div key="empty" className="page">
                   <div className="page-content">
                     <div className="content">
-                      <TwoColText
-                        title="About Our Journey"
-                        textContent={[
-                          "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
-                          "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                          "As you flip through these pages, you'll discover stories",
-                        ]}
-                        imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
-                        imageAlt="Journey illustration showing a path through mountains"
-                        imageCaption="A journey of a thousand miles begins with a single step"
-                      />
+                      <h1>No pages available</h1>
                     </div>
-                    <div className="page-number">{publishedPages.length + 1}</div>
+                    <div className="page-number">1</div>
                   </div>
                 </div>
-              </HTMLFlipBook>
-            </div>
+              )}
 
-            {isSnipping && startPoint && endPoint && (
-              <div
-                style={{
-                  position: "fixed",
-                  left: Math.min(startPoint.x, endPoint.x),
-                  top: Math.min(startPoint.y, endPoint.y),
-                  width: Math.abs(endPoint.x - startPoint.x),
-                  height: Math.abs(endPoint.y - startPoint.y),
-                  border: "2px dashed #000",
-                  backgroundColor: "rgba(0, 0, 0, 0.1)",
-                  pointerEvents: "none",
-                  zIndex: 9999,
-                }}
-              />
-            )}
+              <div key="twocol" className="page">
+                <div className="page-content">
+                  <div className="content">
+                    <TwoColText
+                      title="About Our Journey"
+                      textContent={[
+                        "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
+                        "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
+                        "As you flip through these pages, you'll discover stories",
+                      ]}
+                      imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
+                      imageAlt="Journey illustration showing a path through mountains"
+                      imageCaption="A journey of a thousand miles begins with a single step"
+                    />
+                  </div>
+                  <div className="page-number">{publishedPages.length + 1}</div>
+                </div>
+              </div>
+            </HTMLFlipBook>
           </div>
-        )
-      }
 
-
-
+          {isSnipping && startPoint && endPoint && (
+            <div
+              style={{
+                position: "fixed",
+                left: Math.min(startPoint.x, endPoint.x),
+                top: Math.min(startPoint.y, endPoint.y),
+                width: Math.abs(endPoint.x - startPoint.x),
+                height: Math.abs(endPoint.y - startPoint.y),
+                border: "2px dashed #000",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                pointerEvents: "none",
+                zIndex: 9999,
+              }}
+            />
+          )}
+        </div>
+      )}
     </>
   );
 };
 
-export default Home;
+export default React.memo(Home);

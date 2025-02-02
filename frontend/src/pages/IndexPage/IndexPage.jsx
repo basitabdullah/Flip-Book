@@ -1,6 +1,7 @@
 import React from "react";
 import "./IndexPage.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore";
+import { BsChevronDoubleDown } from 'react-icons/bs';
 
 const IndexPage = ({ goToPage }) => {
   const { publishedFlipbooks } = useFlipbookStore();
@@ -50,6 +51,10 @@ const IndexPage = ({ goToPage }) => {
             <p onClick={() => goToPage(6)}>{">"}{publishedPages[5]?.title}</p>
             <p onClick={() => goToPage(7)}>{">"}{publishedPages[6]?.title}</p>
           </div>
+        </div>
+        
+        <div className="scroll-indicator">
+          <BsChevronDoubleDown className="bounce-icon" />
         </div>
       </div>
     </div>

@@ -57,7 +57,34 @@ export const createFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const deleteFlipbook = async (req, res) => {
+  const { flipbookId } = req.params;
 
+  try {
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(flipbookId)) {
+      return res.status(400).json({ message: "Invalid flipbook ID format" });
+    }
+
+    // Find and delete the flipbook
+    const deletedFlipbook = await Flipbook.findByIdAndDelete(flipbookId);
+
+    if (!deletedFlipbook) {
+      return res.status(404).json({ message: "Flipbook not found" });
+    }
+
+    // Also delete any associated published flipbook
+    await PublishedFlipbook.findOneAndDelete({ flipbook: flipbookId });
+
+    res.status(200).json({ 
+      message: "Flipbook deleted successfully",
+      deletedFlipbook 
+    });
+  } catch (error) {
+    console.error("Error deleting flipbook:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 // Get all pages in the flipbook
 export const getAllPages = async (req, res) => {
   try {
@@ -475,6 +502,8 @@ export const deletePublishedFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 
 

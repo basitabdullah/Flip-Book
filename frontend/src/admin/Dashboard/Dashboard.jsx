@@ -11,6 +11,9 @@ import { IoBookOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { IoGridOutline } from "react-icons/io5";
+import { IoHomeOutline } from "react-icons/io5";
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -151,6 +154,11 @@ function FlipbookEditor({
           <IoAddOutline className="icon" />
           Add New Page
         </Link>
+        <div className="divider">|</div>
+        <button className="action-button quaternary animated">
+          <IoGridOutline className="icon" />
+          Add Two Column Layout
+        </button>
       </div>
 
       {flipbook && (
@@ -503,22 +511,22 @@ function Sidebar({ isOpen, onClose }) {
       <div className="logo">Flipbook Admin</div>
       <nav>
         <Link to="/" className="nav-item">
-          <span className="icon">🏠</span>
+          <IoHomeOutline className="icon" />
           Home
         </Link>
 
         <Link to="/admin/admin-dashboard/flipbooks" className="nav-item">
-          <span className="icon">📚</span>
+          <IoBookOutline className="icon" />
           Flipbook List
         </Link>
 
         <Link to="/admin/admin-dashboard/scheduled" className="nav-item">
-          <span className="icon">📄</span>
+          <IoTimeOutline className="icon" />
           Scheduled Flipbooks
         </Link>
 
         <Link to="/admin/admin-dashboard/published" className="nav-item">
-          <span className="icon">⚠️</span>
+          <IoCheckmarkDoneOutline className="icon" />
           Published Versions
         </Link>
       </nav>

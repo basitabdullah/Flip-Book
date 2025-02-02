@@ -63,21 +63,28 @@ $border-radius: 8px;
 
   nav {
     .nav-item {
-      padding: 14px;
-      margin: 8px 0;
-      cursor: pointer;
-      border-radius: $border-radius;
-      transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 10px;
-
-      &:hover {
-        background: ($secondary-color, 10%);
+      padding: 12px 20px;
+      color: $white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      
+      .icon {
+        margin-right: 12px;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
       }
 
-      &.active {
-        background: $primary-color;
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+        
+        .icon {
+          transform: scale(1.2);
+        }
       }
     }
   }
@@ -854,5 +861,32 @@ $border-radius: 8px;
   &:active {
     transform: translateY(1px);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.action-button.quaternary {
+  background: linear-gradient(45deg, #6366f1, #8b5cf6);
+  color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  }
+  
+  &.animated {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
   }
 }

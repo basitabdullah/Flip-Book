@@ -13,7 +13,8 @@ import {
   togglePublishedFlipbook,
   updatePublishedFlipbook,
   deletePublishedFlipbook,
-  getAllFlipbooks
+  getAllFlipbooks,
+  deleteFlipbook
 } from "../controllers/flipbookController.js";
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.delete("/pages/:pageId", deletePage);
 router.post("/createflipbook", createFlipbook);
 router.get("/singleflipbook/:id", getFlipbookById);
 router.get('/allflipbooks', getAllFlipbooks);
+router.delete("/:flipbookId", deleteFlipbook);
 
 //Publish Routes
 router.post("/instantpublish/:flipbookId", publishFlipbook);

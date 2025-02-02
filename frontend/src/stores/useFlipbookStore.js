@@ -511,6 +511,39 @@ const useFlipbookStore = create((set) => ({
       });
     }
   },
+  deleteFlipbook: async (flipbookId) => {
+    try {
+      set({ loading: true, error: null });
+
+      const response = await axiosInstance.delete(`/flipbook/${flipbookId}`);
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      // Remove the deleted flipbook from the state
+      set((state) => ({
+        flipbooks: state.flipbooks.filter(
+          (flipbook) => flipbook._id !== flipbookId
+        ),
+        loading: false,
+      }));
+
+      toast.success("Flipbook deleted successfully");
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting flipbook:", error.response || error);
+      const errorMessage = error.response?.data?.message || error.message;
+
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
 }));
 
 export default useFlipbookStore;

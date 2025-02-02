@@ -11,6 +11,7 @@ const FlipbookList = () => {
     flipbooks,
     getFlipbooks,
     createFlipbook,
+    deleteFlipbook,
     loading,
     error 
   } = useFlipbookStore();
@@ -28,6 +29,16 @@ const FlipbookList = () => {
       setImage(''); // Reset image
     } catch (error) {
       console.error('Failed to create flipbook:', error);
+    }
+  };
+
+  const handleDeleteFlipbook = async (flipbookId) => {
+    if (window.confirm('Are you sure you want to delete this flipbook?')) {
+      try {
+        await deleteFlipbook(flipbookId);
+      } catch (error) {
+        console.error('Failed to delete flipbook:', error);
+      }
     }
   };
 
@@ -98,7 +109,12 @@ const FlipbookList = () => {
                   Edit
                 </Link>
                 
-                <button className="delete-btn">Delete</button>
+                <button 
+                  className="delete-btn"
+                  onClick={() => handleDeleteFlipbook(flipbook._id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
