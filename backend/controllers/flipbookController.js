@@ -5,8 +5,7 @@ import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
 
 export const getAllFlipbooks = async (req, res) => {
   try {
-    const flipbooks = await Flipbook.find()
-      .sort({ createdAt: -1 }); // Sort by creation date, newest first
+    const flipbooks = await Flipbook.find().sort({ createdAt: -1 }); // Sort by creation date, newest first
 
     if (!flipbooks || flipbooks.length === 0) {
       return res.status(404).json({ message: "No flipbooks found" });
@@ -18,7 +17,6 @@ export const getAllFlipbooks = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const getFlipbookById = async (req, res) => {
   try {
@@ -76,9 +74,9 @@ export const deleteFlipbook = async (req, res) => {
     // Also delete any associated published flipbook
     await PublishedFlipbook.findOneAndDelete({ flipbook: flipbookId });
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Flipbook deleted successfully",
-      deletedFlipbook 
+      deletedFlipbook,
     });
   } catch (error) {
     console.error("Error deleting flipbook:", error);
@@ -160,8 +158,7 @@ export const createPage = async (req, res) => {
 
 // Update an existing page
 export const updatePage = async (req, res) => {
-  const { title, description, content, pageNumber, contentType } =
-    req.body;
+  const { title, description, content, pageNumber, contentType } = req.body;
   const { pageId } = req.params;
   const { flipbookId } = req.params;
 
@@ -194,7 +191,6 @@ export const updatePage = async (req, res) => {
     const pageIndex = flipbook.pages.findIndex(
       (p) => p._id.toString() === pageId
     );
-  
 
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });
@@ -259,13 +255,7 @@ export const deletePage = async (req, res) => {
   }
 };
 
-
-
-
-
 //////////////////////publish/////////////////////////////////
-
-
 
 // Publish a specific Flipbbok
 export const publishFlipbook = async (req, res) => {
@@ -418,7 +408,10 @@ export const updatePublishedFlipbook = async (req, res) => {
     }
 
     // Check if the new page number already exists (if pageNumber is being changed)
-    if (pageNumber && pageNumber !== publishedFlipbook.pages[pageIndex].pageNumber) {
+    if (
+      pageNumber &&
+      pageNumber !== publishedFlipbook.pages[pageIndex].pageNumber
+    ) {
       const pageExists = publishedFlipbook.pages.some(
         (p, idx) => idx !== pageIndex && p.pageNumber === pageNumber
       );
@@ -431,17 +424,19 @@ export const updatePublishedFlipbook = async (req, res) => {
     publishedFlipbook.pages[pageIndex] = {
       ...publishedFlipbook.pages[pageIndex],
       title: title || publishedFlipbook.pages[pageIndex].title,
-      description: description || publishedFlipbook.pages[pageIndex].description,
+      description:
+        description || publishedFlipbook.pages[pageIndex].description,
       content: content || publishedFlipbook.pages[pageIndex].content,
-      contentType: contentType || publishedFlipbook.pages[pageIndex].contentType,
+      contentType:
+        contentType || publishedFlipbook.pages[pageIndex].contentType,
       pageNumber: pageNumber || publishedFlipbook.pages[pageIndex].pageNumber,
     };
 
     await publishedFlipbook.save();
 
-    res.status(200).json({ 
-      message: "Published flipbook page updated successfully.", 
-      publishedFlipbook 
+    res.status(200).json({
+      message: "Published flipbook page updated successfully.",
+      publishedFlipbook,
     });
   } catch (error) {
     console.error("Error updating published flipbook page:", error);
@@ -461,7 +456,7 @@ export const deletePublishedFlipbook = async (req, res) => {
 
     // Find the flipbook to be deleted
     const flipbookToDelete = await PublishedFlipbook.findById(flipbookId);
-    
+
     if (!flipbookToDelete) {
       return res.status(404).json({ message: "Published flipbook not found" });
     }
@@ -470,7 +465,7 @@ export const deletePublishedFlipbook = async (req, res) => {
     if (flipbookToDelete.isPublished) {
       // Get all published flipbooks sorted by publishedAt in descending order
       latestFlipbooks = await PublishedFlipbook.find({
-        _id: { $ne: flipbookId } // Exclude the one being deleted
+        _id: { $ne: flipbookId }, // Exclude the one being deleted
       }).sort({ publishedAt: -1 });
 
       // If there are other flipbooks, publish the latest one
@@ -482,20 +477,21 @@ export const deletePublishedFlipbook = async (req, res) => {
     }
 
     // Delete the flipbook
-    const deletedFlipbook = await PublishedFlipbook.findByIdAndDelete(flipbookId);
+    const deletedFlipbook = await PublishedFlipbook.findByIdAndDelete(
+      flipbookId
+    );
 
     // Update the original flipbook's isPublished status
     if (deletedFlipbook.flipbook) {
-      await Flipbook.findByIdAndUpdate(
-        deletedFlipbook.flipbook,
-        { isPublished: false }
-      );
+      await Flipbook.findByIdAndUpdate(deletedFlipbook.flipbook, {
+        isPublished: false,
+      });
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Published flipbook deleted successfully",
       deletedFlipbook,
-      newPublishedFlipbook: latestFlipbooks[0] || null
+      newPublishedFlipbook: latestFlipbooks[0] || null,
     });
   } catch (error) {
     console.error("Error deleting published flipbook:", error);

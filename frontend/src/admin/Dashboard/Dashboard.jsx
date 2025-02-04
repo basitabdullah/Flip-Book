@@ -139,12 +139,12 @@ function FlipbookEditor({
       <div className="publish-buttons">
         <button onClick={() => setOpenPublishModal(true)} className="action-button primary">
           <IoBookOutline className="icon" />
-          Add New Issue
+          Publish New Issue
         </button>
         <div className="divider">|</div>
         <button onClick={() => setIsScheduling(!isScheduling)} className="action-button secondary">
           <IoTimeOutline className="icon" />
-          Schedule Publish
+          Schedule Publication
         </button>
         <div className="divider">|</div>
         <Link
@@ -157,7 +157,7 @@ function FlipbookEditor({
         <div className="divider">|</div>
         <button className="action-button quaternary animated">
           <IoGridOutline className="icon" />
-          Add Two Column Layout
+          Add A Catalog
         </button>
       </div>
 

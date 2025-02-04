@@ -1,13 +1,20 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import HTMLFlipBook from "react-pageflip";
 import "./Home.scss";
 import IndexPage from "../IndexPage/IndexPage";
 import Navigation from "../../components/Navigation/Navigation";
 import html2canvas from "html2canvas";
 import useFlipbookStore from "../../stores/useFlipbookStore";
-import TwoColText from "../TwoColText/TwoColText";
 import pageFlipSound from "../../assets/page-flip-sound.mp3";
 import Loader from "../../components/Loader/Loader";
+import CoverPage from "../../pages/PageCover/PageCover";
+
 const Home = () => {
   const bookRef = useRef(null);
   const audioRef = useRef(new Audio(pageFlipSound));
@@ -16,12 +23,8 @@ const Home = () => {
   const [endPoint, setEndPoint] = useState(null);
 
   // Destructure the necessary state and actions from the store
-  const {
-    loading,
-    error,
-    publishedFlipbooks,
-    getPublishedFlipbooks,
-  } = useFlipbookStore();
+  const { loading, error, publishedFlipbooks, getPublishedFlipbooks } =
+    useFlipbookStore();
 
   // Fetch pages and published flipbooks when the component mounts
   useEffect(() => {
@@ -41,9 +44,10 @@ const Home = () => {
     : [];
 
   // Get the pages from the first published flipbook (if any exist)
-  const publishedPages = filteredPublishedFlipbooks.length > 0
-    ? filteredPublishedFlipbooks[0].pages
-    : [];
+  const publishedPages =
+    filteredPublishedFlipbooks.length > 0
+      ? filteredPublishedFlipbooks[0].pages
+      : [];
 
   // Memoize the YouTube URL transformation and add lazy loading
   const getYouTubeEmbedUrl = useCallback((url) => {
@@ -65,44 +69,47 @@ const Home = () => {
   }, []);
 
   // Memoize the content renderer
-  const renderContent = useCallback((page) => {
-    switch (page.contentType) {
-      case "video":
-        const youtubeEmbedUrl = getYouTubeEmbedUrl(page.content);
-        return (
-          <div className="video-container">
+  const renderContent = useCallback(
+    (page) => {
+      switch (page.contentType) {
+        case "video":
+          const youtubeEmbedUrl = getYouTubeEmbedUrl(page.content);
+          return (
+            <div className="video-container">
+              <iframe
+                loading="lazy"
+                src={youtubeEmbedUrl}
+                title={`YouTube video for page ${page.pageNumber}`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                onLoad={(e) => {
+                  // Add error handling for iframe loading
+                  e.target.onerror = () => console.log("Failed to load video");
+                }}
+              />
+            </div>
+          );
+        case "image":
+          return <img loading="lazy" src={page.content} alt={page.title} />; // Add lazy loading for images
+        case "map":
+          return (
             <iframe
               loading="lazy"
-              src={youtubeEmbedUrl}
-              title={`YouTube video for page ${page.pageNumber}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              onLoad={(e) => {
-                // Add error handling for iframe loading
-                e.target.onerror = () => console.log('Failed to load video');
-              }}
+              src={page.content}
+              width="100%"
+              height="315"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              referrerPolicy="no-referrer-when-downgrade"
             />
-          </div>
-        );
-      case "image":
-        return <img loading="lazy" src={page.content} alt={page.title} />; // Add lazy loading for images
-      case "map":
-        return (
-          <iframe
-            loading="lazy"
-            src={page.content}
-            width="100%"
-            height="315"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        );
-      default:
-        return null;
-    }
-  }, [getYouTubeEmbedUrl]);
+          );
+        default:
+          return null;
+      }
+    },
+    [getYouTubeEmbedUrl]
+  );
 
   const handleStartSnipping = () => {
     setIsSnipping(true);
@@ -116,11 +123,14 @@ const Home = () => {
   };
 
   // Optimize screenshot functionality
-  const handleMouseMove = useCallback((e) => {
-    if (!isSnipping || !startPoint) return;
-    e.preventDefault();
-    setEndPoint({ x: e.clientX, y: e.clientY });
-  }, [isSnipping, startPoint]);
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (!isSnipping || !startPoint) return;
+      e.preventDefault();
+      setEndPoint({ x: e.clientX, y: e.clientY });
+    },
+    [isSnipping, startPoint]
+  );
 
   const handleMouseUp = async () => {
     if (!isSnipping || !startPoint || !endPoint) return;
@@ -181,21 +191,21 @@ const Home = () => {
   const sortedPages = useMemo(() => {
     return Array.isArray(publishedPages)
       ? publishedPages
-        .filter(page => page !== null)
-        .sort((a, b) => a.pageNumber - b.pageNumber)
+          .filter((page) => page !== null)
+          .sort((a, b) => a.pageNumber - b.pageNumber)
       : [];
   }, [publishedPages]);
 
   // Optimize audio loading
   useEffect(() => {
-    audioRef.current.preload = 'none'; // Only load audio when needed
+    audioRef.current.preload = "none"; // Only load audio when needed
     audioRef.current.volume = 0.5;
   }, []);
 
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
       console.log("Navigating to page:", pageIndex);
-      bookRef.current.pageFlip().flip(pageIndex);
+      bookRef.current.pageFlip().flip(pageIndex + 1);
     } else {
       console.error("bookRef is not initialized");
     }
@@ -227,18 +237,28 @@ const Home = () => {
               ref={bookRef}
               showCover={true}
               useMouseEvents={false}
-
+              drawShadow={true} // Enable shadows when flipping
+              maxShadowOpacity={0.8} // Adjust shadow intensity (1 = max, 0 = none)
+              flippingTime={500} // Animation duration in milliseconds
               onFlip={() => {
                 if (!audioRef.current.src) {
                   audioRef.current.src = pageFlipSound;
                 }
                 audioRef.current.play();
               }}
-              maxShadowOpacity={0.5}
-              style={{
-                filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3))',
-              }}
             >
+              <div key="cover" className="page">
+                <div className="page-content">
+                  <CoverPage
+                    backgroundImage={
+                      "https://images.unsplash.com/photo-1731076274484-e3882b02d523?q=80&w=1885&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    }
+                    title={"Rose Wood"}
+                    subtitle={"Experience the beauty of nature with us"}
+                  />
+                </div>
+              </div>
+
               <div key="index" className="page">
                 <div className="page-content">
                   <IndexPage goToPage={goToPage} />
@@ -256,7 +276,7 @@ const Home = () => {
                       <div className="content">
                         <h1>{page.title}</h1>
                         {renderContent(page)}
-                        <p>{page.description}</p>
+                        <p className="page-description">{page.description}</p>
                       </div>
                       <div className="page-number">{page.pageNumber}</div>
                     </div>
@@ -272,25 +292,6 @@ const Home = () => {
                   </div>
                 </div>
               )}
-
-              <div key="twocol" className="page">
-                <div className="page-content">
-                  <div className="content">
-                    <TwoColText
-                      title="About Our Journey"
-                      textContent={[
-                        "Welcome to our digital flipbook! This journey began with a simple idea: to create something meaningful and engaging for our readers.",
-                        "Through careful design and thoughtful content curation, we've crafted an experience that combines the charm of traditional books with modern digital innovation.",
-                        "As you flip through these pages, you'll discover stories",
-                      ]}
-                      imageSrc="https://images.unsplash.com/photo-1516383740770-fbcc5ccbece0"
-                      imageAlt="Journey illustration showing a path through mountains"
-                      imageCaption="A journey of a thousand miles begins with a single step"
-                    />
-                  </div>
-                  <div className="page-number">{publishedPages.length + 1}</div>
-                </div>
-              </div>
             </HTMLFlipBook>
           </div>
 

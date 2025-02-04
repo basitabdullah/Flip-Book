@@ -14,7 +14,7 @@ import {
   updatePublishedFlipbook,
   deletePublishedFlipbook,
   getAllFlipbooks,
-  deleteFlipbook
+  deleteFlipbook,
 } from "../controllers/flipbookController.js";
 
 const router = express.Router();
