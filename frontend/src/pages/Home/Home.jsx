@@ -14,6 +14,9 @@ import useFlipbookStore from "../../stores/useFlipbookStore";
 import pageFlipSound from "../../assets/page-flip-sound.mp3";
 import Loader from "../../components/Loader/Loader";
 import CoverPage from "../../pages/PageCover/PageCover";
+import CatalogPage from "../../pages/CatalogPage/CatalogPage";
+import GalleryPage from "../../pages/GalleryPage/GalleryPage";
+import SocialPage from "../../pages/SocialPage/SocialPage";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -191,8 +194,8 @@ const Home = () => {
   const sortedPages = useMemo(() => {
     return Array.isArray(publishedPages)
       ? publishedPages
-          .filter((page) => page !== null)
-          .sort((a, b) => a.pageNumber - b.pageNumber)
+        .filter((page) => page !== null)
+        .sort((a, b) => a.pageNumber - b.pageNumber)
       : [];
   }, [publishedPages]);
 
@@ -232,14 +235,17 @@ const Home = () => {
           <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
           <div className="home">
             <HTMLFlipBook
-              width={450}
+              width={Math.min(window.innerWidth * 0.8, 450)}
               height={600}
+              size="stretch"
+              minWidth={320}
+              maxWidth={450}
               ref={bookRef}
               showCover={true}
               useMouseEvents={false}
-              drawShadow={true} // Enable shadows when flipping
-              maxShadowOpacity={0.8} // Adjust shadow intensity (1 = max, 0 = none)
-              flippingTime={500} // Animation duration in milliseconds
+              drawShadow={true}
+              maxShadowOpacity={0.8}
+              flippingTime={500}
               onFlip={() => {
                 if (!audioRef.current.src) {
                   audioRef.current.src = pageFlipSound;
@@ -273,8 +279,8 @@ const Home = () => {
                     className="page"
                   >
                     <div className="page-content">
-                      <div className="content">
-                        <h1>{page.title}</h1>
+                      <div className="content custom-scrollbar">
+                        <h1 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{page.title}</h1>
                         {renderContent(page)}
                         <p className="page-description">{page.description}</p>
                       </div>
@@ -292,6 +298,27 @@ const Home = () => {
                   </div>
                 </div>
               )}
+
+              <div key="social" className="page">
+                <div className="page-content">
+                  <SocialPage />
+                  <div className="page-number">{sortedPages.length + 1}</div>
+                </div>
+              </div>
+
+              <div key="gallery" className="page">
+                <div className="page-content">
+                  <GalleryPage />
+                  <div className="page-number">{sortedPages.length + 2}</div>
+                </div>
+              </div>
+
+              <div key="catalog" className="page">
+                <div className="page-content">
+                  <CatalogPage />
+                  <div className="page-number">{sortedPages.length + 3}</div>
+                </div>
+              </div>
             </HTMLFlipBook>
           </div>
 
