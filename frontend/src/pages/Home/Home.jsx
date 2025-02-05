@@ -17,6 +17,7 @@ import CoverPage from "../../pages/PageCover/PageCover";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
 import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
+import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -81,13 +82,12 @@ const Home = () => {
             <div className="video-container">
               <iframe
                 loading="lazy"
-                src={youtubeEmbedUrl}
+                src={`${youtubeEmbedUrl}&autoplay=1&mute=1`} // Added autoplay=1 and mute=1 (required for autoplay)
                 title={`YouTube video for page ${page.pageNumber}`}
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
                 allowFullScreen
                 onLoad={(e) => {
-                  // Add error handling for iframe loading
                   e.target.onerror = () => console.log("Failed to load video");
                 }}
               />
@@ -194,8 +194,8 @@ const Home = () => {
   const sortedPages = useMemo(() => {
     return Array.isArray(publishedPages)
       ? publishedPages
-        .filter((page) => page !== null)
-        .sort((a, b) => a.pageNumber - b.pageNumber)
+          .filter((page) => page !== null)
+          .sort((a, b) => a.pageNumber - b.pageNumber)
       : [];
   }, [publishedPages]);
 
@@ -211,6 +211,18 @@ const Home = () => {
       bookRef.current.pageFlip().flip(pageIndex + 1);
     } else {
       console.error("bookRef is not initialized");
+    }
+  };
+
+  const goToNextPage = () => {
+    if (bookRef?.current) {
+      bookRef.current.pageFlip().flipNext();
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (bookRef?.current) {
+      bookRef.current.pageFlip().flipPrev();
     }
   };
 
@@ -280,7 +292,11 @@ const Home = () => {
                   >
                     <div className="page-content">
                       <div className="content custom-scrollbar">
-                        <h1 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{page.title}</h1>
+                        <h1
+                          style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}
+                        >
+                          {page.title}
+                        </h1>
                         {renderContent(page)}
                         <p className="page-description">{page.description}</p>
                       </div>
@@ -320,6 +336,34 @@ const Home = () => {
                 </div>
               </div>
             </HTMLFlipBook>
+
+            {/* Navigation Arrows */}
+            <div
+              style={{
+                position: "absolute",
+                left: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                zIndex: 1000,
+              }}
+              onClick={goToPreviousPage}
+            >
+              <RiArrowLeftWideFill size={60} color="#fff" />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                zIndex: 1000,
+              }}
+              onClick={goToNextPage}
+            >
+              <RiArrowRightWideFill size={60} color="#fff" />
+            </div>
           </div>
 
           {isSnipping && startPoint && endPoint && (
