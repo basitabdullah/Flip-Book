@@ -22,7 +22,6 @@ const IndexPage = ({ goToPage }) => {
       <div className="content">
         <div className="featured-pages">
           <div className="index-title">
-            <p className="index-number">00</p>
             <p className="index-text">Index</p>
           </div>
           <div className="featured-numbers">

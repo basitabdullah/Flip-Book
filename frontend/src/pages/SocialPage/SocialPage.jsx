@@ -1,53 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './SocialPage.scss';
-import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+import { 
+  FaFacebook, 
+  FaInstagram, 
+  FaTwitter, 
+  FaYoutube, 
+  FaPhone, 
+  FaEnvelope, 
+  FaMapMarkerAlt 
+} from 'react-icons/fa';
 
 const SocialPage = () => {
-  const [currentReview, setCurrentReview] = useState(0);
-
-  const reviews = [
-    {
-      name: "Sarah Johnson",
-      rating: 5,
-      text: "Absolutely stunning hotel with impeccable service. The views are breathtaking!",
-      date: "March 2024"
-    },
-    {
-      name: "Michael Chen",
-      rating: 5,
-      text: "A perfect blend of luxury and comfort. Will definitely return!",
-      date: "February 2024"
-    },
-    {
-      name: "Emma Williams",
-      rating: 5,
-      text: "The spa services were outstanding. Best weekend getaway ever!",
-      date: "January 2024"
-    }
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentReview((prev) => (prev === reviews.length - 1 ? 0 : prev + 1));
-    }, 4000);
-
-    return () => clearInterval(timer);
-  }, [reviews.length]);
-
-  const renderStars = (rating) => {
-    return "★".repeat(rating) + "☆".repeat(5 - rating);
-  };
-
   return (
     <div className="social-page">
-      <h1>Find Us</h1>
+      <h1>Connect With Us</h1>
       
       {/* Map Section */}
       <div className="map-container">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.5965966464116!2d77.59120147473573!3d12.93904901622411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae15986765d7d9%3A0xbba2fea7014e5087!2sLalbagh%20Botanical%20Garden!5e0!3m2!1sen!2sin!4v1709755547495!5m2!1sen!2sin"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.9897290067227!2d77.5882468!3d12.9715987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sBengaluru%2C%20Karnataka%2C%20India!5e0!3m2!1sen!2sin!4v1709814407955!5m2!1sen!2sin"
           width="100%"
-          height="200"
+          height="180"
           style={{ border: 0 }}
           allowFullScreen=""
           loading="lazy"
@@ -55,56 +28,50 @@ const SocialPage = () => {
         />
       </div>
 
-      {/* Social Links */}
-      <div className="social-links">
-        <a href="#" className="social-icon facebook">
-          <FaFacebook /> <span>Follow us</span>
-        </a>
-        <a href="#" className="social-icon instagram">
-          <FaInstagram /> <span>Follow us</span>
-        </a>
-        <a href="#" className="social-icon twitter">
-          <FaTwitter /> <span>Follow us</span>
-        </a>
-        <a href="#" className="social-icon tripadvisor">
-          <FaYoutube /> <span>Subscribe</span>
-        </a>
-      </div>
-
-
-
-      {/* Reviews Carousel */}
-      <div className="reviews-section">
-        <h2>Guest Reviews</h2>
-        <div className="reviews-carousel">
-          <div 
-            className="reviews-track"
-            style={{ transform: `translateX(-${currentReview * 100}%)` }}
-          >
-            {reviews.map((review, index) => (
-              <div key={index} className="review-card">
-                <div className="review-header">
-                  <span className="review-name">{review.name}</span>
-                  <span className="review-date">{review.date}</span>
-                </div>
-                <div className="review-rating">{renderStars(review.rating)}</div>
-                <p className="review-text">"{review.text}"</p>
-              </div>
-            ))}
+      <div className="contact-info">
+        <div className="contact-item">
+          <FaMapMarkerAlt className="icon" />
+          <div className="info">
+            <h3>Address</h3>
+            <p>123 Rose Wood Avenue</p>
+            <p>Bangalore, Karnataka 560004</p>
           </div>
         </div>
-        <div className="review-indicators">
-          {reviews.map((_, index) => (
-            <button
-              key={index}
-              className={`indicator ${currentReview === index ? 'active' : ''}`}
-              onClick={() => setCurrentReview(index)}
-            />
-          ))}
+
+        <div className="contact-item">
+          <FaPhone className="icon" />
+          <div className="info">
+            <h3>Phone</h3>
+            <a href="tel:+919876543210">+91 98765 43210</a>
+          </div>
         </div>
+
+        <div className="contact-item">
+          <FaEnvelope className="icon" />
+          <div className="info">
+            <h3>Email</h3>
+            <a href="mailto:info@rosewood.com">info@rosewood.com</a>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Links */}
+      <div className="social-links">
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon facebook">
+          <FaFacebook /> <span>Facebook</span>
+        </a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon instagram">
+          <FaInstagram /> <span>Instagram</span>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon twitter">
+          <FaTwitter /> <span>Twitter</span>
+        </a>
+        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-icon youtube">
+          <FaYoutube /> <span>YouTube</span>
+        </a>
       </div>
     </div>
   );
 };
 
-export default SocialPage; 
+export default SocialPage;

@@ -17,6 +17,7 @@ import CoverPage from "../../pages/PageCover/PageCover";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
 import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
+import ReviewsPage from "../../pages/ReviewsPage/ReviewsPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 
 const Home = () => {
@@ -329,12 +330,20 @@ const Home = () => {
                 </div>
               </div>
 
+              <div key="reviews" className="page">
+                <div className="page-content">
+                  <ReviewsPage />
+                  <div className="page-number">{sortedPages.length + 4}</div>
+                </div>
+              </div>
               <div key="catalog" className="page">
                 <div className="page-content">
                   <CatalogPage />
                   <div className="page-number">{sortedPages.length + 3}</div>
                 </div>
               </div>
+
+
             </HTMLFlipBook>
 
             {/* Navigation Arrows */}
