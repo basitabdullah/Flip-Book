@@ -33,8 +33,8 @@ const SocialPage = () => {
           <FaMapMarkerAlt className="icon" />
           <div className="info">
             <h3>Address</h3>
-            <p>123 Rose Wood Avenue</p>
-            <p>Bangalore, Karnataka 560004</p>
+            <p>Rose Wood Avenue</p>
+            <p>Reservoir Road, Gulmarg, 193403</p>
           </div>
         </div>
 
@@ -42,7 +42,7 @@ const SocialPage = () => {
           <FaPhone className="icon" />
           <div className="info">
             <h3>Phone</h3>
-            <a href="tel:+919876543210">+91 98765 43210</a>
+            <a href="tel:+919876543210">+91 9484000023 </a>
           </div>
         </div>
 
@@ -50,7 +50,7 @@ const SocialPage = () => {
           <FaEnvelope className="icon" />
           <div className="info">
             <h3>Email</h3>
-            <a href="mailto:info@rosewood.com">info@rosewood.com</a>
+            <a href="mailto:info@rosewood.com">reservation@therosewoodhotel.com</a>
           </div>
         </div>
       </div>

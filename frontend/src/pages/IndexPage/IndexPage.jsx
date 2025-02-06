@@ -1,7 +1,7 @@
 import React from "react";
 import "./IndexPage.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore";
-import { BsChevronDoubleDown } from "react-icons/bs";
+import indexImg from "../../assets/indexImg.jpg";
 
 const IndexPage = ({ goToPage }) => {
   const { publishedFlipbooks } = useFlipbookStore();
@@ -24,30 +24,18 @@ const IndexPage = ({ goToPage }) => {
           <div className="index-title">
             <p className="index-text">Index</p>
           </div>
-          <div className="featured-numbers">
-            {[0, 1, 2].map((index) => (
-              <div className="number" key={index}>
-                <p className="num">{String(index + 1).padStart(2, '0')}</p>
-                <p 
-                  onClick={() => goToPage(index + 1)} 
-                  className="page-title"
-                >
-                  {publishedPages[index]?.title}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
 
+          <img className="indexImg" src={indexImg} alt="index" />
         <div className="other-pages-wrapper">
           <div className="other-pages">
-            {[3, 4, 5, 6].map((index) => (
-              <div 
-                className="page-entry" 
+            {[1,2, 3, 4, 5, 6].map((index) => (
+              <div
+                className="page-entry"
                 onClick={() => goToPage(index + 1)}
                 key={index}
               >
-                <p className="num">{String(index + 1).padStart(2, '0')}</p>
+                <p className="num">{String(index + 1).padStart(2, "0")}</p>
                 <p className="page-title">{publishedPages[index]?.title}</p>
               </div>
             ))}

@@ -6,23 +6,23 @@ const GalleryPage = () => {
 
   const images = [
     {
-      url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop',
-      title: 'Luxury Pool',
-      description: 'Infinity pool overlooking the ocean'
+      url: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829205/Rose%20Wood/deluxeroom-3_lccamm.jpg',
+      title: 'Luxury rooms',
+      description: 'Experience the best rooms.'
     },
     {
-      url: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?q=80&w=2070&auto=format&fit=crop',
+      url: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829223/Rose%20Wood/deluxe-0310_vset6l.jpg',
       title: 'Presidential Suite',
       description: 'Experience ultimate luxury'
     },
     {
-      url: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=2025&auto=format&fit=crop',
-      title: 'Gourmet Restaurant',
+      url: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829232/Rose%20Wood/deluxebalcony_sizgbj.jpg',
+      title: 'Best Balcony View',
       description: 'Fine dining at its best'
     },
     {
-      url: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=2080&auto=format&fit=crop',
-      title: 'Spa Retreat',
+      url: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829248/Rose%20Wood/suitebathroom-2_qtvdoq.jpg',
+      title: 'Best Bathrooms',
       description: 'Relax and rejuvenate'
     }
   ];

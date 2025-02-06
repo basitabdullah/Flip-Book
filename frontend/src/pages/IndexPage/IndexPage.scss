@@ -21,14 +21,19 @@ $font: "Mulish", serif;
       position: relative;
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -0.5rem;
         left: 50%;
         transform: translateX(-50%);
         width: 70%;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1) 50%, transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(0, 0, 0, 0.1) 50%,
+          transparent
+        );
       }
 
       .index-title {
@@ -56,97 +61,6 @@ $font: "Mulish", serif;
           letter-spacing: 0.1em;
         }
       }
-
-      .featured-numbers {
-        margin-bottom: 0.5rem;
-        position: relative;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5));
-          border-radius: 14px;
-          z-index: -1;
-        }
-
-        .number {
-          &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-          }
-
-          &:hover::before {
-            opacity: 0.5;
-          }
-
-          flex: 1;
-          min-width: 90px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          padding: 0.5rem;
-          transition: all 0.3s ease;
-          position: relative;
-          
-          &::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: #007bff;
-            transition: width 0.3s ease;
-          }
-
-          &:hover {
-            transform: translateY(-3px);
-            
-            &::after {
-              width: 80%;
-            }
-
-            .num {
-              color: #007bff;
-            }
-          }
-
-          .num {
-            font-size: clamp(1.5rem, 3vw, 1.8rem);
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.25rem;
-            font-family: $font;
-            transition: color 0.3s ease;
-          }
-
-          .page-title {
-            font-size: clamp(0.8rem, 1.5vw, 1rem);
-            font-weight: 500;
-            color: #555;
-            transition: color 0.3s ease;
-            
-            &:hover {
-              color: #007bff;
-            }
-          }
-        }
-      }
     }
 
     .other-pages-wrapper {
@@ -168,9 +82,9 @@ $font: "Mulish", serif;
           transition: all 0.2s ease;
           border-radius: 8px;
           backdrop-filter: blur(3px);
-          
+
           &::before {
-            content: '→';
+            content: "→";
             position: absolute;
             right: 0.5rem;
             opacity: 0;
@@ -183,11 +97,11 @@ $font: "Mulish", serif;
 
           &:hover {
             transform: translateX(5px);
-            
+
             .num {
               color: #007bff;
             }
-            
+
             .page-title {
               color: #007bff;
             }

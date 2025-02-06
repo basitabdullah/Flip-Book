@@ -41,9 +41,9 @@ $breakpoint-xl: 1200px;
       font-size: 1.2rem;
       margin-bottom: $spacing-md;
       position: relative;
-      
+
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         left: 0;
         bottom: -0.5rem;
@@ -61,7 +61,7 @@ $breakpoint-xl: 1200px;
       li {
         margin-bottom: $spacing-sm;
         gap: $spacing-sm;
-        
+
         i {
           color: $primary-color;
           min-width: 20px;
@@ -69,33 +69,14 @@ $breakpoint-xl: 1200px;
       }
     }
   }
-
-  &__social {
+  .footer__top {
     display: flex;
-    gap: $spacing-sm;
-    margin-top: $spacing-md;
-
-    .social-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: rgba($text-color, 0.1);
-      color: $text-color;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background-color: $primary-color;
-        transform: translateY(-3px);
-      }
-
-      i {
-        font-size: 1.2rem;
-      }
-    }
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #cbcbcb;
   }
+ 
 
   &__bottom {
     margin-top: $spacing-lg;

@@ -9,11 +9,18 @@ const CatalogPage = () => {
       id: 1,
       name: 'Deluxe Suite',
       price: '₹24,999',
-      image: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070&auto=format&fit=crop',
+      image: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829223/Rose%20Wood/deluxe-0310_vset6l.jpg',
       amenities: ['King Bed', 'Ocean View', 'Spa Bath', 'Mini Bar']
     },
     {
       id: 2,
+      name: 'Executive Room',
+      price: '₹16,999',
+      image: 'https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829205/Rose%20Wood/deluxeroom-3_lccamm.jpg',
+      amenities: ['Queen Bed', 'City View', 'Work Desk', 'Coffee Maker']
+    },
+    {
+      id: 3,
       name: 'Executive Room',
       price: '₹16,999',
       image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=2070&auto=format&fit=crop',

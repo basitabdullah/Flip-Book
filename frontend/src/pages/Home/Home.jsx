@@ -19,6 +19,7 @@ import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
 import ReviewsPage from "../../pages/ReviewsPage/ReviewsPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
+import ThanksPage from "../ThanksPage/ThanksPage";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -315,18 +316,22 @@ const Home = () => {
                   </div>
                 </div>
               )}
-
-              <div key="social" className="page">
-                <div className="page-content">
-                  <SocialPage />
-                  <div className="page-number">{sortedPages.length + 1}</div>
-                </div>
-              </div>
-
               <div key="gallery" className="page">
                 <div className="page-content">
                   <GalleryPage />
+                  <div className="page-number">{sortedPages.length + 1}</div>
+                </div>
+              </div>
+              <div key="catalog" className="page">
+                <div className="page-content">
+                  <CatalogPage />
                   <div className="page-number">{sortedPages.length + 2}</div>
+                </div>
+              </div>
+              <div key="social" className="page">
+                <div className="page-content">
+                  <SocialPage />
+                  <div className="page-number">{sortedPages.length + 3}</div>
                 </div>
               </div>
 
@@ -336,14 +341,13 @@ const Home = () => {
                   <div className="page-number">{sortedPages.length + 4}</div>
                 </div>
               </div>
-              <div key="catalog" className="page">
+              <div key="thanks" className="page">
                 <div className="page-content">
-                  <CatalogPage />
-                  <div className="page-number">{sortedPages.length + 3}</div>
+                  <ThanksPage />
+                  <div className="page-number">{sortedPages.length + 5}</div>
                 </div>
               </div>
-
-
+              
             </HTMLFlipBook>
 
             {/* Navigation Arrows */}
