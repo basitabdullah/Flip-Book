@@ -44,6 +44,8 @@
         height: calc(100% - 30px);
         overflow-y: auto;
         padding-right: clamp(5px, 2vw, 10px);
+        display: flex;
+        flex-direction: column;
       
         h1 {
           font-size: clamp(0.9rem, 3vw, 1.2rem);
@@ -325,4 +327,46 @@
   text-overflow: ellipsis;
   word-break: break-word; // Ensures words break properly
   max-height: 2.4em; // Fallback for browsers that don't support line-clamp
+}
+
+// Navigation Arrows
+.navigation-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  &.left {
+    left: 10px;
+  }
+
+  &.right {
+    right: 10px;
+  }
+
+  @media (max-width: 768px) {
+    top: auto;
+    bottom: 20px;
+    transform: none;
+
+    &.left {
+      left: calc(50% - 70px); // Move closer to center from left
+    }
+
+    &.right {
+      right: calc(50% - 70px); // Move closer to center from right
+    }
+  }
 }

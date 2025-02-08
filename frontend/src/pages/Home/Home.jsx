@@ -250,10 +250,11 @@ const Home = () => {
           <div className="home">
             <HTMLFlipBook
               width={Math.min(window.innerWidth * 0.8, 450)}
-              height={600}
+              height={window.innerWidth < 600 ? 500 : 600}
               size="stretch"
               minWidth={320}
               maxWidth={450}
+              maxHeight={window.innerWidth < 600 ? 500 : 550}
               ref={bookRef}
               showCover={true}
               useMouseEvents={false}
@@ -352,30 +353,16 @@ const Home = () => {
 
             {/* Navigation Arrows */}
             <div
-              style={{
-                position: "absolute",
-                left: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                zIndex: 1000,
-              }}
+              className="navigation-arrow left"
               onClick={goToPreviousPage}
             >
-              <RiArrowLeftWideFill size={60} color="#fff" />
+              <RiArrowLeftWideFill size={40} color="#fff" />
             </div>
             <div
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                cursor: "pointer",
-                zIndex: 1000,
-              }}
+              className="navigation-arrow right"
               onClick={goToNextPage}
             >
-              <RiArrowRightWideFill size={60} color="#fff" />
+              <RiArrowRightWideFill size={40} color="#fff" />
             </div>
           </div>
 

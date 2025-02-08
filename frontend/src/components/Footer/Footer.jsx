@@ -1,21 +1,25 @@
 import React from "react";
 import "./Footer.scss";
-
+import useFlipbookStore from "../../stores/useFlipbookStore";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
+  const { loading } = useFlipbookStore();
   return (
-    <footer className="footer">
-      <div className="footer__top">
+    !loading && (
+      <footer className="footer">
         <p>&copy; {currentYear} Rose Wood Gulmarg</p>
-      </div>
-      <div className="footer__bottom">
-        <p>Designed and Devloped By Gabfire</p>
-      </div>
-    </footer>
+        <p>
+          Designed And Developed{" "}
+          <a
+            target="_"
+            href="https://www.gabfire.in/"
+          >
+            Gabfire.in
+          </a>
+        </p>
+      </footer>
+    )
   );
 };
-
-
 
 export default Footer;
