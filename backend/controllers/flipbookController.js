@@ -369,12 +369,6 @@ export const updatePublishedFlipbook = async (req, res) => {
   const { title, description, content, pageNumber, contentType } = req.body;
   const { pageId, flipbookId } = req.params;
 
-  console.log("Received request to update published flipbook:", {
-    flipbookId,
-    pageId,
-    body: req.body,
-  });
-
   // Validate MongoDB ObjectId format
   if (
     !mongoose.Types.ObjectId.isValid(flipbookId) ||
@@ -388,7 +382,6 @@ export const updatePublishedFlipbook = async (req, res) => {
   try {
     // Find the specific published flipbook by ID
     const publishedFlipbook = await PublishedFlipbook.findById(flipbookId);
-    console.log("Published Flipbook query result:", publishedFlipbook);
 
     if (!publishedFlipbook) {
       return res.status(404).json({ message: "Published Flipbook not found." });
@@ -398,10 +391,7 @@ export const updatePublishedFlipbook = async (req, res) => {
     const pageIndex = publishedFlipbook.pages.findIndex(
       (p) => p._id.toString() === pageId
     );
-    console.log("Page search result:", {
-      pageIndex,
-      availablePages: publishedFlipbook.pages.map((p) => p._id.toString()),
-    });
+  
 
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });
@@ -446,7 +436,7 @@ export const updatePublishedFlipbook = async (req, res) => {
 
 export const deletePublishedFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
-  let latestFlipbooks = []; // Declare the variable here
+  let latestFlipbooks = []; 
 
   try {
     // Validate MongoDB ObjectId format
@@ -498,8 +488,3 @@ export const deletePublishedFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
-
