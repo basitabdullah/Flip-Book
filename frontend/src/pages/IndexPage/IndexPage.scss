@@ -6,145 +6,157 @@ $font: "Mulish", serif;
   display: flex;
   height: 100%;
   justify-content: center;
-  background-image: url("https://img.freepik.com/free-photo/whitish-gray-textured-wallpaper-pattern_1194-6769.jpg?t=st=1738651849~exp=1738655449~hmac=a27f01cb5dbf8ba2b6498ba45bf582d0032df3b929d2b9a242154a8f90a1f0c2&w=1060");
+  background: transparent;
   padding: clamp(0.75rem, 2vw, 1.5rem);
 
-  .content {
-    display: flex;
-    flex-direction: column;
+  .index-content {
+    background: transparent;
+    padding: clamp(1rem, 3vw, 2rem);
     width: 100%;
-    height: 100%;
-    max-width: 600px;
+    max-width: 800px;
+    position: relative;
+    border: none;
+    overflow: auto;
 
-    .featured-pages {
-      margin-bottom: 1rem;
-      position: relative;
-
-      &::after {
-        content: "";
-        position: absolute;
-        bottom: -0.5rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(0, 0, 0, 0.1) 50%,
-          transparent
-        );
-      }
-
-      .index-title {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        margin-bottom: clamp(2rem, 4vw, 3rem);
-        text-align: center;
-        border-bottom: 2px solid #333;
-        padding-bottom: 0.5rem;
-
-        .index-number {
-          font-size: clamp(2rem, 4vw, 2.5rem);
-          font-weight: 700;
-          color: #333;
-        }
-
-        .index-text {
-          font-family: $font;
-          font-size: clamp(2rem, 4vw, 2.5rem);
-          font-weight: 700;
-          color: #333;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-      }
+    .image-container {
+      width: 100%;
+      margin: 20px 0;
     }
 
-    .other-pages-wrapper {
-      margin-top: 0.5rem;
-      position: relative;
+    .index-img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in;
+    }
+  }
 
-      .other-pages {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: clamp(0.5rem, 1vw, 0.75rem);
+  .index-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    padding-bottom: 0.25rem;
+    font-family: "Raleway", sans-serif;
+    font-weight: 400;
+    font-size: 2.5em;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px double #1a1a1a;
+    margin-bottom: 30px;
+  }
 
-        .page-entry {
-          position: relative;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.5rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          border-radius: 8px;
-          backdrop-filter: blur(3px);
+  .other-pages {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 1.5rem;
 
-          &::before {
-            content: "→";
-            position: absolute;
-            right: 0.5rem;
-            opacity: 0;
-            transition: all 0.2s ease;
-          }
+    .page-entry {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
-          &:hover::before {
-            opacity: 0.5;
-          }
+      &:hover {
+        background: rgba(0, 0, 0, 0.02);
+      }
 
-          &:hover {
-            transform: translateX(5px);
+      &:active {
+        background: rgba(0, 0, 0, 0.05);
+      }
 
-            .num {
-              color: #007bff;
-            }
+      .num {
+        font-family: "Times New Roman", Times, serif;
+        color: #1a1a1a;
+        font-weight: 700;
+        min-width: 24px;
+        font-size: 1.2em;
+        font-style: italic;
+      }
 
-            .page-title {
-              color: #007bff;
-            }
-          }
+      .page-title {
+        font-family: "Times New Roman", Times, serif;
+        color: #1a1a1a;
+        font-size: 1.1em;
+        font-weight: 500;
+      }
 
-          .num {
-            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-            font-weight: 600;
-            color: #666;
-            min-width: 25px;
-            transition: color 0.2s ease;
-          }
-
-          .page-title {
-            font-size: clamp(0.75rem, 1.2vw, 0.85rem);
-            color: #444;
-            transition: color 0.2s ease;
-          }
+      &:hover {
+        .num,
+        .page-title {
+          color: #000;
         }
       }
     }
   }
+}
 
-  @media (max-width: 480px) {
-    padding: 0.5rem;
+.slider-container {
+  .slick-slider,
+  .slick-list,
+  .slick-track {
+    height: 100%;
+  }
 
-    .content {
-      .featured-pages {
-        .featured-numbers {
-          padding: 0.5rem;
-          gap: 0.75rem;
+  .slide {
+    position: relative;
 
-          .number {
-            padding: 0.5rem;
-          }
-        }
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  }
+
+  // Custom styling for dots
+  .slick-dots {
+    bottom: 25px;
+
+    li {
+      margin: 0 4px;
+
+      button:before {
+        font-size: 12px;
+        color: #fff;
+        opacity: 0.7;
+        transition: all 0.3s ease;
       }
 
-      .other-pages-wrapper {
-        .other-pages {
-          grid-template-columns: 1fr;
-        }
+      &.slick-active button:before {
+        opacity: 1;
+        color: #1a1a1a;
+        transform: scale(1.2);
+        margin-top: 10px;
       }
+    }
+  }
+
+  .slick-list {
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .slider-container {
+    .slide img {
+      height: 250px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .slider-container {
+    .slide img {
+      height: 200px;
     }
   }
 }
