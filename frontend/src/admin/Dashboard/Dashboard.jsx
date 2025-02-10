@@ -7,6 +7,8 @@ import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
 import { toast } from 'react-hot-toast';
 import FlipbookList from "../FlipbookList/FlipbookList";
 import AddPage from "../AddPage/AddPage";
+import AddCustomPage from "../AddCustomPage/AddCustomPage";
+import CustomPageEditor from "../CustomPageEditor/CustomPageEditor";
 import { IoBookOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
@@ -76,6 +78,8 @@ function Dashboard() {
           />
           <Route path="/scheduled" element={<ScheduledFlipbooks />} />
           <Route path="/add-page/:id" element={<AddPage />} />
+          <Route path="/add-custom-page/:flipbookId" element={<AddCustomPage />} />
+          <Route path="/custom-pages/:id" element={<CustomPageEditor />} />
           <Route path="/published" element={<PublishedFlipbooks />} />
           <Route path="/flipbooks" element={<FlipbookList />} />
         </Routes>
@@ -155,10 +159,13 @@ function FlipbookEditor({
           Add New Page
         </Link>
         <div className="divider">|</div>
-        <button className="action-button quaternary animated">
+        <Link
+          to={`/admin/admin-dashboard/add-custom-page/${id}`}
+          className="action-button quaternary animated"
+        >
           <IoGridOutline className="icon" />
-          Add A Catalog
-        </button>
+          Add A Custom Page
+        </Link>
       </div>
 
       {flipbook && (
@@ -182,19 +189,20 @@ function FlipbookEditor({
                 <p>Click "Add New Page" to get started</p>
               </div>
             )}
-            {flipbook.pages && flipbook.pages.length > 0 && (
+            {flipbook.pages &&
+              flipbook.pages.length > 0 &&
               [...flipbook.pages]
+                .filter(page => !page.isCustom)
                 .sort((a, b) => a.pageNumber - b.pageNumber)
                 .map((page) => (
                   <PageCard
-                    key={page._id}
+                    key={`${page._id}-${page.pageNumber}`}
                     pageData={page}
                     pageNumber={page.pageNumber}
                     loading={loading}
                     flipbookId={id}
                   />
-                ))
-            )}
+                ))}
           </div>
         </>
       )}
@@ -506,6 +514,8 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
 }
 
 function Sidebar({ isOpen, onClose }) {
+  const { id } = useParams();
+
   return (
     <div className={`sidebar ${isOpen ? "active" : ""}`}>
       <div className="logo">Flipbook Admin</div>
@@ -528,6 +538,11 @@ function Sidebar({ isOpen, onClose }) {
         <Link to="/admin/admin-dashboard/published" className="nav-item">
           <IoCheckmarkDoneOutline className="icon" />
           Published Versions
+        </Link>
+
+        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="nav-item">
+          <IoGridOutline className="icon" />
+          Custom Pages
         </Link>
       </nav>
     </div>

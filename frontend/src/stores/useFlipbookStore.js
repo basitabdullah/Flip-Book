@@ -544,6 +544,104 @@ const useFlipbookStore = create((set) => ({
       throw errorMessage;
     }
   },
+
+  addIndexPage: async (flipbookId, pageData) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.post(
+        `/flipbook/${flipbookId}/index`,
+        pageData
+      );
+
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || [],
+        error: null,
+      }));
+
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  updateIndexPage: async (flipbookId, pageNumber, pageData) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.put(
+        `/flipbook/${flipbookId}/index/${pageNumber}`,
+        pageData
+      );
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || state.pages,
+        error: null,
+      }));
+
+      toast.success("Index page updated successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  deleteIndexPage: async (flipbookId, pageNumber) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.delete(
+        `/flipbook/${flipbookId}/index/${pageNumber}`
+      );
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || [],
+        error: null,
+      }));
+
+      toast.success("Index page deleted successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
 }));
 
 export default useFlipbookStore;
