@@ -32,13 +32,12 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-
 // Connect to database (run only once)
+connectDB();
 
 // ❌ REMOVE app.listen() (Vercel handles routing itself)
-app.listen(process.env.PORT, () => {
-  connectDB();
-  console.log(`Listening on port ${process.env.PORT}`);
-});
+// app.listen(process.env.PORT, () => {
+//   console.log(`Listening on port ${process.env.PORT}`);
+// });
 
 export default app;
