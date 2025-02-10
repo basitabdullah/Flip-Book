@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import flipbookRoutes from "./routes/flipbookRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import scheduledFlipbookRoutes from "./routes/scheduledFlipbookRoutes.js";
+import indexPageRoutes from "./routes/indexPageRoutes.js";
 import "./services/schedulerService.js";
 dotenv.config();
 const app = express();
@@ -28,6 +29,7 @@ app.use(cors(corsOptions));
 app.use("/api/auth", authRoutes);
 app.use("/api/flipbook", flipbookRoutes);
 app.use("/api/scheduled-flipbooks", scheduledFlipbookRoutes);
+app.use("/api", indexPageRoutes);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
