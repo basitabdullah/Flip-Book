@@ -59,7 +59,7 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
 
   return (
     <>
-      <div className="navigation">
+      <header className="navigation">
         <div className="buttons">
           <div className="button" title="Previous Page">
             <RxThickArrowLeft onClick={goBackward} />
@@ -87,7 +87,7 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
             <BiScreenshot onClick={onStartSnipping} />
           </div>
         </div>
-      </div>
+      </header>
 
       {showShareModal && (
         <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
