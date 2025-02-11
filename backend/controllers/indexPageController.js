@@ -99,10 +99,12 @@ export const updateIndexPage = async (req, res) => {
       }
     }
 
+    // Preserve the existing pageType when updating
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
       title: title || flipbook.pages[pageIndex].title,
-      pageNumber: newPageNumber || flipbook.pages[pageIndex].pageNumber,
+      pageNumber: parseInt(pageNumber),
+      pageType: 'IndexPage',  // Explicitly set pageType
       images: images || flipbook.pages[pageIndex].images,
       pagesTitles: pagesTitles || flipbook.pages[pageIndex].pagesTitles
     };
@@ -111,9 +113,10 @@ export const updateIndexPage = async (req, res) => {
 
     res.status(200).json({ 
       message: "Index page updated successfully", 
-      page: flipbook.pages[pageIndex] 
+      flipbook 
     });
   } catch (error) {
+    console.error('Error updating index page:', error);
     res.status(500).json({ 
       message: "Error updating index page", 
       error: error.message 
@@ -131,18 +134,23 @@ export const deleteIndexPage = async (req, res) => {
       return res.status(404).json({ message: "Flipbook not found" });
     }
 
+    // Find the index of the page to delete
     const pageIndex = flipbook.pages.findIndex(
-      page => page.pageNumber === parseInt(pageNumber) && page.pageType === 'index'
+      page => page.pageNumber === parseInt(pageNumber) && page.pageType === 'IndexPage'
     );
 
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Index page not found" });
     }
 
+    // Remove the page
     flipbook.pages.splice(pageIndex, 1);
     await flipbook.save();
 
-    res.status(200).json({ message: "Index page deleted successfully" });
+    res.status(200).json({ 
+      message: "Index page deleted successfully",
+      flipbook 
+    });
   } catch (error) {
     res.status(500).json({ 
       message: "Error deleting index page", 

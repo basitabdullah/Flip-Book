@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import useCustomPageStore from '../../stores/useCustomPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import CustomPageCard from './CustomPageCard';
 import './CustomPageEditor.scss';
 
 const CustomPageEditor = () => {
   const { id } = useParams();
-  const { flipbook, loading, error } = useFlipbookStore();
+  const { customPages, loading, error, fetchCustomPages } = useCustomPageStore();
+  const { getFlipbookById, loading: flipbookLoading } = useFlipbookStore();
 
-  if (loading) return <div>Loading...</div>;
+  useEffect(() => {
+    const loadData = async () => {
+      if (id) {
+        await getFlipbookById(id);
+        await fetchCustomPages(id);
+      }
+    };
+    loadData();
+  }, [id, getFlipbookById, fetchCustomPages]);
+
+  if (loading || flipbookLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!flipbook) return <div>No flipbook found</div>;
-
-  // Filter for pages that are either custom or of type IndexPage
-  const customPages = flipbook.pages?.filter(page => 
-    page.isCustom || page.pageType === 'IndexPage'
-  ) || [];
 
   return (
     <div className="custom-page-editor">

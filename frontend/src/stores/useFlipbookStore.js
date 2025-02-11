@@ -584,14 +584,14 @@ const useFlipbookStore = create((set) => ({
         pageData
       );
 
-      if (!response.data) {
-        throw new Error("No data received from server");
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
       }
 
       set((state) => ({
         loading: false,
         flipbook: response.data.flipbook,
-        pages: response.data.flipbook.pages || state.pages,
+        pages: response.data.flipbook.pages || [],
         error: null,
       }));
 
@@ -599,12 +599,10 @@ const useFlipbookStore = create((set) => ({
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
-
       set({
         loading: false,
         error: errorMessage,
       });
-
       toast.error(errorMessage);
       throw errorMessage;
     }
@@ -617,8 +615,8 @@ const useFlipbookStore = create((set) => ({
         `/flipbook/${flipbookId}/index/${pageNumber}`
       );
 
-      if (!response.data) {
-        throw new Error("No data received from server");
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
       }
 
       set((state) => ({
@@ -632,12 +630,10 @@ const useFlipbookStore = create((set) => ({
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
-
       set({
         loading: false,
         error: errorMessage,
       });
-
       toast.error(errorMessage);
       throw errorMessage;
     }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import useCustomPageStore from '../../stores/useCustomPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
-import { toast } from 'react-hot-toast';
 import './CustomPageCard.scss';
+import { toast } from 'react-hot-toast';
 
 const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
-  const { updateIndexPage, deletePage } = useFlipbookStore();
+  const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
+  const { getFlipbookById } = useFlipbookStore();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(pageData?.title || '');
   const [images, setImages] = useState(pageData?.images || []);
@@ -57,7 +59,7 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
           pageNumber: parseInt(entry.pageNumber)
         }));
 
-      await updateIndexPage(flipbookId, pageNumber, {
+      await updateCustomPage(flipbookId, pageNumber, {
         title,
         pageNumber,
         images: validImages,
@@ -65,9 +67,7 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
       });
 
       setIsEditing(false);
-      toast.success('Page updated successfully');
     } catch (error) {
-      toast.error('Failed to update page');
       console.error('Update error:', error);
     }
   };
@@ -75,11 +75,11 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
       try {
-        await deletePage(flipbookId, pageNumber);
-        toast.success('Page deleted successfully');
+        await deleteCustomPage(flipbookId, pageNumber);
+        await getFlipbookById(flipbookId);
       } catch (error) {
-        toast.error('Failed to delete page');
         console.error('Delete error:', error);
+        toast.error('Failed to delete page');
       }
     }
   };
