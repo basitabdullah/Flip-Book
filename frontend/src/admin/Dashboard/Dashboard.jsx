@@ -166,6 +166,11 @@ function FlipbookEditor({
           <IoGridOutline className="icon" />
           Add A Custom Page
         </Link>
+
+        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="action-button quaternary animated">
+          <IoGridOutline className="icon" />
+          Custom Page Editor
+        </Link>
       </div>
 
       {flipbook && (
@@ -192,7 +197,7 @@ function FlipbookEditor({
             {flipbook.pages &&
               flipbook.pages.length > 0 &&
               [...flipbook.pages]
-                .filter(page => !page.isCustom)
+                .filter(page => !page.isCustom && page.pageType !== 'IndexPage')
                 .sort((a, b) => a.pageNumber - b.pageNumber)
                 .map((page) => (
                   <PageCard
@@ -320,21 +325,60 @@ function FlipbookEditor({
 function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const updatePage = useFlipbookStore((state) => state.updatePage);
   const deletePage = useFlipbookStore((state) => state.deletePage);
-  const [title, setTitle] = useState(pageData.title || "");
-  const [description, setDescription] = useState(pageData.description || "");
-  const [contentType, setContentType] = useState(pageData.contentType || "");
-  const [content, setContent] = useState(pageData.content || "");
+  
+  console.log("PageData received:", pageData); // Debug log
+  
+  // Initialize state based on page type
+  const [title, setTitle] = useState(pageData?.title || "");
+  const [description, setDescription] = useState(pageData?.description || "");
+  const [contentType, setContentType] = useState(pageData?.contentType || "");
+  const [content, setContent] = useState(pageData?.content || "");
+  
+  // Add state for index page specific fields
+  const [images, setImages] = useState(pageData?.images || []);
+  const [pagesTitles, setPagesTitles] = useState(pageData?.pagesTitles || []);
+
+  // Update state when pageData changes
+  useEffect(() => {
+    if (pageData) {
+      setTitle(pageData.title || "");
+      setDescription(pageData.description || "");
+      setContentType(pageData.contentType || "");
+      setContent(pageData.content || "");
+      setImages(pageData.images || []);
+      setPagesTitles(pageData.pagesTitles || []);
+    }
+  }, [pageData]);
 
   const textareaRef = useRef(null);
 
   const handleUpdate = async () => {
-    const updateData = {
-      title,
-      description,
-      content,
-      contentType,
-      pageNumber,
-    };
+    let updateData;
+
+    // If pageType is not specified, default to 'Page'
+    const pageType = pageData.pageType || 'Page';
+
+    if (pageType === 'Page') {
+      updateData = {
+        title,
+        pageNumber,
+        pageType: 'Page',
+        description,
+        content,
+        contentType
+      };
+    } else if (pageType === 'IndexPage') {
+      updateData = {
+        title,
+        pageNumber,
+        pageType: 'IndexPage',
+        description,
+        content,
+        contentType,
+        images,
+        pagesTitles
+      };
+    }
 
     try {
       await updatePage(pageData._id, updateData, flipbookId);
@@ -343,9 +387,18 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
+      try {
+        await deletePage(pageData._id);
+      } catch (error) {
+        console.error("Failed to delete page:", error);
+      }
+    }
+  };
+
   const handleContentChange = (e) => {
-    const value = e.target.value;
-    setContent(value);
+    setContent(e.target.value);
   };
 
   const renderContent = () => {
@@ -430,26 +483,34 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
     )}`;
   };
 
-  const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
-      try {
-        await deletePage(pageData._id);
-      } catch (error) {
-        console.error("Failed to delete page:", error);
-      }
-    }
-  };
+  // Default to 'Page' type if not specified
+  const pageType = pageData.pageType || 'Page';
 
   return (
     <div className="page-card">
-      <div className="page-number">Page {pageNumber}</div>
+      <div className="page-number">
+        Page {pageNumber} ({pageType})
+      </div>
 
+      {/* Base fields for all page types */}
+      <div className="form-group">
+        <label>Title</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter page title"
+        />
+      </div>
+
+      {/* Fields for both Page and IndexPage types */}
       <div className="form-group">
         <label>Content Type</label>
         <select
           value={contentType}
           onChange={(e) => setContentType(e.target.value)}
         >
+          <option value="">Select type</option>
           <option value="image">Image</option>
           <option value="video">YouTube Video</option>
           <option value="map">Map</option>
@@ -471,16 +532,6 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
       </div>
 
       <div className="form-group">
-        <label>Title</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter page title"
-        />
-      </div>
-
-      <div className="form-group">
         <label>Description</label>
         <textarea
           ref={textareaRef}
@@ -493,6 +544,70 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
           }}
         />
       </div>
+
+      {/* Additional fields only for IndexPage type */}
+      {pageType === 'IndexPage' && (
+        <>
+          <div className="form-group">
+            <label>Thumbnail Images</label>
+            <textarea
+              value={images.join('\n')}
+              onChange={(e) => setImages(e.target.value.split('\n').filter(url => url.trim()))}
+              placeholder="Enter image URLs (one per line)"
+              style={{
+                resize: "vertical",
+                minHeight: "100px",
+              }}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Pages List</label>
+            <div className="pages-titles-list">
+              {pagesTitles.map((page, index) => (
+                <div key={index} className="page-title-item">
+                  <input
+                    type="text"
+                    value={page.title}
+                    onChange={(e) => {
+                      const newPagesTitles = [...pagesTitles];
+                      newPagesTitles[index].title = e.target.value;
+                      setPagesTitles(newPagesTitles);
+                    }}
+                    placeholder="Page title"
+                  />
+                  <input
+                    type="number"
+                    value={page.pageNumber}
+                    onChange={(e) => {
+                      const newPagesTitles = [...pagesTitles];
+                      newPagesTitles[index].pageNumber = parseInt(e.target.value);
+                      setPagesTitles(newPagesTitles);
+                    }}
+                    placeholder="Page number"
+                  />
+                  <button
+                    onClick={() => {
+                      const newPagesTitles = pagesTitles.filter((_, i) => i !== index);
+                      setPagesTitles(newPagesTitles);
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  setPagesTitles([...pagesTitles, { title: '', pageNumber: '' }]);
+                }}
+              >
+                Add Page
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="button-group">
         <button
           disabled={loading}
@@ -540,10 +655,7 @@ function Sidebar({ isOpen, onClose }) {
           Published Versions
         </Link>
 
-        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="nav-item">
-          <IoGridOutline className="icon" />
-          Custom Pages
-        </Link>
+        
       </nav>
     </div>
   );

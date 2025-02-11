@@ -4,7 +4,15 @@ import { Flipbook } from "../models/flipbookModel.js";
 export const addIndexPage = async (req, res) => {
   try {
     const { flipbookId } = req.params;
-    const { title, pageNumber, tableOfContents } = req.body;
+    const { 
+      title, 
+      pageNumber, 
+      description, 
+      content, 
+      contentType, 
+      images, 
+      pagesTitles 
+    } = req.body;
 
     const flipbook = await Flipbook.findById(flipbookId);
     if (!flipbook) {
@@ -23,22 +31,24 @@ export const addIndexPage = async (req, res) => {
     }
 
     const newIndexPage = {
-      pageType: 'index',
-      isCustom: true,
+      pageType: 'IndexPage',
+      // Base page fields
       title,
-      pageNumber,
-      tableOfContents
+      pageNumber: parseInt(pageNumber),
+      // Index page specific fields
+      description,
+      content,
+      contentType,
+      images,
+      pagesTitles
     };
 
     flipbook.pages.push(newIndexPage);
     await flipbook.save();
 
-    // Get the updated flipbook
-    const updatedFlipbook = await Flipbook.findById(flipbookId);
-
     res.status(201).json({ 
       message: "Index page added successfully", 
-      flipbook: updatedFlipbook 
+      flipbook 
     });
   } catch (error) {
     res.status(500).json({ 
@@ -52,7 +62,15 @@ export const addIndexPage = async (req, res) => {
 export const updateIndexPage = async (req, res) => {
   try {
     const { flipbookId, pageNumber } = req.params;
-    const { title, tableOfContents, newPageNumber } = req.body;
+    const { 
+      title, 
+      description, 
+      content, 
+      contentType,
+      images, 
+      pagesTitles, 
+      newPageNumber 
+    } = req.body;
 
     const flipbook = await Flipbook.findById(flipbookId);
     if (!flipbook) {
@@ -60,7 +78,7 @@ export const updateIndexPage = async (req, res) => {
     }
 
     const pageIndex = flipbook.pages.findIndex(
-      page => page.pageNumber === parseInt(pageNumber) && page.pageType === 'index'
+      page => page.pageNumber === parseInt(pageNumber) && page.pageType === 'IndexPage'
     );
 
     if (pageIndex === -1) {
@@ -83,8 +101,12 @@ export const updateIndexPage = async (req, res) => {
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
       title: title || flipbook.pages[pageIndex].title,
+      description: description || flipbook.pages[pageIndex].description,
+      content: content || flipbook.pages[pageIndex].content,
+      contentType: contentType || flipbook.pages[pageIndex].contentType,
       pageNumber: newPageNumber || flipbook.pages[pageIndex].pageNumber,
-      tableOfContents: tableOfContents || flipbook.pages[pageIndex].tableOfContents
+      images: images || flipbook.pages[pageIndex].images,
+      pagesTitles: pagesTitles || flipbook.pages[pageIndex].pagesTitles
     };
 
     await flipbook.save();

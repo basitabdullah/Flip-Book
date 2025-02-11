@@ -119,8 +119,8 @@ export const getPageByNumber = async (req, res) => {
 
 // Create a new page
 export const createPage = async (req, res) => {
-  const { flipbookId } = req.params; // Flipbook ID passed as a parameter
-  const { pageNumber, title, description, content, contentType } = req.body;
+  const { flipbookId } = req.params;
+  const { title, pageNumber, description, content, contentType } = req.body;
 
   try {
     // Find the specific flipbook by ID
@@ -139,14 +139,16 @@ export const createPage = async (req, res) => {
       return res.status(400).json({ message: "Page number already exists." });
     }
 
-    // Add the new page to the flipbook
+    // Add the new page to the flipbook with pageType 'Page'
     flipbook.pages.push({
-      pageNumber,
+      pageType: 'Page',
       title,
+      pageNumber,
       description,
       content,
       contentType,
     });
+    
     await flipbook.save();
 
     res.status(201).json({ message: "Page added successfully.", flipbook });
@@ -206,7 +208,7 @@ export const updatePage = async (req, res) => {
       }
     }
 
-    // Update the page
+    // Update the page while preserving pageType
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
       title: title || flipbook.pages[pageIndex].title,
@@ -214,6 +216,7 @@ export const updatePage = async (req, res) => {
       content: content || flipbook.pages[pageIndex].content,
       contentType: contentType || flipbook.pages[pageIndex].contentType,
       pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber,
+      pageType: 'Page' // Ensure pageType remains 'Page'
     };
 
     await flipbook.save();
