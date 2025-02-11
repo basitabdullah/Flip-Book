@@ -32,18 +32,12 @@ const Page = BasePage.discriminator(
 const IndexPage = BasePage.discriminator(
   "IndexPage",
   new mongoose.Schema({
-    description: { type: String, required: true },
-    content: { type: String, required: true },
-    contentType: {
-      type: String,
-      required: true,
-      enum: ["image", "video", "map"],
-    },
     images: { type: [String], required: true },
     pagesTitles: [{
       title: { type: String, required: true },
-      pageNumber: { type: Number, required: true },
-    }]
+      pageNumber: { type: Number, required: true, min: 1 }
+    }],
+    isCustom: { type: Boolean, default: true }
   })
 );
 

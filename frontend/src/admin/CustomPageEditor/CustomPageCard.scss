@@ -1,26 +1,19 @@
 .custom-page-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-
-  &.editing {
-    border: 2px solid #007bff;
-    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.1);
-  }
 
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 
     .page-number {
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #2c3e50;
+      font-weight: 600;
+      color: #444;
     }
 
     .action-buttons {
@@ -28,142 +21,215 @@
       gap: 0.5rem;
 
       button {
-        background: none;
+        padding: 0.5rem 1rem;
         border: none;
-        padding: 0.5rem;
-        border-radius: 6px;
+        border-radius: 4px;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-
-        svg {
-          width: 1.25rem;
-          height: 1.25rem;
-        }
+        font-size: 0.9rem;
 
         &.edit-btn {
-          color: #4a5568;
-          &:hover { color: #2d3748; }
-        }
+          background: #007bff;
+          color: white;
 
-        &.save-btn {
-          color: #007bff;
-          &:hover { color: #0056b3; }
+          &:hover {
+            background: #0056b3;
+          }
+
+          &.active {
+            background: #6c757d;
+          }
         }
 
         &.delete-btn {
-          color: #dc3545;
-          &:hover { color: #c82333; }
-        }
+          background: #dc3545;
+          color: white;
 
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
+          &:hover {
+            background: #c82333;
+          }
         }
       }
     }
   }
 
-  .card-content {
-    .title-input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      transition: all 0.3s ease;
+  .edit-form {
+    .form-group {
+      margin-bottom: 1.5rem;
 
-      &:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #444;
       }
 
-      &:disabled {
-        background: #f8fafc;
-        cursor: not-allowed;
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
       }
     }
 
-    .table-of-contents {
-      background: #f8fafc;
+    .form-section {
+      margin-bottom: 1.5rem;
+      border: 1px solid #eee;
       border-radius: 8px;
       padding: 1.5rem;
 
-      .toc-header {
+      .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
 
         h4 {
-          font-size: 1.1rem;
-          color: #2c3e50;
           margin: 0;
-        }
-
-        .add-entry-btn {
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          padding: 0.5rem 1rem;
-          font-size: 0.875rem;
-          cursor: pointer;
-          transition: background 0.3s ease;
-
-          &:hover {
-            background: #0056b3;
-          }
+          color: #444;
         }
       }
 
-      .toc-entry {
+      .image-entry,
+      .page-title-entry {
         display: grid;
-        grid-template-columns: 1fr auto auto;
         gap: 1rem;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         align-items: center;
 
         input {
           padding: 0.5rem;
-          border: 1px solid #e2e8f0;
-          border-radius: 6px;
-          font-size: 0.875rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 0.9rem;
 
           &:focus {
             outline: none;
             border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-          }
-
-          &:disabled {
-            background: #f8fafc;
-            cursor: not-allowed;
           }
         }
+      }
 
-        .remove-entry-btn {
-          background: #dc3545;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          width: 28px;
-          height: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: background 0.3s ease;
-          font-size: 1.25rem;
-          line-height: 1;
+      .image-entry {
+        grid-template-columns: 1fr auto;
+      }
 
-          &:hover {
-            background: #c82333;
-          }
+      .page-title-entry {
+        grid-template-columns: 2fr 1fr auto;
+      }
+    }
+
+    .add-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+
+      &:hover {
+        background: #218838;
+      }
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+
+      &:hover {
+        background: #c82333;
+      }
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #0056b3;
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .view-mode {
+    h3 {
+      margin: 0 0 1.5rem;
+      color: #333;
+    }
+
+    .images-section,
+    .pages-list-section {
+      margin-bottom: 1.5rem;
+
+      h4 {
+        margin: 0 0 1rem;
+        color: #444;
+      }
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+
+      .image-preview {
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        border-radius: 4px;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .pages-list {
+      .page-entry {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .page-title {
+          font-weight: 500;
+          color: #333;
+        }
+
+        .page-number {
+          color: #666;
         }
       }
     }

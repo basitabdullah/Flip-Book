@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import useFlipbookStore from '../../stores/useFlipbookStore';
-import { IoTrashOutline, IoSaveOutline, IoCreateOutline } from 'react-icons/io5';
 import { toast } from 'react-hot-toast';
 import './CustomPageCard.scss';
 
@@ -8,27 +7,40 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   const { updateIndexPage, deletePage } = useFlipbookStore();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(pageData?.title || '');
-  const [tableOfContents, setTableOfContents] = useState(pageData?.tableOfContents || []);
+  const [images, setImages] = useState(pageData?.images || []);
+  const [pagesTitles, setPagesTitles] = useState(pageData?.pagesTitles || []);
 
-  if (!pageData) {
-    return null;
-  }
+  if (!pageData) return null;
 
-  const handleAddEntry = () => {
-    setTableOfContents([...tableOfContents, { title: '', pageNumber: '' }]);
+  const handleAddImage = () => {
+    setImages([...images, '']);
   };
 
-  const handleUpdateEntry = (index, field, value) => {
-    const updatedEntries = [...tableOfContents];
+  const handleUpdateImage = (index, value) => {
+    const updatedImages = [...images];
+    updatedImages[index] = value;
+    setImages(updatedImages);
+  };
+
+  const handleRemoveImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  const handleAddPageTitle = () => {
+    setPagesTitles([...pagesTitles, { title: '', pageNumber: '' }]);
+  };
+
+  const handleUpdatePageTitle = (index, field, value) => {
+    const updatedEntries = [...pagesTitles];
     updatedEntries[index] = {
       ...updatedEntries[index],
       [field]: field === 'pageNumber' ? (value === '' ? '' : parseInt(value)) : value
     };
-    setTableOfContents(updatedEntries);
+    setPagesTitles(updatedEntries);
   };
 
-  const handleRemoveEntry = (index) => {
-    setTableOfContents(tableOfContents.filter((_, i) => i !== index));
+  const handleRemovePageTitle = (index) => {
+    setPagesTitles(pagesTitles.filter((_, i) => i !== index));
   };
 
   const handleUpdate = async () => {
@@ -37,7 +49,8 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
         throw new Error('Missing required data');
       }
 
-      const validTableOfContents = tableOfContents
+      const validImages = images.filter(img => img.trim());
+      const validPagesTitles = pagesTitles
         .filter(entry => entry.title && entry.pageNumber)
         .map(entry => ({
           ...entry,
@@ -47,7 +60,8 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
       await updateIndexPage(flipbookId, pageNumber, {
         title,
         pageNumber,
-        tableOfContents: validTableOfContents
+        images: validImages,
+        pagesTitles: validPagesTitles
       });
 
       setIsEditing(false);
@@ -59,14 +73,9 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   };
 
   const handleDelete = async () => {
-    if (!pageData._id || !flipbookId) {
-      toast.error('Missing required data for deletion');
-      return;
-    }
-
-    if (window.confirm('Are you sure you want to delete this page?')) {
+    if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
       try {
-        await deletePage(pageData._id, flipbookId);
+        await deletePage(flipbookId, pageNumber);
         toast.success('Page deleted successfully');
       } catch (error) {
         toast.error('Failed to delete page');
@@ -76,92 +85,123 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   };
 
   return (
-    <div className={`custom-page-card ${isEditing ? 'editing' : ''}`}>
+    <div className="custom-page-card">
       <div className="card-header">
         <span className="page-number">Page {pageNumber}</span>
         <div className="action-buttons">
-          <button
-            className="edit-btn"
-            onClick={() => setIsEditing(!isEditing)}
-            disabled={loading}
+          <button 
+            onClick={() => setIsEditing(!isEditing)} 
+            className={`edit-btn ${isEditing ? 'active' : ''}`}
           >
-            <IoCreateOutline />
+            {isEditing ? 'Cancel' : 'Edit'}
           </button>
-          {isEditing && (
-            <button
-              className="save-btn"
-              onClick={handleUpdate}
-              disabled={loading}
-            >
-              <IoSaveOutline />
-            </button>
-          )}
-          <button
-            className="delete-btn"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            <IoTrashOutline />
-          </button>
+          <button onClick={handleDelete} className="delete-btn">Delete</button>
         </div>
       </div>
 
-      <div className="card-content">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Page Title"
-          disabled={!isEditing}
-          className="title-input"
-        />
+      {isEditing ? (
+        <div className="edit-form">
+          <div className="form-group">
+            <label>Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter title"
+            />
+          </div>
 
-        {pageData.pageType === 'index' && (
-          <div className="table-of-contents">
-            <div className="toc-header">
-              <h4>Table of Contents</h4>
-              {isEditing && (
+          <div className="form-section">
+            <div className="section-header">
+              <h4>Images</h4>
+              <button type="button" onClick={handleAddImage} className="add-btn">
+                + Add Image
+              </button>
+            </div>
+            {images.map((image, index) => (
+              <div key={index} className="image-entry">
+                <input
+                  type="text"
+                  value={image}
+                  onChange={(e) => handleUpdateImage(index, e.target.value)}
+                  placeholder="Enter image URL"
+                />
                 <button
                   type="button"
-                  onClick={handleAddEntry}
-                  className="add-entry-btn"
+                  onClick={() => handleRemoveImage(index)}
+                  className="remove-btn"
                 >
-                  + Add Entry
+                  ×
                 </button>
-              )}
-            </div>
+              </div>
+            ))}
+          </div>
 
-            {tableOfContents.map((entry, index) => (
-              <div key={index} className="toc-entry">
+          <div className="form-section">
+            <div className="section-header">
+              <h4>Pages List</h4>
+              <button type="button" onClick={handleAddPageTitle} className="add-btn">
+                + Add Page
+              </button>
+            </div>
+            {pagesTitles.map((entry, index) => (
+              <div key={index} className="page-title-entry">
                 <input
                   type="text"
                   value={entry.title}
-                  onChange={(e) => handleUpdateEntry(index, 'title', e.target.value)}
-                  placeholder="Section Title"
-                  disabled={!isEditing}
+                  onChange={(e) => handleUpdatePageTitle(index, 'title', e.target.value)}
+                  placeholder="Page Title"
                 />
                 <input
                   type="number"
                   value={entry.pageNumber}
-                  onChange={(e) => handleUpdateEntry(index, 'pageNumber', e.target.value)}
+                  onChange={(e) => handleUpdatePageTitle(index, 'pageNumber', e.target.value)}
                   placeholder="Page #"
                   min="1"
-                  disabled={!isEditing}
                 />
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveEntry(index)}
-                    className="remove-entry-btn"
-                  >
-                    ×
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => handleRemovePageTitle(index)}
+                  className="remove-btn"
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
-        )}
-      </div>
+
+          <button onClick={handleUpdate} className="save-btn" disabled={loading}>
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      ) : (
+        <div className="view-mode">
+          <h3>{title}</h3>
+          
+          <div className="images-section">
+            <h4>Images</h4>
+            <div className="images-grid">
+              {images.map((image, index) => (
+                <div key={index} className="image-preview">
+                  <img src={image} alt={`Image ${index + 1}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="pages-list-section">
+            <h4>Pages List</h4>
+            <div className="pages-list">
+              {pagesTitles.map((entry, index) => (
+                <div key={index} className="page-entry">
+                  <span className="page-title">{entry.title}</span>
+                  <span className="page-number">Page {entry.pageNumber}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

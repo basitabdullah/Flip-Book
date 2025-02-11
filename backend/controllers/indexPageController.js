@@ -7,9 +7,6 @@ export const addIndexPage = async (req, res) => {
     const { 
       title, 
       pageNumber, 
-      description, 
-      content, 
-      contentType, 
       images, 
       pagesTitles 
     } = req.body;
@@ -19,7 +16,7 @@ export const addIndexPage = async (req, res) => {
       return res.status(404).json({ message: "Flipbook not found" });
     }
 
-    // Check if page number already exists in the flipbook
+    // Only check uniqueness for the main page number
     const pageExists = flipbook.pages.some(
       page => page.pageNumber === parseInt(pageNumber)
     );
@@ -30,17 +27,24 @@ export const addIndexPage = async (req, res) => {
       });
     }
 
+    // Validate that pagesTitles page numbers are positive
+    const validPagesTitles = pagesTitles.map(entry => ({
+      ...entry,
+      pageNumber: parseInt(entry.pageNumber)
+    }));
+
+    if (validPagesTitles.some(entry => entry.pageNumber < 1)) {
+      return res.status(400).json({
+        message: "Page numbers in pagesTitles must be positive"
+      });
+    }
+
     const newIndexPage = {
       pageType: 'IndexPage',
-      // Base page fields
       title,
       pageNumber: parseInt(pageNumber),
-      // Index page specific fields
-      description,
-      content,
-      contentType,
       images,
-      pagesTitles
+      pagesTitles: validPagesTitles
     };
 
     flipbook.pages.push(newIndexPage);
@@ -64,9 +68,6 @@ export const updateIndexPage = async (req, res) => {
     const { flipbookId, pageNumber } = req.params;
     const { 
       title, 
-      description, 
-      content, 
-      contentType,
       images, 
       pagesTitles, 
       newPageNumber 
@@ -101,9 +102,6 @@ export const updateIndexPage = async (req, res) => {
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
       title: title || flipbook.pages[pageIndex].title,
-      description: description || flipbook.pages[pageIndex].description,
-      content: content || flipbook.pages[pageIndex].content,
-      contentType: contentType || flipbook.pages[pageIndex].contentType,
       pageNumber: newPageNumber || flipbook.pages[pageIndex].pageNumber,
       images: images || flipbook.pages[pageIndex].images,
       pagesTitles: pagesTitles || flipbook.pages[pageIndex].pagesTitles

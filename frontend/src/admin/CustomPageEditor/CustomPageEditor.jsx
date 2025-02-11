@@ -12,7 +12,10 @@ const CustomPageEditor = () => {
   if (error) return <div>Error: {error}</div>;
   if (!flipbook) return <div>No flipbook found</div>;
 
-  const customPages = flipbook.pages?.filter(page => page.isCustom) || [];
+  // Filter for pages that are either custom or of type IndexPage
+  const customPages = flipbook.pages?.filter(page => 
+    page.isCustom || page.pageType === 'IndexPage'
+  ) || [];
 
   return (
     <div className="custom-page-editor">

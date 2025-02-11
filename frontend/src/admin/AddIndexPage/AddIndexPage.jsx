@@ -6,24 +6,39 @@ import './AddIndexPage.scss';
 const AddIndexPage = ({ flipbookId }) => {
   const [title, setTitle] = useState('');
   const [pageNumber, setPageNumber] = useState('');
-  const [tableOfContents, setTableOfContents] = useState([]);
+  const [images, setImages] = useState(['']);
+  const [pagesTitles, setPagesTitles] = useState([]);
   const { addIndexPage, loading } = useFlipbookStore();
 
-  const handleAddTableEntry = () => {
-    setTableOfContents([...tableOfContents, { title: '', pageNumber: '' }]);
+  const handleAddImage = () => {
+    setImages([...images, '']);
   };
 
-  const handleUpdateTableEntry = (index, field, value) => {
-    const updatedEntries = [...tableOfContents];
+  const handleUpdateImage = (index, value) => {
+    const updatedImages = [...images];
+    updatedImages[index] = value;
+    setImages(updatedImages);
+  };
+
+  const handleRemoveImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  const handleAddPageTitle = () => {
+    setPagesTitles([...pagesTitles, { title: '', pageNumber: '' }]);
+  };
+
+  const handleUpdatePageTitle = (index, field, value) => {
+    const updatedEntries = [...pagesTitles];
     updatedEntries[index] = {
       ...updatedEntries[index],
-      [field]: value
+      [field]: field === 'pageNumber' ? (value === '' ? '' : parseInt(value)) : value
     };
-    setTableOfContents(updatedEntries);
+    setPagesTitles(updatedEntries);
   };
 
-  const handleRemoveTableEntry = (index) => {
-    setTableOfContents(tableOfContents.filter((_, i) => i !== index));
+  const handleRemovePageTitle = (index) => {
+    setPagesTitles(pagesTitles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -41,7 +56,8 @@ const AddIndexPage = ({ flipbookId }) => {
         return;
       }
 
-      const validTableOfContents = tableOfContents
+      const validImages = images.filter(img => img.trim());
+      const validPagesTitles = pagesTitles
         .filter(entry => entry.title && entry.pageNumber)
         .map(entry => ({
           ...entry,
@@ -51,12 +67,16 @@ const AddIndexPage = ({ flipbookId }) => {
       await addIndexPage(flipbookId, {
         title,
         pageNumber: parsedPageNumber,
-        tableOfContents: validTableOfContents
+        images: validImages,
+        pagesTitles: validPagesTitles
       });
 
+      // Reset form
       setTitle('');
       setPageNumber('');
-      setTableOfContents([]);
+      setImages(['']);
+      setPagesTitles([]);
+      
       toast.success('Index page added successfully');
     } catch (error) {
       toast.error(error.message || 'Failed to add index page');
@@ -92,37 +112,58 @@ const AddIndexPage = ({ flipbookId }) => {
           />
         </div>
 
-        <div className="table-of-contents">
-          <div className="toc-header">
-            <h4>Table of Contents</h4>
-            <button
-              type="button"
-              onClick={handleAddTableEntry}
-              className="add-entry-btn"
-            >
-              + Add Entry
+        <div className="images-section">
+          <div className="section-header">
+            <h4>Images</h4>
+            <button type="button" onClick={handleAddImage} className="add-btn">
+              + Add Image
             </button>
           </div>
+          {images.map((image, index) => (
+            <div key={index} className="image-entry">
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => handleUpdateImage(index, e.target.value)}
+                placeholder="Enter image URL"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="remove-btn"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
 
-          {tableOfContents.map((entry, index) => (
-            <div key={index} className="toc-entry">
+        <div className="pages-titles-section">
+          <div className="section-header">
+            <h4>Pages List</h4>
+            <button type="button" onClick={handleAddPageTitle} className="add-btn">
+              + Add Page
+            </button>
+          </div>
+          {pagesTitles.map((entry, index) => (
+            <div key={index} className="page-title-entry">
               <input
                 type="text"
                 value={entry.title}
-                onChange={(e) => handleUpdateTableEntry(index, 'title', e.target.value)}
-                placeholder="Section Title"
+                onChange={(e) => handleUpdatePageTitle(index, 'title', e.target.value)}
+                placeholder="Page Title"
               />
               <input
                 type="number"
                 value={entry.pageNumber}
-                onChange={(e) => handleUpdateTableEntry(index, 'pageNumber', e.target.value)}
+                onChange={(e) => handleUpdatePageTitle(index, 'pageNumber', e.target.value)}
                 placeholder="Page #"
                 min="1"
               />
               <button
                 type="button"
-                onClick={() => handleRemoveTableEntry(index)}
-                className="remove-entry-btn"
+                onClick={() => handleRemovePageTitle(index)}
+                className="remove-btn"
               >
                 ×
               </button>

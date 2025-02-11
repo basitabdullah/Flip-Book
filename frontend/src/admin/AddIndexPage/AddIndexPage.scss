@@ -33,74 +33,83 @@
     }
   }
 
-  .table-of-contents {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+      margin: 0;
+      color: #444;
+    }
+  }
+
+  .images-section,
+  .pages-titles-section {
     margin-bottom: 2rem;
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 1.5rem;
+  }
 
-    .toc-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
+  .image-entry,
+  .page-title-entry {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
 
-      h4 {
-        margin: 0;
-        color: #444;
-      }
-    }
-
-    .toc-entry {
-      display: grid;
-      grid-template-columns: 2fr 1fr auto;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      align-items: center;
-
-      input {
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 0.9rem;
-
-        &:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-      }
-    }
-
-    .add-entry-btn {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
+    input {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
       border-radius: 4px;
-      cursor: pointer;
       font-size: 0.9rem;
 
-      &:hover {
-        background: #218838;
+      &:focus {
+        outline: none;
+        border-color: #007bff;
       }
     }
+  }
 
-    .remove-entry-btn {
-      background: #dc3545;
-      color: white;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
+  .image-entry {
+    grid-template-columns: 1fr auto;
+  }
 
-      &:hover {
-        background: #c82333;
-      }
+  .page-title-entry {
+    grid-template-columns: 2fr 1fr auto;
+  }
+
+  .add-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &:hover {
+      background: #218838;
+    }
+  }
+
+  .remove-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+
+    &:hover {
+      background: #c82333;
     }
   }
 
