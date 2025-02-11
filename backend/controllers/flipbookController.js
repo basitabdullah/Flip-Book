@@ -273,12 +273,49 @@ export const publishFlipbook = async (req, res) => {
       return res.status(404).json({ message: "Flipbook not found." });
     }
 
-    // Create a new PublishedFlipbook
+    // Validate and transform pages to match PublishedFlipbook schema
+    const validatedPages = flipbook.pages.map(page => {
+      // Handle different page types
+      if (page.pageType === 'Page') {
+        return {
+          title: page.title,
+          description: page.description,
+          content: page.content,
+          pageNumber: page.pageNumber,
+          contentType: page.contentType
+        };
+      } else if (page.pageType === 'IndexPage') {
+        // For index pages, ensure all required fields are present
+        const defaultImage = page.images && page.images.length > 0 
+          ? page.images[0] 
+          : "https://placeholder.com/default-image.jpg"; // Replace with your default image URL
+
+        return {
+          title: page.title,
+          description: page.pagesTitles 
+            ? page.pagesTitles.map(pt => `${pt.title}: Page ${pt.pageNumber}`).join('\n')
+            : "Index Page",
+          content: defaultImage,
+          pageNumber: page.pageNumber,
+          contentType: "image" // Index pages are always displayed as images
+        };
+      }
+      return null;
+    }).filter(page => page && 
+      page.title && 
+      page.description && 
+      page.content && 
+      page.pageNumber && 
+      page.contentType
+    ); // Remove any invalid entries
+
+    // Create a new PublishedFlipbook with validated pages
     const publishedFlipbook = new PublishedFlipbook({
       name,
       flipbook: flipbook._id,
-      pages: flipbook.pages,
+      pages: validatedPages,
       issue: issueName,
+      isPublished: true // Set to true by default when publishing
     });
 
     // Save the PublishedFlipbook
