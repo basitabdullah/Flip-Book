@@ -16,7 +16,7 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { IoGridOutline } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
-
+import { FaEdit } from "react-icons/fa";
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -167,8 +167,8 @@ function FlipbookEditor({
           Add A Custom Page
         </Link>
 
-        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="action-button quaternary animated">
-          <IoGridOutline className="icon" />
+        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="action-button editor animated">
+          <FaEdit className="icon" />
           Custom Page Editor
         </Link>
       </div>

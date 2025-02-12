@@ -7,16 +7,15 @@ $font: "Mulish", serif;
   height: 100%;
   justify-content: center;
   background: transparent;
-  padding: clamp(0.75rem, 2vw, 1.5rem);
 
   .index-content {
     background: transparent;
-    padding: clamp(1rem, 3vw, 2rem);
     width: 100%;
     max-width: 800px;
     position: relative;
     border: none;
     overflow: auto;
+    padding: 10px;
 
     .image-container {
       width: 100%;
