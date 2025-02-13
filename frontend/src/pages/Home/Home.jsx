@@ -236,28 +236,34 @@ const Home = () => {
 
   // Memoize the page renderer
   const renderPageContent = useCallback((page) => {
-    console.log('Rendering page:', page); // Debug log
     
     // Default to "Page" type if pageType is not specified
     const pageType = page.pageType || "Page";
 
     switch (pageType) {
-      case "Gallery":
+      case "PublishedGalleryPage":
         return (
           <div className="page-content">
-            <GalleryPage pageData={page} />
+            <GalleryPage 
+              pageData={{
+                title: page.title,
+                pageNumber: page.pageNumber,
+                subtitle: page.subtitle,
+                imagesData: page.imagesData
+              }} 
+            />
             <div className="page-number">{page.pageNumber}</div>
           </div>
         );
-      case "IndexPage":
+      case "PublishedIndexPage":
         return (
           <div className="page-content">
             <IndexPage pageData={page} goToPage={goToPage} />
             <div className="page-number">{page.pageNumber}</div>
           </div>
         );
-      case "Page":
-      default: // Make "Page" the default case
+      case "PublishedPage":
+      default:
         return (
           <div className="page-content">
             <div className="content custom-scrollbar">

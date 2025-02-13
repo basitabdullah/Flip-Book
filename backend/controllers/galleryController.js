@@ -3,7 +3,7 @@ import { Flipbook, GalleryPage } from "../models/flipbookModel.js";
 export const addGalleryPage = async (req, res) => {
   try {
     const { flipbookId } = req.params;
-    const { title, pageNumber, subtitle, images } = req.body;
+    const { title, pageNumber, subtitle, imagesData } = req.body;
 
     // Find the flipbook by its ID
     const flipbook = await Flipbook.findById(flipbookId);
@@ -22,12 +22,20 @@ export const addGalleryPage = async (req, res) => {
       });
     }
 
-    // Parse images if needed
-    const parsedImages =
-      typeof images === "string" ? JSON.parse(images) : images;
+    // Validate imagesData structure
+    if (!Array.isArray(imagesData)) {
+      return res.status(400).json({ message: "ImagesData should be an array" });
+    }
 
-    if (!Array.isArray(parsedImages)) {
-      return res.status(400).json({ message: "Images should be an array" });
+    // Validate each image entry
+    const isValidImages = imagesData.every(img => 
+      img.imagesDataTitle && 
+      img.imagesDataSubtitle && 
+      img.imagesDataImage
+    );
+
+    if (!isValidImages) {
+      return res.status(400).json({ message: "Each image must have title, subtitle, and image URL" });
     }
 
     // Create the new gallery page using the Mongoose model
@@ -35,7 +43,9 @@ export const addGalleryPage = async (req, res) => {
       title,
       pageNumber: parseInt(pageNumber, 10),
       subtitle,
-      imagesData: parsedImages,
+      imagesData,
+      pageType: 'Gallery', // Explicitly set the pageType
+      isCustom: true
     });
 
     // Add the new gallery page to the flipbook's pages array
@@ -58,35 +68,44 @@ export const addGalleryPage = async (req, res) => {
 
 export const updateGalleryPage = async (req, res) => {
   try {
-    const { flipbookId, pageNumber } = req.params;
+    const { flipbookId, pageId } = req.params;
     const { title, subtitle, imagesData } = req.body;
 
-    // Parse imagesData if needed
-    const parsedImagesData =
-      typeof imagesData === "string" ? JSON.parse(imagesData) : imagesData;
-
-    if (!Array.isArray(parsedImagesData)) {
+    // Validate imagesData structure
+    if (!Array.isArray(imagesData)) {
       return res.status(400).json({ message: "ImagesData should be an array" });
     }
 
-    // Update the page using MongoDB's positional operator ($)
+    // Validate each image entry
+    const isValidImages = imagesData.every(img => 
+      img.imagesDataTitle && 
+      img.imagesDataSubtitle && 
+      img.imagesDataImage
+    );
+
+    if (!isValidImages) {
+      return res.status(400).json({ message: "Each image must have title, subtitle, and image URL" });
+    }
+
+    // Update the page using findOneAndUpdate
     const result = await Flipbook.findOneAndUpdate(
       { 
         _id: flipbookId, 
-        "pages.pageNumber": parseInt(pageNumber, 10)
+        "pages._id": pageId,
+        "pages.pageType": "Gallery" // Ensure we're updating a gallery page
       },
       {
         $set: {
           "pages.$.title": title,
           "pages.$.subtitle": subtitle,
-          "pages.$.imagesData": parsedImagesData,
+          "pages.$.imagesData": imagesData,
         }
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!result) {
-      return res.status(404).json({ message: "Flipbook or page not found" });
+      return res.status(404).json({ message: "Flipbook or gallery page not found" });
     }
 
     res.status(200).json({
@@ -103,21 +122,24 @@ export const updateGalleryPage = async (req, res) => {
 
 export const deleteGalleryPage = async (req, res) => {
   try {
-    const { flipbookId, pageNumber } = req.params;
+    const { flipbookId, pageId } = req.params;
 
-    // Use $pull to remove the matching page
-    const result = await Flipbook.findByIdAndUpdate(
-      flipbookId,
+    // Use findOneAndUpdate with $pull to remove the specific gallery page
+    const result = await Flipbook.findOneAndUpdate(
+      { _id: flipbookId },
       {
         $pull: {
-          pages: { pageNumber: parseInt(pageNumber, 10) }
+          pages: { 
+            _id: pageId,
+            pageType: "Gallery" // Ensure we're deleting a gallery page
+          }
         }
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!result) {
-      return res.status(404).json({ message: "Flipbook not found" });
+      return res.status(404).json({ message: "Flipbook or gallery page not found" });
     }
 
     res.status(200).json({
@@ -131,3 +153,4 @@ export const deleteGalleryPage = async (req, res) => {
     });
   }
 };
+

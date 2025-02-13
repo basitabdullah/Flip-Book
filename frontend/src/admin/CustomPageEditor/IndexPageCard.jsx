@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import useCustomPageStore from '../../stores/useCustomPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
-import './CustomPageCard.scss';
 import { toast } from 'react-hot-toast';
+import './CustomPageCard.scss';
 
-const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
+const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
   const { getFlipbookById } = useFlipbookStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -12,10 +12,8 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   const [images, setImages] = useState(pageData?.images || []);
   const [pagesTitles, setPagesTitles] = useState(pageData?.pagesTitles || []);
 
-  if (!pageData) return null;
-
   const handleAddImage = () => {
-    setImages([...images, ''])
+    setImages([...images, '']);
   };
 
   const handleUpdateImage = (index, value) => {
@@ -47,28 +45,18 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
 
   const handleUpdate = async () => {
     try {
-      if (!flipbookId || !pageNumber) {
-        throw new Error('Missing required data');
-      }
-
-      const validImages = images.filter(img => img.trim());
-      const validPagesTitles = pagesTitles
-        .filter(entry => entry.title && entry.pageNumber)
-        .map(entry => ({
-          ...entry,
-          pageNumber: parseInt(entry.pageNumber)
-        }));
-
       await updateCustomPage(flipbookId, pageNumber, {
         title,
         pageNumber,
-        images: validImages,
-        pagesTitles: validPagesTitles
+        images,
+        pagesTitles,
+        pageType: 'IndexPage',
+        isCustom: true
       });
-
       setIsEditing(false);
+      toast.success('Index page updated successfully');
     } catch (error) {
-      console.error('Update error:', error);
+      toast.error('Failed to update page');
     }
   };
 
@@ -77,22 +65,19 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
       try {
         await deleteCustomPage(flipbookId, pageNumber);
         await getFlipbookById(flipbookId);
+        toast.success('Page deleted successfully');
       } catch (error) {
-        console.error('Delete error:', error);
         toast.error('Failed to delete page');
       }
     }
   };
 
   return (
-    <div className="custom-page-card">
+    <div className="custom-page-card index-page">
       <div className="card-header">
         <span className="page-number">Page {pageNumber}</span>
         <div className="action-buttons">
-          <button 
-            onClick={() => setIsEditing(!isEditing)} 
-            className={`edit-btn ${isEditing ? 'active' : ''}`}
-          >
+          <button onClick={() => setIsEditing(!isEditing)} className={`edit-btn ${isEditing ? 'active' : ''}`}>
             {isEditing ? 'Cancel' : 'Edit'}
           </button>
           <button onClick={handleDelete} className="delete-btn">Delete</button>
@@ -113,7 +98,7 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
 
           <div className="form-section">
             <div className="section-header">
-              <h4>Images</h4>
+              <h4>Thumbnail Images</h4>
               <button type="button" onClick={handleAddImage} className="add-btn">
                 + Add Image
               </button>
@@ -177,18 +162,16 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
       ) : (
         <div className="view-mode">
           <h3>{title}</h3>
-          
-          <div className="images-section">
-            <h4>Images</h4>
-            <div className="images-grid">
+          <div className="thumbnails-section">
+            <h4>Thumbnail Images</h4>
+            <div className="thumbnails-grid">
               {images.map((image, index) => (
-                <div key={index} className="image-preview">
-                  <img src={image} alt={`Image ${index + 1}`} />
+                <div key={index} className="thumbnail">
+                  <img src={image} alt={`Thumbnail ${index + 1}`} />
                 </div>
               ))}
             </div>
           </div>
-
           <div className="pages-list-section">
             <h4>Pages List</h4>
             <div className="pages-list">
@@ -206,4 +189,4 @@ const CustomPageCard = ({ pageData = {}, pageNumber, loading, flipbookId }) => {
   );
 };
 
-export default CustomPageCard; 
+export default IndexPageCard; 

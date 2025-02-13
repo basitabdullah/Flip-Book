@@ -72,8 +72,9 @@ const AddGalleryPage = ({ flipbookId }) => {
         return;
       }
 
-      // Call the store method with the correct data structure
+      // Call the store method with the correct data structure including pageType
       await addGalleryPage(flipbookId, {
+        pageType: 'Gallery', // Add this to match the discriminator
         title,
         pageNumber: parsedPageNumber,
         subtitle,
@@ -81,7 +82,8 @@ const AddGalleryPage = ({ flipbookId }) => {
           imagesDataTitle: img.imagesDataTitle,
           imagesDataSubtitle: img.imagesDataSubtitle,
           imagesDataImage: img.imagesDataImage
-        }))
+        })),
+        isCustom: true // Add this to match the schema
       });
 
       // Refresh the flipbook data

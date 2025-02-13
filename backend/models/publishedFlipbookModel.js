@@ -1,31 +1,79 @@
 import mongoose from "mongoose";
 
+const basePublishedPageSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    pageNumber: { type: Number, required: true },
+  },
+  { discriminatorKey: "pageType" }
+);
+
+const BasePublishedPage = mongoose.model("BasePublishedPage", basePublishedPageSchema);
+
+// Regular published page
+const PublishedPage = BasePublishedPage.discriminator(
+  "PublishedPage",
+  new mongoose.Schema({
+    description: { type: String, required: true },
+    content: { type: String, required: true },
+    contentType: {
+      type: String,
+      required: true,
+      enum: ["image", "video", "map"],
+    },
+  })
+);
+
+// Published index page
+const PublishedIndexPage = BasePublishedPage.discriminator(
+  "PublishedIndexPage",
+  new mongoose.Schema({
+    images: { type: [String], required: true },
+    pagesTitles: [
+      {
+        title: { type: String, required: true },
+        pageNumber: { type: Number, required: true, min: 1 },
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
+// Published gallery page - matching the original flipbook model structure
+const PublishedGalleryPage = BasePublishedPage.discriminator(
+  "PublishedGalleryPage",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    imagesData: [
+      {
+        imagesDataTitle: { type: String, required: true },
+        imagesDataSubtitle: { type: String, required: true },
+        imagesDataImage: { type: String, required: true },
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
 const publishedFlipbookSchema = new mongoose.Schema({
   issue: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   flipbook: {
     type: mongoose.Schema.Types.ObjectId,
-    unique: false,
     ref: "Flipbook",
+    unique: false,
   },
   isPublished: { type: Boolean, default: false },
-  pages: [
-    {
-      title: { type: String, required: true },
-      description: { type: String, required: true },
-      content: { type: String, required: true }, // URL for image, video, or map
-      pageNumber: { type: Number, required: true },
-      contentType: {
-        type: String,
-        required: true,
-        enum: ["image", "video", "map"],
-      },
-    },
-  ],
+  pages: [basePublishedPageSchema],
   publishedAt: { type: Date, default: Date.now },
 });
 
-export const PublishedFlipbook = mongoose.model(
-  "PublishedFlipbook",
-  publishedFlipbookSchema
-);
+const PublishedFlipbook = mongoose.model("PublishedFlipbook", publishedFlipbookSchema);
+
+export { 
+  PublishedFlipbook, 
+  BasePublishedPage, 
+  PublishedPage, 
+  PublishedIndexPage, 
+  PublishedGalleryPage 
+};

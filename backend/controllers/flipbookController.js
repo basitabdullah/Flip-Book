@@ -263,72 +263,85 @@ export const deletePage = async (req, res) => {
 // Publish a specific Flipbbok
 export const publishFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
-  const { name } = req.body;
-  const { issueName } = req.body;
+  const { name, issueName } = req.body;
 
   try {
-    // Find the Flipbook by ID
-    const flipbook = await Flipbook.findById(flipbookId);
+    // Get the original flipbook with all its data
+    const flipbook = await Flipbook.findById(flipbookId).lean();
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
 
-    // Validate and transform pages to match PublishedFlipbook schema
+    console.log("Original Gallery Pages:", flipbook.pages.filter(p => p.pageType === 'Gallery')); // Debug log
+
     const validatedPages = flipbook.pages.map(page => {
-      // Handle different page types
-      if (page.pageType === 'Page') {
-        return {
-          title: page.title,
-          description: page.description,
-          content: page.content,
-          pageNumber: page.pageNumber,
-          contentType: page.contentType
-        };
-      } else if (page.pageType === 'IndexPage') {
-        // For index pages, ensure all required fields are present
-        const defaultImage = page.images && page.images.length > 0 
-          ? page.images[0] 
-          : "https://placeholder.com/default-image.jpg"; // Replace with your default image URL
+      const basePage = {
+        title: page.title,
+        pageNumber: page.pageNumber
+      };
 
-        return {
-          title: page.title,
-          description: page.pagesTitles 
-            ? page.pagesTitles.map(pt => `${pt.title}: Page ${pt.pageNumber}`).join('\n')
-            : "Index Page",
-          content: defaultImage,
-          pageNumber: page.pageNumber,
-          contentType: "image" // Index pages are always displayed as images
-        };
+      switch (page.pageType) {
+        case 'Page':
+          return {
+            ...basePage,
+            pageType: 'PublishedPage',
+            description: page.description,
+            content: page.content,
+            contentType: page.contentType
+          };
+
+        case 'IndexPage':
+          return {
+            ...basePage,
+            pageType: 'PublishedIndexPage',
+            images: page.images || [],
+            pagesTitles: page.pagesTitles || [],
+            isCustom: true
+          };
+
+        case 'Gallery':
+          console.log("Processing Gallery Page:", page); // Debug log
+          return {
+            ...basePage,
+            pageType: 'PublishedGalleryPage',
+            subtitle: page.subtitle,
+            imagesData: page.imagesData ? page.imagesData.map(img => ({
+              imagesDataTitle: img.imagesDataTitle,
+              imagesDataSubtitle: img.imagesDataSubtitle,
+              imagesDataImage: img.imagesDataImage
+            })) : [],
+            isCustom: true
+          };
+
+        default:
+          return null;
       }
-      return null;
-    }).filter(page => page && 
-      page.title && 
-      page.description && 
-      page.content && 
-      page.pageNumber && 
-      page.contentType
-    ); // Remove any invalid entries
+    }).filter(page => page !== null);
 
-    // Create a new PublishedFlipbook with validated pages
+
     const publishedFlipbook = new PublishedFlipbook({
       name,
       flipbook: flipbook._id,
       pages: validatedPages,
       issue: issueName,
-      isPublished: true // Set to true by default when publishing
+      isPublished: true
     });
 
-    // Save the PublishedFlipbook
     await publishedFlipbook.save();
+    
+    // Update original flipbook
+    await Flipbook.findByIdAndUpdate(flipbookId, { isPublished: true });
 
-    // Mark the Flipbook as published
-    flipbook.isPublished = true;
-    await flipbook.save();
+    // Return the populated published flipbook with complete data
+    const populatedPublishedFlipbook = await PublishedFlipbook.findById(publishedFlipbook._id)
+      .populate({
+        path: 'flipbook',
+        model: 'Flipbook'
+      });
 
-    // Respond with success
     res.status(200).json({
       message: "Flipbook published successfully.",
-      publishedFlipbook,
+      publishedFlipbook: populatedPublishedFlipbook,
     });
   } catch (error) {
     console.error("Error publishing flipbook:", error);
@@ -341,10 +354,16 @@ export const publishFlipbook = async (req, res) => {
 export const getPublishedFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
   try {
-    const flipbook = await PublishedFlipbook.findById(flipbookId);
+    const flipbook = await PublishedFlipbook.findById(flipbookId)
+      .populate({
+        path: 'flipbook',
+        model: 'Flipbook'
+      });
+
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
+
     res.status(200).json(flipbook);
   } catch (error) {
     console.error("Error getting flipbook:", error);
@@ -354,7 +373,11 @@ export const getPublishedFlipbook = async (req, res) => {
 
 export const getAllPublishedFlipbooks = async (req, res) => {
   try {
-    const flipbooks = await PublishedFlipbook.find();
+    const flipbooks = await PublishedFlipbook.find()
+      .populate({
+        path: 'flipbook',
+        model: 'Flipbook'
+      });
 
     if (!flipbooks || flipbooks.length === 0) {
       console.log("No flipbooks found.");
