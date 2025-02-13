@@ -55,6 +55,9 @@ const Home = () => {
       ? filteredPublishedFlipbooks[0].pages
       : [];
 
+  // At the top of the component, after getting publishedPages
+  console.log('Published Pages:', publishedPages);
+
   // Memoize the YouTube URL transformation and add lazy loading
   const getYouTubeEmbedUrl = useCallback((url) => {
     if (!url) return "";
@@ -201,6 +204,9 @@ const Home = () => {
       : [];
   }, [publishedPages]);
 
+  // Before mapping through sortedPages
+  console.log('Sorted Pages:', sortedPages);
+
   // Optimize audio loading
   useEffect(() => {
     audioRef.current.preload = "none"; // Only load audio when needed
@@ -227,6 +233,45 @@ const Home = () => {
       bookRef.current.pageFlip().flipPrev();
     }
   };
+
+  // Memoize the page renderer
+  const renderPageContent = useCallback((page) => {
+    console.log('Rendering page:', page); // Debug log
+    
+    // Default to "Page" type if pageType is not specified
+    const pageType = page.pageType || "Page";
+
+    switch (pageType) {
+      case "Gallery":
+        return (
+          <div className="page-content">
+            <GalleryPage pageData={page} />
+            <div className="page-number">{page.pageNumber}</div>
+          </div>
+        );
+      case "IndexPage":
+        return (
+          <div className="page-content">
+            <IndexPage pageData={page} goToPage={goToPage} />
+            <div className="page-number">{page.pageNumber}</div>
+          </div>
+        );
+      case "Page":
+      default: // Make "Page" the default case
+        return (
+          <div className="page-content">
+            <div className="content custom-scrollbar">
+              <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
+                {page.title}
+              </h1>
+              {renderContent(page)}
+              <p className="page-description">{page.description}</p>
+            </div>
+            <div className="page-number">{page.pageNumber}</div>
+          </div>
+        );
+    }
+  }, [goToPage, renderContent]);
 
   if (error) return <div>Error: {error}</div>;
 
@@ -281,75 +326,21 @@ const Home = () => {
                 </div>
               </div>
 
-              <div key="index" className="page">
-                <div className="page-content">
-                  <IndexPage goToPage={goToPage} />
-                  <div className="page-number">i</div>
+              {sortedPages.map((page) => (
+                <div
+                  key={page._id || `page-${page.pageNumber}`}
+                  className="page"
+                >
+                  {renderPageContent(page)}
                 </div>
-              </div>
+              ))}
 
-              {sortedPages.length > 0 ? (
-                sortedPages.map((page) => (
-                  <div
-                    key={page._id || `page-${page.pageNumber}`}
-                    className="page"
-                  >
-                    <div className="page-content">
-                      <div className="content custom-scrollbar">
-                        <h1
-                          style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}
-                        >
-                          {page.title}
-                        </h1>
-                        {renderContent(page)}
-                        <p className="page-description">{page.description}</p>
-                      </div>
-                      <div className="page-number">{page.pageNumber}</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div key="empty" className="page">
-                  <div className="page-content">
-                    <div className="content">
-                      <h1>No pages available</h1>
-                    </div>
-                    <div className="page-number">1</div>
-                  </div>
-                </div>
-              )}
-              <div key="gallery" className="page">
-                <div className="page-content">
-                  <GalleryPage />
-                  <div className="page-number">{sortedPages.length + 1}</div>
-                </div>
-              </div>
-              <div key="catalog" className="page">
-                <div className="page-content">
-                  <CatalogPage />
-                  <div className="page-number">{sortedPages.length + 2}</div>
-                </div>
-              </div>
-              <div key="social" className="page">
-                <div className="page-content">
-                  <SocialPage />
-                  <div className="page-number">{sortedPages.length + 3}</div>
-                </div>
-              </div>
-
-              <div key="reviews" className="page">
-                <div className="page-content">
-                  <ReviewsPage />
-                  <div className="page-number">{sortedPages.length + 4}</div>
-                </div>
-              </div>
               <div key="thanks" className="page">
                 <div className="page-content">
                   <ThanksPage />
-                  <div className="page-number">{sortedPages.length + 5}</div>
+                  <div className="page-number">{sortedPages.length + 1}</div>
                 </div>
               </div>
-              
             </HTMLFlipBook>
 
             {/* Navigation Arrows */}

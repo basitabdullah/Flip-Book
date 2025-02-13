@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import useFlipbookStore from "../../stores/useFlipbookStore";
 import AddIndexPage from "../AddIndexPage/AddIndexPage";
-import { IoListOutline, IoBookOutline, IoGridOutline } from "react-icons/io5";
+import AddGalleryPage from "../AddGalleryPage/AddGalleryPage";
+import { IoListOutline, IoImagesOutline } from "react-icons/io5";
 import "./AddCustomPage.scss";
 
 const AddCustomPage = () => {
@@ -16,25 +17,20 @@ const AddCustomPage = () => {
       icon: <IoListOutline className="icon" />,
       description: "Create a table of contents"
     },
-    // More page types can be added here in the future
-    // { 
-    //   id: "chapter", 
-    //   name: "Chapter Page", 
-    //   icon: <IoBookOutline className="icon" />,
-    //   description: "Add a chapter introduction"
-    // },
-    // { 
-    //   id: "grid", 
-    //   name: "Grid Page", 
-    //   icon: <IoGridOutline className="icon" />,
-    //   description: "Create a grid layout"
-    // }
+    { 
+      id: "gallery", 
+      name: "Gallery Page", 
+      icon: <IoImagesOutline className="icon" />,
+      description: "Create an image gallery"
+    }
   ];
 
   const renderPageForm = () => {
     switch (selectedPageType) {
       case "index":
         return <AddIndexPage flipbookId={flipbookId} />;
+      case "gallery":
+        return <AddGalleryPage flipbookId={flipbookId} />;
       default:
         return null;
     }

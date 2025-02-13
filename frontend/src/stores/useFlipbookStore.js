@@ -638,6 +638,104 @@ const useFlipbookStore = create((set) => ({
       throw errorMessage;
     }
   },
+
+  // Add Gallery Page
+  addGalleryPage: async (flipbookId, pageData) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.post(
+        `/flipbook/${flipbookId}/gallery`,
+        pageData
+      );
+
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || [],
+        error: null,
+      }));
+
+      toast.success("Gallery page added successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  // Update Gallery Page
+  updateGalleryPage: async (flipbookId, pageNumber, pageData) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.put(
+        `/flipbook/${flipbookId}/gallery/${pageNumber}`,
+        pageData
+      );
+
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || [],
+        error: null,
+      }));
+
+      toast.success("Gallery page updated successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
+  // Delete Gallery Page
+  deleteGalleryPage: async (flipbookId, pageNumber) => {
+    try {
+      set({ loading: true, error: null });
+      const response = await axiosInstance.delete(
+        `/flipbook/${flipbookId}/gallery/${pageNumber}`
+      );
+
+      if (!response.data || !response.data.flipbook) {
+        throw new Error("Invalid response from server");
+      }
+
+      set((state) => ({
+        loading: false,
+        flipbook: response.data.flipbook,
+        pages: response.data.flipbook.pages || [],
+        error: null,
+      }));
+
+      toast.success("Gallery page deleted successfully");
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
 }));
 
 export default useFlipbookStore;
