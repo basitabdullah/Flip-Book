@@ -257,7 +257,7 @@ const Home = () => {
               maxHeight={window.innerWidth < 600 ? 500 : 550}
               ref={bookRef}
               showCover={true}
-              useMouseEvents={false}
+              useMouseEvents={true}
               drawShadow={true}
               maxShadowOpacity={0.8}
               flippingTime={500}
@@ -267,6 +267,7 @@ const Home = () => {
                 }
                 audioRef.current.play();
               }}
+
             >
               <div key="cover" className="page">
                 <div className="page-content">

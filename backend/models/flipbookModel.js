@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const basePageSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    pageNumber: { 
-      type: Number, 
+    pageNumber: {
+      type: Number,
       required: true,
-      min: [1, 'Page number must be positive'] 
-    }
+      min: [1, "Page number must be positive"],
+    },
   },
   { discriminatorKey: "pageType" }
 );
@@ -24,7 +24,7 @@ const Page = BasePage.discriminator(
       type: String,
       required: true,
       enum: ["image", "video", "map"],
-    }
+    },
   })
 );
 
@@ -33,11 +33,29 @@ const IndexPage = BasePage.discriminator(
   "IndexPage",
   new mongoose.Schema({
     images: { type: [String], required: true },
-    pagesTitles: [{
-      title: { type: String, required: true },
-      pageNumber: { type: Number, required: true, min: 1 }
-    }],
-    isCustom: { type: Boolean, default: true }
+    pagesTitles: [
+      {
+        title: { type: String, required: true },
+        pageNumber: { type: Number, required: true, min: 1 },
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
+// Galery page schema
+const GalleryPage = BasePage.discriminator(
+  "Gallery",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    imagesData: [
+      {
+        imagesDataTitle: { type: String, required: true },
+        imagesDataSubtitle: { type: String, required: true },
+        imagesDataImage: { type: String, required: true },
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
   })
 );
 
@@ -55,4 +73,4 @@ flipbookSchema.index({ "pages.pageNumber": 1, _id: 1 }, { unique: true });
 const Flipbook = mongoose.model("Flipbook", flipbookSchema);
 
 // Export in the same way as before to maintain compatibility
-export { Flipbook, BasePage, Page, IndexPage };    
+export { Flipbook, BasePage, Page, IndexPage, GalleryPage };

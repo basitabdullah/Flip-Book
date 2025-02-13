@@ -1,4 +1,4 @@
-import { Flipbook } from "../models/flipbookModel.js";
+import { Flipbook, IndexPage } from "../models/flipbookModel.js";
 
 // Add index page
 export const addIndexPage = async (req, res) => {
@@ -39,13 +39,12 @@ export const addIndexPage = async (req, res) => {
       });
     }
 
-    const newIndexPage = {
-      pageType: 'IndexPage',
+    const newIndexPage = new IndexPage({
       title,
       pageNumber: parseInt(pageNumber),
       images,
       pagesTitles: validPagesTitles
-    };
+    });
 
     flipbook.pages.push(newIndexPage);
     await flipbook.save();

@@ -4,7 +4,6 @@ import useFlipbookStore from "../../stores/useFlipbookStore";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
 const IndexPage = ({ goToPage }) => {
   const { publishedFlipbooks } = useFlipbookStore();
   const [currentSlide, setCurrentSlide] = useState(0);

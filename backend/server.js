@@ -8,6 +8,7 @@ import flipbookRoutes from "./routes/flipbookRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import scheduledFlipbookRoutes from "./routes/scheduledFlipbookRoutes.js";
 import indexPageRoutes from "./routes/indexPageRoutes.js";
+import galleryRoutes from "./routes/galleryRoutes.js";
 import "./services/schedulerService.js";
 dotenv.config();
 const app = express();
@@ -30,16 +31,19 @@ app.use("/api/auth", authRoutes);
 app.use("/api/flipbook", flipbookRoutes);
 app.use("/api/scheduled-flipbooks", scheduledFlipbookRoutes);
 app.use("/api", indexPageRoutes);
+app.use("/api", galleryRoutes);
+
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 // Connect to database (run only once)
-connectDB();
 
 // ❌ REMOVE app.listen() (Vercel handles routing itself)
-// app.listen(process.env.PORT, () => {
-//   console.log(`Listening on port ${process.env.PORT}`);
-// });
+app.listen(process.env.PORT, () => {
+  connectDB();
+  console.log(`Listening on port ${process.env.PORT}`);
+});
 
 export default app;
