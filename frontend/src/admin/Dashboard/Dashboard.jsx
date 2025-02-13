@@ -188,9 +188,12 @@ function FlipbookEditor({
                 <p className="error-message">{error}</p>
               </div>
             )}
-            {(!flipbook.pages || flipbook.pages.length === 0) && (
+            {(!flipbook.pages || 
+              flipbook.pages.filter(page => !page.isCustom && page.pageType !== 'IndexPage').length === 0
+            ) && (
               <div className="no-pages-state">
-                <p>No pages available</p>
+                <p>No normal pages available</p>
+                <p>Check for custom pages!</p>
                 <p>Click "Add New Page" to get started</p>
               </div>
             )}

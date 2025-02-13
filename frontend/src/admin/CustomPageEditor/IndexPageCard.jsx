@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useCustomPageStore from '../../stores/useCustomPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
-import './CustomPageCard.scss';
+import "./CustomPage.scss";
 
 const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
@@ -73,8 +73,8 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   };
 
   return (
-    <div className="custom-page-card index-page">
-      <div className="card-header">
+    <div className="page-editor-card index-editor">
+      <div className="editor-header">
         <span className="page-number">Page {pageNumber}</span>
         <div className="action-buttons">
           <button onClick={() => setIsEditing(!isEditing)} className={`edit-btn ${isEditing ? 'active' : ''}`}>
@@ -130,7 +130,7 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
               </button>
             </div>
             {pagesTitles.map((entry, index) => (
-              <div key={index} className="page-title-entry">
+              <div key={index} className="index-entry">
                 <input
                   type="text"
                   value={entry.title}
@@ -172,16 +172,13 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
               ))}
             </div>
           </div>
-          <div className="pages-list-section">
-            <h4>Pages List</h4>
-            <div className="pages-list">
-              {pagesTitles.map((entry, index) => (
-                <div key={index} className="page-entry">
-                  <span className="page-title">{entry.title}</span>
-                  <span className="page-number">Page {entry.pageNumber}</span>
-                </div>
-              ))}
-            </div>
+          <div className="index-list">
+            {pagesTitles.map((entry, index) => (
+              <div key={index} className="index-item">
+                <span className="item-title">{entry.title}</span>
+                <span className="item-number">Page {entry.pageNumber}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

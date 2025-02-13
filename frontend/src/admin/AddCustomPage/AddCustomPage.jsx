@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import useFlipbookStore from "../../stores/useFlipbookStore";
 import AddIndexPage from "../AddIndexPage/AddIndexPage";
 import AddGalleryPage from "../AddGalleryPage/AddGalleryPage";
 import { IoListOutline, IoImagesOutline } from "react-icons/io5";

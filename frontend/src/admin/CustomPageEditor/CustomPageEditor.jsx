@@ -5,6 +5,7 @@ import useFlipbookStore from '../../stores/useFlipbookStore';
 import IndexPageCard from './IndexPageCard';
 import GalleryPageCard from './GalleryPageCard';
 import './CustomPageEditor.scss';
+import Loader from '../../components/Loader/Loader';
 
 const CustomPageEditor = () => {
   const { id } = useParams();
@@ -48,8 +49,17 @@ const CustomPageEditor = () => {
     }
   };
 
-  if (loading || flipbookLoading) return <div>Loading...</div>;
+  if (loading || flipbookLoading) return <Loader/>;
   if (error) return <div>Error: {error}</div>;
+
+  if (!customPages || customPages.length === 0) {
+    return (
+      <div className="no-pages-message">
+        <p>No custom pages available</p>
+        <p>Add an Index or Gallery page to get started</p>
+      </div>
+    );
+  }
 
   return (
     <div className="custom-page-editor">

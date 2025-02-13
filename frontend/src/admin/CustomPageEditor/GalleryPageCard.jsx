@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useCustomPageStore from '../../stores/useCustomPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
-import './CustomPageCard.scss';
+import "./CustomPage.scss"
 
 const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
@@ -63,8 +63,8 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   };
 
   return (
-    <div className="custom-page-card gallery-page">
-      <div className="card-header">
+    <div className="page-editor-card gallery-editor">
+      <div className="editor-header">
         <span className="page-number">Page {pageNumber}</span>
         <div className="action-buttons">
           <button onClick={() => setIsEditing(!isEditing)} className={`edit-btn ${isEditing ? 'active' : ''}`}>
@@ -104,7 +104,7 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
               </button>
             </div>
             {imagesData.map((image, index) => (
-              <div key={index} className="gallery-image-entry">
+              <div key={index} className="gallery-entry">
                 <input
                   type="text"
                   value={image.imagesDataTitle}
@@ -148,8 +148,8 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
               {imagesData.map((image, index) => (
                 <div key={index} className="gallery-item">
                   <img src={image.imagesDataImage} alt={image.imagesDataTitle} />
-                  <h5>{image.imagesDataTitle}</h5>
-                  <p>{image.imagesDataSubtitle}</p>
+                  <h5 className="item-title">{image.imagesDataTitle}</h5>
+                  <p className="item-subtitle">{image.imagesDataSubtitle}</p>
                 </div>
               ))}
             </div>
