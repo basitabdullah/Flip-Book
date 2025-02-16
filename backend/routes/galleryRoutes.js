@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Routes for gallery pages
 router.post("/flipbook/:flipbookId/gallery", addGalleryPage);
-router.put("/flipbook/:flipbookId/gallery/:pageNumber", updateGalleryPage);
-router.delete("/flipbook/:flipbookId/gallery/:pageNumber", deleteGalleryPage);
+router.put("/flipbook/:flipbookId/gallery/:pageId", updateGalleryPage);
+router.delete("/flipbook/:flipbookId/gallery/:pageId", deleteGalleryPage);
 
 export default router; 

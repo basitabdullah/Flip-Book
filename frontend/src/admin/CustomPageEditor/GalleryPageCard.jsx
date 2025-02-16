@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import useCustomPageStore from '../../stores/useCustomPageStore';
+import useGalleryPageStore from '../../stores/useGalleryPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
-import "./CustomPage.scss"
-
+import "./GalleryPageCard.scss"
 const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
-  const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
+  const { updateGalleryPage, deleteGalleryPage } = useGalleryPageStore();
   const { getFlipbookById } = useFlipbookStore();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(pageData?.title || '');
@@ -35,7 +34,7 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
   const handleUpdate = async () => {
     try {
-      await updateCustomPage(flipbookId, pageNumber, {
+      await updateGalleryPage(flipbookId, pageData._id, {
         title,
         pageNumber,
         subtitle,
@@ -53,7 +52,7 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
       try {
-        await deleteCustomPage(flipbookId, pageNumber);
+        await deleteGalleryPage(flipbookId, pageData._id);
         await getFlipbookById(flipbookId);
         toast.success('Page deleted successfully');
       } catch (error) {
@@ -63,7 +62,7 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   };
 
   return (
-    <div className="page-editor-card gallery-editor">
+    <div className="gallery-card">
       <div className="editor-header">
         <span className="page-number">Page {pageNumber}</span>
         <div className="action-buttons">

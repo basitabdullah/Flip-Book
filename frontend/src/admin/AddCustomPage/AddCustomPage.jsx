@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import AddIndexPage from "../AddIndexPage/AddIndexPage";
 import AddGalleryPage from "../AddGalleryPage/AddGalleryPage";
-import { IoListOutline, IoImagesOutline } from "react-icons/io5";
+import { IoListOutline, IoImagesOutline, IoGridOutline } from "react-icons/io5";
 import "./AddCustomPage.scss";
+import AddCatalogPage from "../AddCatalogPage/AddCatalogPage";
 
 const AddCustomPage = () => {
   const { flipbookId } = useParams();
@@ -21,6 +22,12 @@ const AddCustomPage = () => {
       name: "Gallery Page", 
       icon: <IoImagesOutline className="icon" />,
       description: "Create an image gallery"
+    },
+    { 
+      id: "catalog", 
+      name: "Catalog Page", 
+      icon: <IoGridOutline className="icon" />,
+      description: "Create a product catalog"
     }
   ];
 
@@ -30,6 +37,8 @@ const AddCustomPage = () => {
         return <AddIndexPage flipbookId={flipbookId} />;
       case "gallery":
         return <AddGalleryPage flipbookId={flipbookId} />;
+      case "catalog":
+        return <AddCatalogPage flipbookId={flipbookId} />;
       default:
         return null;
     }

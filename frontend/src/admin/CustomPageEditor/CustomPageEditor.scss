@@ -1,39 +1,72 @@
+// Variables
+$primary-color: #4CAF50;
+$background-color: #f5f7fa;
+$card-background: white;
+$spacing-unit: 1rem;
+$border-radius: 8px;
+
 .custom-page-editor {
-  height: 100%;
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: $spacing-unit * 2;
+  background-color: $background-color;
+  min-height: 100vh;
 
   h2 {
-    color: #2c3e50;
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    font-weight: 400;
-    letter-spacing: 0.5px;
+    color: #333;
+    margin-bottom: $spacing-unit * 2;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
   }
 
   .pages-container {
-    margin-top: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit * 1.5;
+  }
 
-    .no-pages {
-      text-align: center;
-      padding: 3rem;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  .no-pages-message {
+    text-align: center;
+    padding: $spacing-unit * 3;
+    background: $card-background;
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: $spacing-unit * 2 auto;
+    max-width: 600px;
 
-      p {
-        &:first-child {
-          font-size: 1.25rem;
-          color: #2c3e50;
-          margin-bottom: 0.5rem;
-        }
+    p {
+      &:first-child {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: $spacing-unit;
+      }
 
-        &:last-child {
-          color: #64748b;
-          font-size: 1rem;
-        }
+      &:last-child {
+        color: #888;
+        font-size: 1rem;
       }
     }
   }
 }
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .custom-page-editor {
+    padding: $spacing-unit;
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: $spacing-unit;
+    }
+
+    .pages-container {
+      gap: $spacing-unit;
+    }
+
+    .no-pages-message {
+      padding: $spacing-unit * 2;
+      margin: $spacing-unit auto;
+    }
+  }
+} 

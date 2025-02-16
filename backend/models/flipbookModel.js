@@ -59,6 +59,23 @@ const GalleryPage = BasePage.discriminator(
   })
 );
 
+// Catalog page schema
+const CatalogPage = BasePage.discriminator(
+  "Catalog",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    catalogItems: [
+      {
+        name: { type: String, required: true },
+        price: { type: String, required: true },
+        image: { type: String, required: true },
+        amenities: [{ type: String, required: true }]
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
 // Keep the original flipbook schema unchanged for compatibility
 const flipbookSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -72,5 +89,5 @@ flipbookSchema.index({ "pages.pageNumber": 1, _id: 1 }, { unique: true });
 
 const Flipbook = mongoose.model("Flipbook", flipbookSchema);
 
-// Export in the same way as before to maintain compatibility
-export { Flipbook, BasePage, Page, IndexPage, GalleryPage };
+// Export all models
+export { Flipbook, BasePage, Page, IndexPage, GalleryPage, CatalogPage };

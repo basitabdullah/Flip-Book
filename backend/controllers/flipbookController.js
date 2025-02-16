@@ -313,6 +313,21 @@ export const publishFlipbook = async (req, res) => {
             isCustom: true
           };
 
+        case 'Catalog':
+          console.log("Processing Catalog Page:", page); // Debug log
+          return {
+            ...basePage,
+            pageType: 'PublishedCatalogPage',
+            subtitle: page.subtitle,
+            catalogItems: page.catalogItems ? page.catalogItems.map(item => ({
+              name: item.name,
+              price: item.price,
+              image: item.image,
+              amenities: item.amenities
+            })) : [],
+            isCustom: true
+          };
+
         default:
           return null;
       }

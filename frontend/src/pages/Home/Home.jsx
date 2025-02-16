@@ -20,7 +20,6 @@ import SocialPage from "../../pages/SocialPage/SocialPage";
 import ReviewsPage from "../../pages/ReviewsPage/ReviewsPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
-
 const Home = () => {
   const bookRef = useRef(null);
   const audioRef = useRef(new Audio(pageFlipSound));
@@ -56,7 +55,7 @@ const Home = () => {
       : [];
 
   // At the top of the component, after getting publishedPages
-  console.log('Published Pages:', publishedPages);
+  console.log("Published Pages:", publishedPages);
 
   // Memoize the YouTube URL transformation and add lazy loading
   const getYouTubeEmbedUrl = useCallback((url) => {
@@ -99,7 +98,13 @@ const Home = () => {
             </div>
           );
         case "image":
-          return <img loading="lazy" src={page.content} alt={page.title} />; // Add lazy loading for images
+          return (
+            <img
+              loading="lazy"
+              src={page.content}
+              alt={page.title}
+            />
+          ); // Add lazy loading for images
         case "map":
           return (
             <iframe
@@ -205,7 +210,7 @@ const Home = () => {
   }, [publishedPages]);
 
   // Before mapping through sortedPages
-  console.log('Sorted Pages:', sortedPages);
+  console.log("Sorted Pages:", sortedPages);
 
   // Optimize audio loading
   useEffect(() => {
@@ -235,49 +240,68 @@ const Home = () => {
   };
 
   // Memoize the page renderer
-  const renderPageContent = useCallback((page) => {
-    
-    // Default to "Page" type if pageType is not specified
-    const pageType = page.pageType || "Page";
+  const renderPageContent = useCallback(
+    (page) => {
+      // Default to "Page" type if pageType is not specified
+      const pageType = page.pageType || "Page";
 
-    switch (pageType) {
-      case "PublishedGalleryPage":
-        return (
-          <div className="page-content">
-            <GalleryPage 
-              pageData={{
-                title: page.title,
-                pageNumber: page.pageNumber,
-                subtitle: page.subtitle,
-                imagesData: page.imagesData
-              }} 
-            />
-            <div className="page-number">{page.pageNumber}</div>
-          </div>
-        );
-      case "PublishedIndexPage":
-        return (
-          <div className="page-content">
-            <IndexPage pageData={page} goToPage={goToPage} />
-            <div className="page-number">{page.pageNumber}</div>
-          </div>
-        );
-      case "PublishedPage":
-      default:
-        return (
-          <div className="page-content">
-            <div className="content custom-scrollbar">
-              <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
-                {page.title}
-              </h1>
-              {renderContent(page)}
-              <p className="page-description">{page.description}</p>
+      switch (pageType) {
+        case "PublishedGalleryPage":
+          return (
+            <div className="page-content">
+              <GalleryPage
+                pageData={{
+                  title: page.title,
+                  pageNumber: page.pageNumber,
+                  subtitle: page.subtitle,
+                  imagesData: page.imagesData,
+                }}
+              />
+              <div className="page-number">{page.pageNumber}</div>
             </div>
-            <div className="page-number">{page.pageNumber}</div>
-          </div>
-        );
-    }
-  }, [goToPage, renderContent]);
+          );
+        case "PublishedIndexPage":
+          return (
+            <div className="page-content">
+              <IndexPage
+                pageData={page}
+                goToPage={goToPage}
+              />
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
+        case "PublishedCatalogPage":
+          return (
+            <div className="page-content">
+              <CatalogPage 
+                pageData={{
+                  title: page.title,
+                  pageNumber: page.pageNumber,
+                  subtitle: page.subtitle,
+                  catalogItems: page.catalogItems
+                }} 
+              />
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
+        case "PublishedPage":
+        default:
+          return (
+            <div className="page-content">
+              <div className="content custom-scrollbar">
+                <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
+                  {page.title}
+                </h1>
+                {renderContent(page)}
+                <p className="page-description">{page.description}</p>
+              </div>
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
+      }
+    },
+    [goToPage, renderContent]
+  );
 
   if (error) return <div>Error: {error}</div>;
 
@@ -297,7 +321,10 @@ const Home = () => {
             msUserSelect: "none",
           }}
         >
-          <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
+          <Navigation
+            bookRef={bookRef}
+            onStartSnipping={handleStartSnipping}
+          />
           <div className="home">
             <HTMLFlipBook
               width={Math.min(window.innerWidth * 0.8, 450)}
@@ -318,9 +345,11 @@ const Home = () => {
                 }
                 audioRef.current.play();
               }}
-
             >
-              <div key="cover" className="page">
+              <div
+                key="cover"
+                className="page"
+              >
                 <div className="page-content">
                   <CoverPage
                     backgroundImage={
@@ -341,7 +370,10 @@ const Home = () => {
                 </div>
               ))}
 
-              <div key="thanks" className="page">
+              <div
+                key="thanks"
+                className="page"
+              >
                 <div className="page-content">
                   <ThanksPage />
                   <div className="page-number">{sortedPages.length + 1}</div>
@@ -354,13 +386,19 @@ const Home = () => {
               className="navigation-arrow left"
               onClick={goToPreviousPage}
             >
-              <RiArrowLeftWideFill size={40} color="#fff" />
+              <RiArrowLeftWideFill
+                size={40}
+                color="#fff"
+              />
             </div>
             <div
               className="navigation-arrow right"
               onClick={goToNextPage}
             >
-              <RiArrowRightWideFill size={40} color="#fff" />
+              <RiArrowRightWideFill
+                size={40}
+                color="#fff"
+              />
             </div>
           </div>
 

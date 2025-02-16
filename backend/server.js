@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import scheduledFlipbookRoutes from "./routes/scheduledFlipbookRoutes.js";
 import indexPageRoutes from "./routes/indexPageRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import catalogRoutes from "./routes/catalogRoutes.js";
 import "./services/schedulerService.js";
 dotenv.config();
 const app = express();
@@ -32,6 +33,7 @@ app.use("/api/flipbook", flipbookRoutes);
 app.use("/api/scheduled-flipbooks", scheduledFlipbookRoutes);
 app.use("/api", indexPageRoutes);
 app.use("/api", galleryRoutes);
+app.use("/api", catalogRoutes);
 
 
 app.get("/", (req, res) => {

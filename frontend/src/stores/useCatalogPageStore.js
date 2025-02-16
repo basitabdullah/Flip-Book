@@ -1,15 +1,13 @@
 import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance";
-import { toast } from "react-hot-toast";
 import useFlipbookStore from "./useFlipbookStore";
 
-const useCustomPageStore = create((set, get) => ({
-  customPages: [],
+const useCatalogPageStore = create((set, get) => ({
+  catalogPages: [],
   loading: false,
   error: null,
 
-  // Fetch custom pages from flipbook data
-  fetchCustomPages: async (flipbookId) => {
+  fetchCatalogPages: async (flipbookId) => {
     try {
       set({ loading: true, error: null });
 
@@ -19,32 +17,30 @@ const useCustomPageStore = create((set, get) => ({
         throw new Error("Flipbook not found");
       }
 
-      const customPages = flipbook.pages.filter(
-        (page) => page.pageType === "IndexPage" 
+      const catalogPages = flipbook.pages.filter(
+        (page) => page.pageType === "Catalog"
       );
 
       set({
-        customPages,
+        catalogPages,
         loading: false,
         error: null,
       });
     } catch (error) {
-      const errorMessage = error.message;
       set({
         loading: false,
-        error: errorMessage,
-        customPages: [],
+        error: error.message,
+        catalogPages: [],
       });
-      toast.error(errorMessage);
+      throw error;
     }
   },
 
-  // Add custom page
-  addCustomPage: async (flipbookId, pageData) => {
+  addCatalogPage: async (flipbookId, pageData) => {
     try {
       set({ loading: true, error: null });
       const response = await axiosInstance.post(
-        `/flipbook/${flipbookId}/index`,
+        `/flipbook/${flipbookId}/catalog`,
         pageData
       );
 
@@ -52,29 +48,24 @@ const useCustomPageStore = create((set, get) => ({
         throw new Error("Invalid response from server");
       }
 
-      await get().fetchCustomPages(flipbookId);
-      toast.success("Custom page added successfully");
+      const { getFlipbookById } = useFlipbookStore.getState();
+      await getFlipbookById(flipbookId);
+
+      await get().fetchCatalogPages(flipbookId);
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       set({ loading: false, error: errorMessage });
-      toast.error(errorMessage);
       throw errorMessage;
     }
   },
 
-  // Update custom page
-  updateCustomPage: async (flipbookId, pageNumber, pageData) => {
+  updateCatalogPage: async (flipbookId, pageId, pageData) => {
     try {
       set({ loading: true, error: null });
-
       const response = await axiosInstance.put(
-        `/flipbook/${flipbookId}/index/${pageNumber}`,
-        {
-          ...pageData,
-          pageType: "IndexPage",
-          pageNumber: parseInt(pageNumber),
-        }
+        `/flipbook/${flipbookId}/catalog/${pageId}`,
+        pageData
       );
 
       if (!response.data || !response.data.flipbook) {
@@ -84,33 +75,20 @@ const useCustomPageStore = create((set, get) => ({
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
 
-      const { flipbook } = useFlipbookStore.getState();
-      const updatedCustomPages = flipbook.pages.filter(
-        (page) => page.pageType === "IndexPage" || page.type === "IndexPage"
-      );
-
-      set({
-        customPages: updatedCustomPages,
-        loading: false,
-        error: null,
-      });
-
-      toast.success("Custom page updated successfully");
+      await get().fetchCatalogPages(flipbookId);
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       set({ loading: false, error: errorMessage });
-      toast.error(errorMessage);
       throw errorMessage;
     }
   },
 
-  // Delete custom page
-  deleteCustomPage: async (flipbookId, pageNumber) => {
+  deleteCatalogPage: async (flipbookId, pageId) => {
     try {
       set({ loading: true, error: null });
       const response = await axiosInstance.delete(
-        `/flipbook/${flipbookId}/index/${pageNumber}`
+        `/flipbook/${flipbookId}/catalog/${pageId}`
       );
 
       if (!response.data || !response.data.flipbook) {
@@ -120,25 +98,14 @@ const useCustomPageStore = create((set, get) => ({
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
 
-      const updatedCustomPages = response.data.flipbook.pages.filter(
-        (page) => page.pageType === "IndexPage" || page.type === "IndexPage"
-      );
-
-      set({
-        customPages: updatedCustomPages,
-        loading: false,
-        error: null,
-      });
-
-      toast.success("Custom page deleted successfully");
+      await get().fetchCatalogPages(flipbookId);
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       set({ loading: false, error: errorMessage });
-      toast.error(errorMessage);
       throw errorMessage;
     }
   },
 }));
 
-export default useCustomPageStore;
+export default useCatalogPageStore; 

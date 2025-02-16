@@ -1,9 +1,10 @@
-import { Flipbook, GalleryPage } from "../models/flipbookModel.js";
+import { Flipbook, CatalogPage } from "../models/flipbookModel.js";
 
-export const addGalleryPage = async (req, res) => {
+// Add catalog page
+export const addCatalogPage = async (req, res) => {
   try {
     const { flipbookId } = req.params;
-    const { title, pageNumber, subtitle, imagesData } = req.body;
+    const { title, pageNumber, subtitle, catalogItems } = req.body;
 
     // Find the flipbook by its ID
     const flipbook = await Flipbook.findById(flipbookId);
@@ -22,54 +23,59 @@ export const addGalleryPage = async (req, res) => {
       });
     }
 
-    // Validate imagesData structure
-    if (!Array.isArray(imagesData)) {
-      return res.status(400).json({ message: "ImagesData should be an array" });
+    // Validate catalogItems structure
+    if (!Array.isArray(catalogItems)) {
+      return res.status(400).json({ message: "CatalogItems should be an array" });
     }
 
-    // Validate each image entry
-    const isValidImages = imagesData.every(img => 
-      img.imagesDataTitle && 
-      img.imagesDataSubtitle && 
-      img.imagesDataImage
+    // Validate each catalog item entry
+    const isValidItems = catalogItems.every(item => 
+      item.name && 
+      item.price && 
+      item.image &&
+      Array.isArray(item.amenities) &&
+      item.amenities.length > 0
     );
 
-    if (!isValidImages) {
-      return res.status(400).json({ message: "Each image must have title, subtitle, and image URL" });
+    if (!isValidItems) {
+      return res.status(400).json({ 
+        message: "Each catalog item must have name, price, image, and at least one amenity" 
+      });
     }
 
-    // Create the new gallery page using the Mongoose model
-    const newGalleryPage = new GalleryPage({
+    // Create the new catalog page using the Mongoose model
+    const newCatalogPage = new CatalogPage({
       title,
       pageNumber: parseInt(pageNumber, 10),
       subtitle,
-      imagesData,
-      pageType: 'Gallery', // Explicitly set the pageType
+      catalogItems,
+      pageType: 'Catalog', // Explicitly set the pageType
       isCustom: true
     });
 
-    // Add the new gallery page to the flipbook's pages array
-    flipbook.pages.push(newGalleryPage);
+    // Add the new catalog page to the flipbook's pages array
+    flipbook.pages.push(newCatalogPage);
 
     // Save the updated flipbook
     await flipbook.save();
 
     res.status(201).json({
-      message: "Gallery page added successfully",
+      message: "Catalog page added successfully",
       flipbook,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error adding gallery page",
+      message: "Error adding catalog page",
       error: error.message,
     });
   }
 };
 
-export const updateGalleryPage = async (req, res) => {
+// Update catalog page
+export const updateCatalogPage = async (req, res) => {
   try {
     const { flipbookId, pageId } = req.params;
-    const { title, subtitle, imagesData, pageNumber } = req.body;
+    const { title, subtitle, catalogItems, pageNumber } = req.body;
 
     // Find the flipbook
     const flipbook = await Flipbook.findById(flipbookId);
@@ -79,11 +85,11 @@ export const updateGalleryPage = async (req, res) => {
 
     // Find the page index
     const pageIndex = flipbook.pages.findIndex(
-      page => page._id.toString() === pageId && page.pageType === 'Gallery'
+      page => page._id.toString() === pageId && page.pageType === 'Catalog'
     );
 
     if (pageIndex === -1) {
-      return res.status(404).json({ message: "Gallery page not found" });
+      return res.status(404).json({ message: "Catalog page not found" });
     }
 
     // If updating page number, check if new number already exists
@@ -99,14 +105,35 @@ export const updateGalleryPage = async (req, res) => {
       }
     }
 
+    // Validate catalogItems if provided
+    if (catalogItems) {
+      if (!Array.isArray(catalogItems)) {
+        return res.status(400).json({ message: "CatalogItems should be an array" });
+      }
+
+      const isValidItems = catalogItems.every(item => 
+        item.name && 
+        item.price && 
+        item.image &&
+        Array.isArray(item.amenities) &&
+        item.amenities.length > 0
+      );
+
+      if (!isValidItems) {
+        return res.status(400).json({ 
+          message: "Each catalog item must have name, price, image, and at least one amenity" 
+        });
+      }
+    }
+
     // Update the page
     flipbook.pages[pageIndex] = {
       ...flipbook.pages[pageIndex],
       title,
       subtitle,
-      imagesData,
+      catalogItems,
       pageNumber: parseInt(pageNumber),
-      pageType: 'Gallery',
+      pageType: 'Catalog',
       isCustom: true
     };
 
@@ -114,19 +141,20 @@ export const updateGalleryPage = async (req, res) => {
     await flipbook.save();
 
     res.status(200).json({
-      message: "Gallery page updated successfully",
+      message: "Catalog page updated successfully",
       flipbook
     });
   } catch (error) {
-    console.error('Error updating gallery page:', error);
+    console.error('Error updating catalog page:', error);
     res.status(500).json({
-      message: "Error updating gallery page",
+      message: "Error updating catalog page",
       error: error.message
     });
   }
 };
 
-export const deleteGalleryPage = async (req, res) => {
+// Delete catalog page
+export const deleteCatalogPage = async (req, res) => {
   try {
     const { flipbookId, pageId } = req.params;
 
@@ -138,11 +166,11 @@ export const deleteGalleryPage = async (req, res) => {
 
     // Find the page index
     const pageIndex = flipbook.pages.findIndex(
-      page => page._id.toString() === pageId && page.pageType === 'Gallery'
+      page => page._id.toString() === pageId && page.pageType === 'Catalog'
     );
 
     if (pageIndex === -1) {
-      return res.status(404).json({ message: "Gallery page not found" });
+      return res.status(404).json({ message: "Catalog page not found" });
     }
 
     // Remove the page
@@ -152,15 +180,14 @@ export const deleteGalleryPage = async (req, res) => {
     await flipbook.save();
 
     res.status(200).json({
-      message: "Gallery page deleted successfully",
+      message: "Catalog page deleted successfully",
       flipbook
     });
   } catch (error) {
-    console.error('Error deleting gallery page:', error);
+    console.error('Error deleting catalog page:', error);
     res.status(500).json({
-      message: "Error deleting gallery page",
+      message: "Error deleting catalog page",
       error: error.message
     });
   }
-};
-
+}; 

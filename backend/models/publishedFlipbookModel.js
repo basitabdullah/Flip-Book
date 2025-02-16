@@ -55,6 +55,23 @@ const PublishedGalleryPage = BasePublishedPage.discriminator(
   })
 );
 
+// Published catalog page
+const PublishedCatalogPage = BasePublishedPage.discriminator(
+  "PublishedCatalogPage",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    catalogItems: [
+      {
+        name: { type: String, required: true },
+        price: { type: String, required: true },
+        image: { type: String, required: true },
+        amenities: [{ type: String, required: true }]
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
 const publishedFlipbookSchema = new mongoose.Schema({
   issue: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -75,5 +92,6 @@ export {
   BasePublishedPage, 
   PublishedPage, 
   PublishedIndexPage, 
-  PublishedGalleryPage 
+  PublishedGalleryPage,
+  PublishedCatalogPage 
 };
