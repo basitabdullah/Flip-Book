@@ -242,7 +242,6 @@ const Home = () => {
   // Memoize the page renderer
   const renderPageContent = useCallback(
     (page) => {
-      // Default to "Page" type if pageType is not specified
       const pageType = page.pageType || "Page";
 
       switch (pageType) {
@@ -280,6 +279,26 @@ const Home = () => {
                   subtitle: page.subtitle,
                   catalogItems: page.catalogItems
                 }} 
+              />
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
+        case "PublishedSocialPage":
+          return (
+            <div className="page-content">
+              <SocialPage
+                pageData={{
+                  title: page.title,
+                  pageNumber: page.pageNumber,
+                  subtitle: page.subtitle,
+                  street: page.street,
+                  city: page.city,
+                  postalCode: page.postalCode,
+                  phone: page.phone,
+                  email: page.email,
+                  mapUrl: page.mapUrl,
+                  socialLinks: page.socialLinks
+                }}
               />
               <div className="page-number">{page.pageNumber}</div>
             </div>
@@ -335,7 +354,7 @@ const Home = () => {
               maxHeight={window.innerWidth < 600 ? 500 : 550}
               ref={bookRef}
               showCover={true}
-              useMouseEvents={true}
+              useMouseEvents={false}
               drawShadow={true}
               maxShadowOpacity={0.8}
               flippingTime={500}

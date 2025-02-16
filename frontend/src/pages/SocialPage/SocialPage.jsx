@@ -1,24 +1,52 @@
-import React from 'react';
-import './SocialPage.scss';
-import { 
-  FaFacebook, 
-  FaInstagram, 
-  FaTwitter, 
-  FaYoutube, 
-  FaPhone, 
-  FaEnvelope, 
-  FaMapMarkerAlt 
-} from 'react-icons/fa';
+import React from "react";
+import "./SocialPage.scss";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaYoutube,
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
-const SocialPage = () => {
+const SocialPage = ({ pageData }) => {
+  const {
+    title,
+    subtitle,
+    street,
+    city,
+    postalCode,
+    phone,
+    email,
+    mapUrl,
+    socialLinks
+  } = pageData;
+
+  const getSocialIcon = (platform) => {
+    switch (platform) {
+      case 'facebook':
+        return <FaFacebook />;
+      case 'instagram':
+        return <FaInstagram />;
+      case 'twitter':
+        return <FaTwitter />;
+      case 'youtube':
+        return <FaYoutube />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="social-page">
-      <h1>Connect With Us</h1>
-      
+      <h1>{title}</h1>
+      <h2>{subtitle}</h2>
+
       {/* Map Section */}
       <div className="map-container">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.9897290067227!2d77.5882468!3d12.9715987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sBengaluru%2C%20Karnataka%2C%20India!5e0!3m2!1sen!2sin!4v1709814407955!5m2!1sen!2sin"
+          src={mapUrl}
           width="100%"
           height="180"
           style={{ border: 0 }}
@@ -33,8 +61,8 @@ const SocialPage = () => {
           <FaMapMarkerAlt className="icon" />
           <div className="info">
             <h3>Address</h3>
-            <p>Rose Wood Avenue</p>
-            <p>Reservoir Road, Gulmarg, 193403</p>
+            <p>{street}</p>
+            <p>{city}, {postalCode}</p>
           </div>
         </div>
 
@@ -42,7 +70,7 @@ const SocialPage = () => {
           <FaPhone className="icon" />
           <div className="info">
             <h3>Phone</h3>
-            <a href="tel:+919876543210">+91 9484000023 </a>
+            <a href={`tel:${phone}`}>{phone}</a>
           </div>
         </div>
 
@@ -50,25 +78,25 @@ const SocialPage = () => {
           <FaEnvelope className="icon" />
           <div className="info">
             <h3>Email</h3>
-            <a href="mailto:info@rosewood.com">reservation@therosewoodhotel.com</a>
+            <a href={`mailto:${email}`}>{email}</a>
           </div>
         </div>
       </div>
 
       {/* Social Links */}
       <div className="social-links">
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-icon facebook">
-          <FaFacebook /> <span>Facebook</span>
-        </a>
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-icon instagram">
-          <FaInstagram /> <span>Instagram</span>
-        </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-icon twitter">
-          <FaTwitter /> <span>Twitter</span>
-        </a>
-        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-icon youtube">
-          <FaYoutube /> <span>YouTube</span>
-        </a>
+        {socialLinks.map((social, index) => (
+          <a
+            key={index}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`social-icon ${social.platform}`}
+          >
+            {getSocialIcon(social.platform)}
+            <span>{social.platform.charAt(0).toUpperCase() + social.platform.slice(1)}</span>
+          </a>
+        ))}
       </div>
     </div>
   );
