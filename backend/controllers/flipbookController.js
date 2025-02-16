@@ -266,13 +266,10 @@ export const publishFlipbook = async (req, res) => {
   const { name, issueName } = req.body;
 
   try {
-    // Get the original flipbook with all its data
     const flipbook = await Flipbook.findById(flipbookId).lean();
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
-
-    console.log("Original Gallery Pages:", flipbook.pages.filter(p => p.pageType === 'Gallery')); // Debug log
 
     const validatedPages = flipbook.pages.map(page => {
       const basePage = {
@@ -328,11 +325,25 @@ export const publishFlipbook = async (req, res) => {
             isCustom: true
           };
 
+        case 'Social':
+          return {
+            ...basePage,
+            pageType: 'PublishedSocialPage',
+            subtitle: page.subtitle,
+            street: page.street,
+            city: page.city,
+            postalCode: page.postalCode,
+            phone: page.phone,
+            email: page.email,
+            mapUrl: page.mapUrl,
+            socialLinks: page.socialLinks,
+            isCustom: true
+          };
+
         default:
           return null;
       }
     }).filter(page => page !== null);
-
 
     const publishedFlipbook = new PublishedFlipbook({
       name,

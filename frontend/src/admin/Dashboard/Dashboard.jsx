@@ -17,6 +17,8 @@ import { IoGridOutline } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
+import { IoMenuOutline } from "react-icons/io5";
+
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -30,35 +32,90 @@ function Dashboard() {
     scheduleFlipbook,
   } = useFlipbookStore();
 
+  const sidebarRef = useRef(null);
+  const toggleButtonRef = useRef(null);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Existing click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        sidebarRef.current && 
+        !sidebarRef.current.contains(event.target) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   // Only show back button if not on the main flipbook list
   const showBackButton = !location.pathname.endsWith('/flipbooks');
 
   return (
     <div className="dashboard">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
+      <div 
+        ref={sidebarRef}
+        className={`sidebar ${isSidebarOpen ? 'active' : ''}`}
+      >
+        <div className="logo">Flipbook Admin</div>
+        <nav>
+          <Link to="/" className="nav-item">
+            <IoHomeOutline className="icon" />
+            Home
+          </Link>
+
+          <Link to="/admin/admin-dashboard/flipbooks" className="nav-item">
+            <IoBookOutline className="icon" />
+            Flipbook List
+          </Link>
+
+          <Link to="/admin/admin-dashboard/scheduled" className="nav-item">
+            <IoTimeOutline className="icon" />
+            Scheduled Flipbooks
+          </Link>
+
+          <Link to="/admin/admin-dashboard/published" className="nav-item">
+            <IoCheckmarkDoneOutline className="icon" />
+            Published Versions
+          </Link>
+        </nav>
+      </div>
 
       <div className="main-content">
         <div className="header">
           <div className="header-content">
-            {showBackButton && (
-              <button 
-                onClick={() => navigate(-1)} 
-                className="back-button"
-                aria-label="Go back"
-              >
-                <IoArrowBackOutline />
-              </button>
-            )}
-            <h1>Flipbook Content Manager</h1>
-            <div
-              className="mobile-menu-toggle"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            <button 
+              ref={toggleButtonRef}
+              className="mobile-menu-toggle" 
+              onClick={toggleSidebar}
             >
-              ☰
-            </div>
+              <IoMenuOutline />
+            </button>
+
+            <button 
+              onClick={() => navigate(-1)} 
+              className="header-back-button"
+            >
+              <IoArrowBackOutline className="icon" />
+            </button>
+
+            <h1>Flipbook Content Manager</h1>
           </div>
         </div>
 
@@ -627,39 +684,6 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
           Delete
         </button>
       </div>
-    </div>
-  );
-}
-
-function Sidebar({ isOpen, onClose }) {
-  const { id } = useParams();
-
-  return (
-    <div className={`sidebar ${isOpen ? "active" : ""}`}>
-      <div className="logo">Flipbook Admin</div>
-      <nav>
-        <Link to="/" className="nav-item">
-          <IoHomeOutline className="icon" />
-          Home
-        </Link>
-
-        <Link to="/admin/admin-dashboard/flipbooks" className="nav-item">
-          <IoBookOutline className="icon" />
-          Flipbook List
-        </Link>
-
-        <Link to="/admin/admin-dashboard/scheduled" className="nav-item">
-          <IoTimeOutline className="icon" />
-          Scheduled Flipbooks
-        </Link>
-
-        <Link to="/admin/admin-dashboard/published" className="nav-item">
-          <IoCheckmarkDoneOutline className="icon" />
-          Published Versions
-        </Link>
-
-        
-      </nav>
     </div>
   );
 }

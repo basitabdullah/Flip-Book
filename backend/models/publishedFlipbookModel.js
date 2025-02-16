@@ -72,6 +72,40 @@ const PublishedCatalogPage = BasePublishedPage.discriminator(
   })
 );
 
+// Published social page
+const PublishedSocialPage = BasePublishedPage.discriminator(
+  "PublishedSocialPage",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    postalCode: { type: Number, required: true },
+
+    phone: { type: Number, required: true },
+    email: { type: String, required: true },
+
+    mapUrl: { type: String, required: true },
+    socialLinks: [
+      {
+        platform: {
+          type: String,
+          required: true,
+          enum: ["facebook", "instagram", "twitter", "youtube"],
+        },
+        url: {
+          type: String,
+          required: true,
+          default: function () {
+            return `https://${this.platform}.com`;
+          },
+        },
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
 const publishedFlipbookSchema = new mongoose.Schema({
   issue: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -93,5 +127,6 @@ export {
   PublishedPage, 
   PublishedIndexPage, 
   PublishedGalleryPage,
-  PublishedCatalogPage 
+  PublishedCatalogPage,
+  PublishedSocialPage
 };

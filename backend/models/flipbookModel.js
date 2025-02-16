@@ -69,7 +69,41 @@ const CatalogPage = BasePage.discriminator(
         name: { type: String, required: true },
         price: { type: String, required: true },
         image: { type: String, required: true },
-        amenities: [{ type: String, required: true }]
+        amenities: [{ type: String, required: true }],
+      },
+    ],
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
+// Social page schema
+const SocialPage = BasePage.discriminator(
+  "Social",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    postalCode: { type: Number, required: true },
+
+    phone: { type: Number, required: true },
+    email: { type: String, required: true },
+
+    mapUrl: { type: String, required: true },
+    socialLinks: [
+      {
+        platform: {
+          type: String,
+          required: true,
+          enum: ["facebook", "instagram", "twitter", "youtube"],
+        },
+        url: {
+          type: String,
+          required: true,
+          default: function () {
+            return `https://${this.platform}.com`;
+          },
+        },
       },
     ],
     isCustom: { type: Boolean, default: true },
@@ -90,4 +124,12 @@ flipbookSchema.index({ "pages.pageNumber": 1, _id: 1 }, { unique: true });
 const Flipbook = mongoose.model("Flipbook", flipbookSchema);
 
 // Export all models
-export { Flipbook, BasePage, Page, IndexPage, GalleryPage, CatalogPage };
+export {
+  Flipbook,
+  BasePage,
+  Page,
+  IndexPage,
+  GalleryPage,
+  CatalogPage,
+  SocialPage,
+};
