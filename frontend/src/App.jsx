@@ -29,6 +29,6 @@ const App = () => {
   );
 };
 
-export default App;//added Capital F
+export default App;
 
 ////id in flipbook store////////

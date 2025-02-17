@@ -223,6 +223,7 @@ function FlipbookEditor({
           <IoGridOutline className="icon" />
           Add A Custom Page
         </Link>
+        <div className="divider">|</div>
 
         <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="action-button editor animated">
           <FaEdit className="icon" />

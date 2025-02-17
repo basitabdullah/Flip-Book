@@ -8,7 +8,10 @@ const basePublishedPageSchema = new mongoose.Schema(
   { discriminatorKey: "pageType" }
 );
 
-const BasePublishedPage = mongoose.model("BasePublishedPage", basePublishedPageSchema);
+const BasePublishedPage = mongoose.model(
+  "BasePublishedPage",
+  basePublishedPageSchema
+);
 
 // Regular published page
 const PublishedPage = BasePublishedPage.discriminator(
@@ -65,7 +68,7 @@ const PublishedCatalogPage = BasePublishedPage.discriminator(
         name: { type: String, required: true },
         price: { type: String, required: true },
         image: { type: String, required: true },
-        amenities: [{ type: String, required: true }]
+        amenities: [{ type: String, required: true }],
       },
     ],
     isCustom: { type: Boolean, default: true },
@@ -119,14 +122,17 @@ const publishedFlipbookSchema = new mongoose.Schema({
   publishedAt: { type: Date, default: Date.now },
 });
 
-const PublishedFlipbook = mongoose.model("PublishedFlipbook", publishedFlipbookSchema);
+const PublishedFlipbook = mongoose.model(
+  "PublishedFlipbook",
+  publishedFlipbookSchema
+);
 
-export { 
-  PublishedFlipbook, 
-  BasePublishedPage, 
-  PublishedPage, 
-  PublishedIndexPage, 
+export {
+  PublishedFlipbook,
+  BasePublishedPage,
+  PublishedPage,
+  PublishedIndexPage,
   PublishedGalleryPage,
   PublishedCatalogPage,
-  PublishedSocialPage
+  PublishedSocialPage,
 };

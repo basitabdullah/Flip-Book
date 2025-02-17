@@ -20,6 +20,10 @@ import SocialPage from "../../pages/SocialPage/SocialPage";
 import ReviewsPage from "../../pages/ReviewsPage/ReviewsPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
+import { Link } from "react-router-dom";
+
+
+
 const Home = () => {
   const bookRef = useRef(null);
   const audioRef = useRef(new Audio(pageFlipSound));
@@ -27,41 +31,29 @@ const Home = () => {
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
 
-  // Destructure the necessary state and actions from the store
   const { loading, error, publishedFlipbooks, getPublishedFlipbooks } =
     useFlipbookStore();
 
-  // Fetch pages and published flipbooks when the component mounts
   useEffect(() => {
     getPublishedFlipbooks();
   }, [getPublishedFlipbooks]);
 
-  // Add this effect to configure audio
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.5; // Adjust volume as needed
+      audioRef.current.volume = 0.5;
+      audioRef.current.preload = "none";
     }
   }, []);
 
-  // Safely filter published flipbooks with null check
   const filteredPublishedFlipbooks = Array.isArray(publishedFlipbooks)
-    ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
+    ? publishedFlipbooks.filter((flipbook) => flipbook?.isPublished)
     : [];
 
-  // Get the pages from the first published flipbook (if any exist)
-  const publishedPages =
-    filteredPublishedFlipbooks.length > 0
-      ? filteredPublishedFlipbooks[0].pages
-      : [];
+  const publishedPages = filteredPublishedFlipbooks[0]?.pages || [];
 
-  // At the top of the component, after getting publishedPages
-  console.log("Published Pages:", publishedPages);
-
-  // Memoize the YouTube URL transformation and add lazy loading
   const getYouTubeEmbedUrl = useCallback((url) => {
     if (!url) return "";
     if (url.includes("youtube.com/embed/")) {
-      // Add privacy-enhanced mode and other optimizations
       return `${url}?rel=0&modestbranding=1&host=https://www.youtube-nocookie.com`;
     }
     let videoId = "";
@@ -76,7 +68,6 @@ const Home = () => {
       : "";
   }, []);
 
-  // Memoize the content renderer
   const renderContent = useCallback(
     (page) => {
       switch (page.contentType) {
@@ -86,7 +77,7 @@ const Home = () => {
             <div className="video-container">
               <iframe
                 loading="lazy"
-                src={`${youtubeEmbedUrl}&autoplay=1&mute=1`} // Added autoplay=1 and mute=1 (required for autoplay)
+                src={`${youtubeEmbedUrl}&autoplay=1&mute=1`}
                 title={`YouTube video for page ${page.pageNumber}`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; autoplay"
@@ -98,13 +89,7 @@ const Home = () => {
             </div>
           );
         case "image":
-          return (
-            <img
-              loading="lazy"
-              src={page.content}
-              alt={page.title}
-            />
-          ); // Add lazy loading for images
+          return <img loading="lazy" src={page.content} alt={page.title} />;
         case "map":
           return (
             <iframe
@@ -135,7 +120,6 @@ const Home = () => {
     setStartPoint({ x: e.clientX, y: e.clientY });
   };
 
-  // Optimize screenshot functionality
   const handleMouseMove = useCallback(
     (e) => {
       if (!isSnipping || !startPoint) return;
@@ -200,7 +184,6 @@ const Home = () => {
     setEndPoint(null);
   };
 
-  // Memoize sorted pages
   const sortedPages = useMemo(() => {
     return Array.isArray(publishedPages)
       ? publishedPages
@@ -209,21 +192,9 @@ const Home = () => {
       : [];
   }, [publishedPages]);
 
-  // Before mapping through sortedPages
-  console.log("Sorted Pages:", sortedPages);
-
-  // Optimize audio loading
-  useEffect(() => {
-    audioRef.current.preload = "none"; // Only load audio when needed
-    audioRef.current.volume = 0.5;
-  }, []);
-
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
-      console.log("Navigating to page:", pageIndex);
       bookRef.current.pageFlip().flip(pageIndex + 1);
-    } else {
-      console.error("bookRef is not initialized");
     }
   };
 
@@ -239,7 +210,6 @@ const Home = () => {
     }
   };
 
-  // Memoize the page renderer
   const renderPageContent = useCallback(
     (page) => {
       const pageType = page.pageType || "Page";
@@ -262,23 +232,20 @@ const Home = () => {
         case "PublishedIndexPage":
           return (
             <div className="page-content">
-              <IndexPage
-                pageData={page}
-                goToPage={goToPage}
-              />
+              <IndexPage pageData={page} goToPage={goToPage} />
               <div className="page-number">{page.pageNumber}</div>
             </div>
           );
         case "PublishedCatalogPage":
           return (
             <div className="page-content">
-              <CatalogPage 
+              <CatalogPage
                 pageData={{
                   title: page.title,
                   pageNumber: page.pageNumber,
                   subtitle: page.subtitle,
-                  catalogItems: page.catalogItems
-                }} 
+                  catalogItems: page.catalogItems,
+                }}
               />
               <div className="page-number">{page.pageNumber}</div>
             </div>
@@ -297,7 +264,7 @@ const Home = () => {
                   phone: page.phone,
                   email: page.email,
                   mapUrl: page.mapUrl,
-                  socialLinks: page.socialLinks
+                  socialLinks: page.socialLinks,
                 }}
               />
               <div className="page-number">{page.pageNumber}</div>
@@ -322,123 +289,112 @@ const Home = () => {
     [goToPage, renderContent]
   );
 
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="error-container p-8 text-center">
+        <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Flipbook</h2>
+        <p className="text-gray-700">{error}</p>
+        <Link to="/admin/admin-dashboard" className="text-blue-500">Admin</Link>
+      </div>
+    );
+  }
+
+ 
+  const currentFlipbook = filteredPublishedFlipbooks[0];
+  const flipbookImage = currentFlipbook?.flipbook?.image;
+  const flipbookName = currentFlipbook?.name;
 
   return (
-    <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <div
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          style={{
-            userSelect: "none",
-            WebkitUserSelect: "none",
-            MozUserSelect: "none",
-            msUserSelect: "none",
+    <div
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      style={{
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        MozUserSelect: "none",
+        msUserSelect: "none",
+      }}
+    >
+      <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
+      <div className="home">
+        <HTMLFlipBook
+          width={Math.min(window.innerWidth * 0.8, 450)}
+          height={window.innerWidth < 600 ? 500 : 600}
+          size="stretch"
+          minWidth={320}
+          maxWidth={450}
+          maxHeight={window.innerWidth < 600 ? 500 : 550}
+          ref={bookRef}
+          showCover={true}
+          useMouseEvents={false}
+          drawShadow={true}
+          maxShadowOpacity={0.8}
+          flippingTime={500}
+          onFlip={() => {
+            if (!audioRef.current.src) {
+              audioRef.current.src = pageFlipSound;
+            }
+            audioRef.current.play().catch(console.error);
           }}
         >
-          <Navigation
-            bookRef={bookRef}
-            onStartSnipping={handleStartSnipping}
-          />
-          <div className="home">
-            <HTMLFlipBook
-              width={Math.min(window.innerWidth * 0.8, 450)}
-              height={window.innerWidth < 600 ? 500 : 600}
-              size="stretch"
-              minWidth={320}
-              maxWidth={450}
-              maxHeight={window.innerWidth < 600 ? 500 : 550}
-              ref={bookRef}
-              showCover={true}
-              useMouseEvents={false}
-              drawShadow={true}
-              maxShadowOpacity={0.8}
-              flippingTime={500}
-              onFlip={() => {
-                if (!audioRef.current.src) {
-                  audioRef.current.src = pageFlipSound;
-                }
-                audioRef.current.play();
-              }}
-            >
-              <div
-                key="cover"
-                className="page"
-              >
-                <div className="page-content">
-                  <CoverPage
-                    backgroundImage={
-                      "https://images.unsplash.com/photo-1731076274484-e3882b02d523?q=80&w=1885&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    }
-                    title={"Rose Wood"}
-                    subtitle={"Experience the beauty of nature with us"}
-                  />
-                </div>
-              </div>
-
-              {sortedPages.map((page) => (
-                <div
-                  key={page._id || `page-${page.pageNumber}`}
-                  className="page"
-                >
-                  {renderPageContent(page)}
-                </div>
-              ))}
-
-              <div
-                key="thanks"
-                className="page"
-              >
-                <div className="page-content">
-                  <ThanksPage />
-                  <div className="page-number">{sortedPages.length + 1}</div>
-                </div>
-              </div>
-            </HTMLFlipBook>
-
-            {/* Navigation Arrows */}
-            <div
-              className="navigation-arrow left"
-              onClick={goToPreviousPage}
-            >
-              <RiArrowLeftWideFill
-                size={40}
-                color="#fff"
-              />
-            </div>
-            <div
-              className="navigation-arrow right"
-              onClick={goToNextPage}
-            >
-              <RiArrowRightWideFill
-                size={40}
-                color="#fff"
+          <div key="cover" className="page">
+            <div className="page-content">
+              <CoverPage
+                backgroundImage={flipbookImage}
+                title={flipbookName}
+                subtitle={"Experience the beauty of nature with us"}
               />
             </div>
           </div>
 
-          {isSnipping && startPoint && endPoint && (
-            <div
-              style={{
-                position: "fixed",
-                left: Math.min(startPoint.x, endPoint.x),
-                top: Math.min(startPoint.y, endPoint.y),
-                width: Math.abs(endPoint.x - startPoint.x),
-                height: Math.abs(endPoint.y - startPoint.y),
-                border: "2px dashed #000",
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
-                pointerEvents: "none",
-                zIndex: 9999,
-              }}
-            />
-          )}
+          {sortedPages.map((page) => (
+            <div key={page._id || `page-${page.pageNumber}`} className="page">
+              {renderPageContent(page)}
+            </div>
+          ))}
+
+          <div className="page">
+            <div className="page-content">
+              <ReviewsPage />
+              <div className="page-number">{sortedPages.length + 1}</div>
+            </div>
+          </div>
+
+          <div key="thanks" className="page">
+            <div className="page-content">
+              <ThanksPage />
+              <div className="page-number">{sortedPages.length + 2}</div>
+            </div>
+          </div>
+        </HTMLFlipBook>
+
+        <div className="navigation-arrow left" onClick={goToPreviousPage}>
+          <RiArrowLeftWideFill size={40} color="#fff" />
         </div>
+        <div className="navigation-arrow right" onClick={goToNextPage}>
+          <RiArrowRightWideFill size={40} color="#fff" />
+        </div>
+      </div>
+
+      {isSnipping && startPoint && endPoint && (
+        <div
+          style={{
+            position: "fixed",
+            left: Math.min(startPoint.x, endPoint.x),
+            top: Math.min(startPoint.y, endPoint.y),
+            width: Math.abs(endPoint.x - startPoint.x),
+            height: Math.abs(endPoint.y - startPoint.y),
+            border: "2px dashed #000",
+            backgroundColor: "rgba(0, 0, 0, 0.1)",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        />
       )}
-    </>
+    </div>
   );
 };
 

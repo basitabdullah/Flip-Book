@@ -270,11 +270,12 @@ export const publishFlipbook = async (req, res) => {
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
-
+    
     const validatedPages = flipbook.pages.map(page => {
       const basePage = {
         title: page.title,
         pageNumber: page.pageNumber
+
       };
 
       switch (page.pageType) {
@@ -345,12 +346,13 @@ export const publishFlipbook = async (req, res) => {
       }
     }).filter(page => page !== null);
 
+
     const publishedFlipbook = new PublishedFlipbook({
       name,
       flipbook: flipbook._id,
       pages: validatedPages,
       issue: issueName,
-      isPublished: true
+      isPublished: true,
     });
 
     await publishedFlipbook.save();
