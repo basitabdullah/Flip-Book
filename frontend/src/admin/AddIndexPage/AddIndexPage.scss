@@ -132,4 +132,33 @@
       cursor: not-allowed;
     }
   }
+
+  .file-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+
+  .selected-files {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+
+    p {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+
+      li {
+        margin-bottom: 3px;
+        font-size: 0.9em;
+        color: #666;
+      }
+    }
+  }
 } 

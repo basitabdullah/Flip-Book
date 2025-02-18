@@ -37,17 +37,17 @@ app.use("/api", galleryRoutes);
 app.use("/api", catalogRoutes);
 app.use("/api", socialRoutes);
 
-
+app.use("/uploads", express.static("uploads"));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
 // Connect to database (run only once)
-connectDB();
 
 // ❌ REMOVE app.listen() (Vercel handles routing itself)
-// app.listen(process.env.PORT, () => {
-//   console.log(`Listening on port ${process.env.PORT}`);
-// });
+app.listen(process.env.PORT, () => {
+  connectDB();
+  console.log(`Listening on port ${process.env.PORT}`);
+});
 
 export default app;

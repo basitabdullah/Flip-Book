@@ -105,12 +105,12 @@ const PublishedFlipbooks = () => {
                     >
                       {flipbook.isPublished ? "Unpublish" : "Publish"}
                     </button>
-                    <button
+                    {/* <button
                       className="view-button"
                       onClick={() => handleViewFlipbook(flipbook._id)}
                     >
                       <FaEdit /> Edit
-                    </button>
+                    </button> */}
                     <button
                       className="delete-button"
                       onClick={() => handleDelete(flipbook._id)}

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import useCustomPageStore from '../../stores/useCustomPageStore';
 import useGalleryPageStore from '../../stores/useGalleryPageStore';
 import useCatalogPageStore from '../../stores/useCatalogPageStore';
 import useSocialPageStore from '../../stores/useSocialPageStore';
+import useIndexPageStore from '../../stores/useIndexPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import IndexPageCard from './IndexPageCard';
 import GalleryPageCard from './GalleryPageCard';
@@ -14,7 +14,7 @@ import Loader from '../../components/Loader/Loader';
 
 const CustomPageEditor = () => {
   const { id } = useParams();
-  const { customPages, loading: indexLoading, error: indexError, fetchCustomPages } = useCustomPageStore();
+  const { indexPages, loading: indexLoading, error: indexError, fetchIndexPages } = useIndexPageStore();
   const { galleryPages, loading: galleryLoading, error: galleryError, fetchGalleryPages } = useGalleryPageStore();
   const { catalogPages, loading: catalogLoading, error: catalogError, fetchCatalogPages } = useCatalogPageStore();
   const { socialPages, loading: socialLoading, error: socialError, fetchSocialPages } = useSocialPageStore();
@@ -24,21 +24,14 @@ const CustomPageEditor = () => {
     const loadData = async () => {
       if (id) {
         await getFlipbookById(id);
-        await fetchCustomPages(id);
+        await fetchIndexPages(id);
         await fetchGalleryPages(id);
         await fetchCatalogPages(id);
         await fetchSocialPages(id);
       }
     };
     loadData();
-  }, [id, getFlipbookById, fetchCustomPages, fetchGalleryPages, fetchCatalogPages, fetchSocialPages]);
-
-  const pageTypes = [
-    'IndexPage',
-    'Gallery',
-    'Catalog',
-    'Social'
-  ];
+  }, [id, getFlipbookById, fetchIndexPages, fetchGalleryPages, fetchCatalogPages, fetchSocialPages]);
 
   const renderPageCard = (page) => {
     switch (page.pageType) {
@@ -90,7 +83,7 @@ const CustomPageEditor = () => {
   if (indexLoading || galleryLoading || catalogLoading || flipbookLoading || socialLoading) return <Loader/>;
   if (indexError || galleryError || catalogError || socialError) return <div>Error: {indexError || galleryError || catalogError || socialError}</div>;
 
-  const allPages = [...customPages, ...galleryPages, ...catalogPages, ...socialPages].sort((a, b) => a.pageNumber - b.pageNumber);
+  const allPages = [...indexPages, ...galleryPages, ...catalogPages, ...socialPages].sort((a, b) => a.pageNumber - b.pageNumber);
 
   if (!allPages || allPages.length === 0) {
     return (

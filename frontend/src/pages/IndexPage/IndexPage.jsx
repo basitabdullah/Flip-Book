@@ -4,16 +4,22 @@ import useFlipbookStore from "../../stores/useFlipbookStore";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-const IndexPage = ({ goToPage }) => {
+
+const IndexPage = ({pageData}) => {
   const { publishedFlipbooks } = useFlipbookStore();
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const images = [
-    "https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829214/Rose%20Wood/deluxebalcony-0236-1_wbd2u2.jpg",
-    "https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829205/Rose%20Wood/deluxeroom-3_lccamm.jpg",
-    "https://res.cloudinary.com/dfntxbbxh/image/upload/v1738829223/Rose%20Wood/deluxe-0310_vset6l.jpg",
-  ];
 
+  const filteredPublishedFlipbooks = Array.isArray(publishedFlipbooks)
+    ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
+    : [];
+
+    
+    const publishedPages =
+    filteredPublishedFlipbooks.length > 0
+    ? filteredPublishedFlipbooks[0].pages
+    : [];
+    
+    console.log(publishedPages);
   const settings = {
     infinite: true,
     speed: 500,
@@ -27,26 +33,17 @@ const IndexPage = ({ goToPage }) => {
     arrows: false
   };
 
-  // Function to handle image change
-
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % images.length);
+      setCurrentSlide((prev) => (prev + 1) % publishedPages.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [publishedPages.length]);
 
 
-  const filteredPublishedFlipbooks = Array.isArray(publishedFlipbooks)
-    ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
-    : [];
-
-  const publishedPages =
-    filteredPublishedFlipbooks.length > 0
-      ? filteredPublishedFlipbooks[0].pages
-      : [];
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
+  
   return (
     <div className="index-page">
       <div className="index-content">
@@ -56,25 +53,27 @@ const IndexPage = ({ goToPage }) => {
 
         <div className="slider-container">
           <Slider {...settings}>
-            {images.map((img, index) => (
-              <div key={index} className="slide">
-                <img src={img} alt={`slide ${index + 1}`} />
+            {pageData.images.map((img) => (
+              <div key={img} className="slide">
+                <img 
+                  src={`${backendUrl}${img}`}
+                  alt={`slide ${img}`} 
+                />
               </div>
             ))}
           </Slider>
         </div>
 
-        <div className="other-pages-wrapper">
+        <div className="other-pages-wrapper"> 
           <div className="other-pages">
-            {[1,2, 3, 4, 5, 6].map((index) => (
+            {publishedPages.map((page) => (
               <div
                 className="page-entry"
-                onClick={() => goToPage(index + 1)}
-                key={index}
+                key={page.pageNumber}
               >
-                <p className="num">{String(index + 1).padStart(2, "0")}</p>
-                <p className="page-title">{publishedPages[index]?.title}</p>
-              </div>
+                <p className="num">{String(page.pageNumber).padStart(2, "0")}</p>
+                <p className="page-title">{page.title}</p>
+              </div>  
             ))}
           </div>
         </div>

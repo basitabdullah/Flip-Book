@@ -1,57 +1,48 @@
 import React, { useState } from 'react';
-import useCustomPageStore from '../../stores/useCustomPageStore';
+import useIndexPageStore from '../../stores/useIndexPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
+
 const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
-  const { updateCustomPage, deleteCustomPage } = useCustomPageStore();
+  const { updateIndexPage, deleteIndexPage } = useIndexPageStore();
   const { getFlipbookById } = useFlipbookStore();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(pageData?.title || '');
   const [images, setImages] = useState(pageData?.images || []);
-  const [pagesTitles, setPagesTitles] = useState(pageData?.pagesTitles || []);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const handleAddImage = () => {
-    setImages([...images, '']);
-  };
-
-  const handleUpdateImage = (index, value) => {
-    const updatedImages = [...images];
-    updatedImages[index] = value;
-    setImages(updatedImages);
-  };
-
-  const handleRemoveImage = (index) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
-
-  const handleAddPageTitle = () => {
-    setPagesTitles([...pagesTitles, { title: '', pageNumber: '' }]);
-  };
-
-  const handleUpdatePageTitle = (index, field, value) => {
-    const updatedEntries = [...pagesTitles];
-    updatedEntries[index] = {
-      ...updatedEntries[index],
-      [field]: field === 'pageNumber' ? (value === '' ? '' : parseInt(value)) : value
-    };
-    setPagesTitles(updatedEntries);
-  };
-
-  const handleRemovePageTitle = (index) => {
-    setPagesTitles(pagesTitles.filter((_, i) => i !== index));
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 8) {
+      toast.error('Maximum 8 images allowed');
+      return;
+    }
+    setSelectedFiles(files);
   };
 
   const handleUpdate = async () => {
     try {
-      await updateCustomPage(flipbookId, pageNumber, {
-        title,
-        pageNumber,
-        images,
-        pagesTitles,
-        pageType: 'IndexPage',
-        isCustom: true
-      });
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('pageNumber', pageNumber);
+      formData.append('pageType', 'IndexPage');
+      formData.append('isCustom', true);
+      
+      // Append existing images if no new files selected
+      if (selectedFiles.length === 0) {
+        images.forEach(image => {
+          formData.append('existingImages', image);
+        });
+      } else {
+        // Append new files
+        selectedFiles.forEach(file => {
+          formData.append('images', file);
+        });
+      }
+
+      await updateIndexPage(flipbookId, pageNumber, formData);
       setIsEditing(false);
+      setSelectedFiles([]);
       toast.success('Index page updated successfully');
     } catch (error) {
       toast.error('Failed to update page');
@@ -61,7 +52,7 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete page ${pageNumber}?`)) {
       try {
-        await deleteCustomPage(flipbookId, pageNumber);
+        await deleteIndexPage(flipbookId, pageNumber);
         await getFlipbookById(flipbookId);
         toast.success('Page deleted successfully');
       } catch (error) {
@@ -96,61 +87,37 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
           <div className="form-section">
             <div className="section-header">
-              <h4>Thumbnail Images</h4>
-              <button type="button" onClick={handleAddImage} className="add-btn">
-                + Add Image
-              </button>
+              <h4>Images (Max 8)</h4>
             </div>
-            {images.map((image, index) => (
-              <div key={index} className="image-entry">
-                <input
-                  type="text"
-                  value={image}
-                  onChange={(e) => handleUpdateImage(index, e.target.value)}
-                  placeholder="Enter image URL"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="remove-btn"
-                >
-                  ×
-                </button>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              multiple
+              accept="image/*"
+              className="file-input"
+            />
+            {selectedFiles.length > 0 && (
+              <div className="selected-files">
+                <p>Selected new files ({selectedFiles.length}):</p>
+                <ul>
+                  {selectedFiles.map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
               </div>
-            ))}
-          </div>
-
-          <div className="form-section">
-            <div className="section-header">
-              <h4>Pages List</h4>
-              <button type="button" onClick={handleAddPageTitle} className="add-btn">
-                + Add Page
-              </button>
-            </div>
-            {pagesTitles.map((entry, index) => (
-              <div key={index} className="index-entry">
-                <input
-                  type="text"
-                  value={entry.title}
-                  onChange={(e) => handleUpdatePageTitle(index, 'title', e.target.value)}
-                  placeholder="Page Title"
-                />
-                <input
-                  type="number"
-                  value={entry.pageNumber}
-                  onChange={(e) => handleUpdatePageTitle(index, 'pageNumber', e.target.value)}
-                  placeholder="Page #"
-                  min="1"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemovePageTitle(index)}
-                  className="remove-btn"
-                >
-                  ×
-                </button>
+            )}
+            {selectedFiles.length === 0 && (
+              <div className="current-images">
+                <p>Current images:</p>
+                <div className="thumbnails-grid">
+                  {images.map((image, index) => (
+                    <div key={index} className="thumbnail">
+                      <img src={image} alt={`Thumbnail ${index + 1}`} />
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            )}
           </div>
 
           <button onClick={handleUpdate} className="save-btn" disabled={loading}>
@@ -161,7 +128,7 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
         <div className="view-mode">
           <h3>{title}</h3>
           <div className="thumbnails-section">
-            <h4>Thumbnail Images</h4>
+            <h4>Images</h4>
             <div className="thumbnails-grid">
               {images.map((image, index) => (
                 <div key={index} className="thumbnail">
@@ -169,14 +136,6 @@ const IndexPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="index-list">
-            {pagesTitles.map((entry, index) => (
-              <div key={index} className="index-item">
-                <span className="item-title">{entry.title}</span>
-                <span className="item-number">Page {entry.pageNumber}</span>
-              </div>
-            ))}
           </div>
         </div>
       )}

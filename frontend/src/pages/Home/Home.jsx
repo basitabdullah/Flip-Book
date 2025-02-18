@@ -22,8 +22,6 @@ import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
 import { Link } from "react-router-dom";
 
-
-
 const Home = () => {
   const bookRef = useRef(null);
   const audioRef = useRef(new Audio(pageFlipSound));
@@ -232,7 +230,11 @@ const Home = () => {
         case "PublishedIndexPage":
           return (
             <div className="page-content">
-              <IndexPage pageData={page} goToPage={goToPage} />
+              <IndexPage
+                pageData={{
+                  images: page.images,
+                }}
+              />
               <div className="page-number">{page.pageNumber}</div>
             </div>
           );
@@ -294,14 +296,17 @@ const Home = () => {
   if (error) {
     return (
       <div className="error-container p-8 text-center">
-        <h2 className="text-xl font-bold text-red-600 mb-4">Error Loading Flipbook</h2>
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          Error Loading Flipbook
+        </h2>
         <p className="text-gray-700">{error}</p>
-        <Link to="/admin/admin-dashboard" className="text-blue-500">Admin</Link>
+        <Link to="/admin/admin-dashboard" className="text-blue-500">
+          Admin
+        </Link>
       </div>
     );
   }
 
- 
   const currentFlipbook = filteredPublishedFlipbooks[0];
   const flipbookImage = currentFlipbook?.flipbook?.image;
   const flipbookName = currentFlipbook?.name;
@@ -329,7 +334,7 @@ const Home = () => {
           maxHeight={window.innerWidth < 600 ? 500 : 550}
           ref={bookRef}
           showCover={true}
-          useMouseEvents={false}
+          useMouseEvents={true}
           drawShadow={true}
           maxShadowOpacity={0.8}
           flippingTime={500}

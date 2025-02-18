@@ -6,47 +6,198 @@ $spacing-unit: 1rem;
 $border-radius: 8px;
 
 .custom-page-editor {
-  padding: $spacing-unit * 2;
-  background-color: $background-color;
-  min-height: 100vh;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   h2 {
     color: #333;
-    margin-bottom: $spacing-unit * 2;
-    font-size: 1.8rem;
-    font-weight: 600;
+    margin-bottom: 30px;
     text-align: center;
+    font-size: 24px;
   }
 
   .pages-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-unit * 1.5;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
   }
 
   .no-pages-message {
     text-align: center;
-    padding: $spacing-unit * 3;
-    background: $card-background;
-    border-radius: $border-radius;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin: $spacing-unit * 2 auto;
-    max-width: 600px;
+    padding: 40px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin: 20px;
 
     p {
-      &:first-child {
-        font-size: 1.2rem;
-        color: #666;
-        margin-bottom: $spacing-unit;
-      }
+      margin: 10px 0;
+      color: #666;
 
-      &:last-child {
-        color: #888;
-        font-size: 1rem;
+      &:first-child {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
       }
     }
+  }
+
+  // Card styles (shared between different page types)
+  .index-card,
+  .gallery-card,
+  .catalog-card,
+  .social-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: relative;
+
+    .editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .page-number {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+
+        button {
+          padding: 8px 12px;
+          border-radius: 4px;
+          border: none;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.2s ease;
+
+          &.edit-btn {
+            background: #4a90e2;
+            color: white;
+
+            &:hover {
+              background: #357abd;
+            }
+
+            &.active {
+              background: #666;
+            }
+          }
+
+          &.delete-btn {
+            background: #dc3545;
+            color: white;
+
+            &:hover {
+              background: #c82333;
+            }
+          }
+        }
+      }
+    }
+
+    .edit-form {
+      .form-group {
+        margin-bottom: 15px;
+
+        label {
+          display: block;
+          margin-bottom: 5px;
+          color: #555;
+        }
+
+        input, textarea {
+          width: 100%;
+          padding: 8px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 14px;
+
+          &:focus {
+            outline: none;
+            border-color: #4a90e2;
+          }
+        }
+      }
+
+      .save-btn {
+        width: 100%;
+        padding: 10px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+
+        &:hover {
+          background: #218838;
+        }
+
+        &:disabled {
+          background: #ccc;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .view-mode {
+      h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .thumbnails-section {
+        margin: 15px 0;
+
+        h4 {
+          color: #666;
+          margin-bottom: 10px;
+        }
+
+        .thumbnails-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          gap: 10px;
+
+          .thumbnail {
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Loader styles
+  .loader {
+    text-align: center;
+    padding: 40px;
+  }
+
+  // Error message styles
+  .error-message {
+    color: #dc3545;
+    text-align: center;
+    padding: 20px;
+    background: #f8d7da;
+    border-radius: 4px;
+    margin: 20px 0;
   }
 }
 
