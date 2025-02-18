@@ -9,11 +9,12 @@ import { CgProfile } from "react-icons/cg";
 import { FaLock } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiScreenshot } from "react-icons/bi";
+import { useUserStore } from "../../stores/useUserStore";
 
 const Navigation = ({ bookRef, onStartSnipping }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTocModal, setShowTocModal] = useState(false);
-
+  const { user } = useUserStore();
   const goForward = () => {
     if (bookRef?.current) {
       bookRef.current.pageFlip().flipNext();
@@ -26,9 +27,7 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
     }
   };
 
-  const user = {
-    role: "admin",
-  };
+ 
 
   const handleShare = () => {
     setShowShareModal(true);
@@ -77,7 +76,7 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
           <Link to="/login" className="button" title="login">
             <CgProfile />
           </Link>
-          {user.role === "admin" && (
+          {user && user.role === "admin" && (
             <Link to="/admin/admin-dashboard/flipbooks" className="button" title="Search">
               <FaLock />
             </Link>

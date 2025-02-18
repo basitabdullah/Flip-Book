@@ -24,7 +24,7 @@ const setCookies = async (res, token) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
     
     let user = await User.findOne({ email });
     if (user) {
@@ -35,7 +35,12 @@ export const register = async (req, res) => {
 
     const encrypedPassword = await encryptPassword(password);
 
-    user = await User.create({ name, email, password: encrypedPassword });
+    user = await User.create({ 
+      name, 
+      email, 
+      phone,
+      password: encrypedPassword 
+    });
 
     //generate token
     const token = await generateToken(user._id);
