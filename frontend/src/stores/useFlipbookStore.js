@@ -250,22 +250,41 @@ const useFlipbookStore = create((set) => ({
     try {
       set({ loading: true, error: null });
 
-      // Call the backend API to toggle the published status
+      // Only allow unpublishing
+      const currentFlipbooks = await axiosInstance.get(
+        `/flipbook/published/get-published-flipbooks`
+      );
+      
+      const flipbookToToggle = currentFlipbooks.data.find(fb => fb._id === flipbookId);
+      
+      // If the flipbook is not published, don't do anything
+      if (!flipbookToToggle?.isPublished) {
+        set({ loading: false });
+        return;
+      }
+
+      // Only proceed with unpublishing
       const response = await axiosInstance.get(
         `/flipbook/published/toggle-published/${flipbookId}`
       );
 
       if (response.status !== 200) {
-        throw new Error(response.data.message || "Failed to toggle flipbook.");
+        throw new Error(response.data.message || "Failed to unpublish flipbook.");
       }
 
-      // Access getPublishedFlipbooks from the store itself
-      const { getPublishedFlipbooks } = useFlipbookStore.getState();
+      // Fetch the latest state from the backend
+      const updatedFlipbooksResponse = await axiosInstance.get(
+        `/flipbook/published/get-published-flipbooks`
+      );
 
-      // Refetch the published flipbooks to reflect the updated status
-      await getPublishedFlipbooks();
+      // Update state with the fresh data from backend
+      set({
+        publishedFlipbooks: updatedFlipbooksResponse.data,
+        loading: false
+      });
 
-      toast.success(`Flipbook ${flipbookId} status updated.`);
+      toast.success(`Flipbook unpublished successfully`);
+      return response.data;
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || error.message || "An error occurred.";
@@ -276,7 +295,6 @@ const useFlipbookStore = create((set) => ({
       });
 
       toast.error(errorMessage);
-
       throw errorMessage;
     }
   },
@@ -467,7 +485,7 @@ const useFlipbookStore = create((set) => ({
         image,
       });
         
-      // Update the state with the new flipbook
+      // Update the state with the new flipbook, without auto-publishing
       set((state) => ({
         flipbooks: [...state.flipbooks, response.data.newFlipbook],
         loading: false,

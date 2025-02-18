@@ -6,33 +6,33 @@ const ReviewsPage = () => {
   const reviews = [
     {
       id: 1,
-      name: "Sarah Johnson",
+      name: "Bhat Faisal",
       rating: 5,
       date: "March 2024",
-      comment: "Absolutely stunning place! The ambiance was perfect and the service was exceptional. Will definitely come back again.",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      comment: "Thank you so much @Rosewood team I had the most delightful experience at Hotel Rosewood, which truly exceeded all my expectations. From the moment I arrived, I was greeted with exceptional hospitality and a warm, welcoming atmosphere. The rooms were immaculate and tastefully designed, offering both luxury and comfort. The staff went above and beyond to ensure every detail of my stay was perfect. The location is ideal, making it convenient for both relaxation and exploration. Whether you're visiting for a romantic getaway, Hotel Rosewood offers everything you could possibly need.",
+      image: "https://lh3.googleusercontent.com/a/ACg8ocJpJcdLCz2KVp_jyTfAVoeQuSlq3AbKi8X52yiHIhulqaYZIQ=s80-rp-mo-ba2-br100"
     },
     {
       id: 2,
-      name: "Michael Chen",
+      name: "Poonam Dongre",
       rating: 5,
-      date: "February 2024",
-      comment: "A perfect blend of luxury and comfort. The attention to detail in every aspect made our stay memorable.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      date: "February 2025",
+      comment: "This was my second time stay at this amazing property, and once again, it exceeded my expectations. The warm and welcoming ambiance, combined with the stunning snow-covered surroundings, made for a truly memorable experience.",
+      image: "https://lh3.googleusercontent.com/a-/ALV-UjW7iYBHrMGJ3bPuxRUBpjVZVGeSwT4ZhVgXLtKM2XWonHxoz67Kaw=s80-rp-mo-br100"
     },
     {
       id: 3,
-      name: "Emma Wilson",
+      name: "Fariqa Badri",
       rating: 4,
-      date: "January 2024",
-      comment: "Beautiful property with excellent amenities. The staff went above and beyond to make our stay comfortable.",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+      date: "January 2025",
+      comment: "I had the most delightful experience at Hotel Rosewood, which truly exceeded all my expectations. From the moment I arrived, I was greeted with exceptional hospitality and a warm, welcoming atmosphere. The rooms were immaculate and tastefully designed, offering both luxury and comfort. The staff went above and beyond to ensure every detail of my stay was perfect. The location is ideal, making it convenient for both relaxation and exploration. Whether you're visiting for a romantic getaway, a family vacation, or a business trip, Hotel Rosewood offers everything you could possibly need. Without a doubt, it's the best hotel in Gulmarg, and I am already looking forward to my next visit!",
+      image: "https://lh3.googleusercontent.com/a/ACg8ocJhhIbMN7uKhD2Cf18XWhWpRCHIs7pwIMyjQ3fskNRyDfHD5Lk=s80-rp-mo-br100"
     },
     {
       id: 4,
-      name: "David Thompson",
+      name: "Muntaha Goroo",
       rating: 5,
-      date: "December 2023",
+      date: "Jan 2025",
       comment: "An oasis of tranquility. The gardens are breathtaking and the rooms are impeccably maintained.",
       image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
     }

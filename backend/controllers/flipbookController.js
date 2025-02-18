@@ -141,14 +141,14 @@ export const createPage = async (req, res) => {
 
     // Add the new page to the flipbook with pageType 'Page'
     flipbook.pages.push({
-      pageType: 'Page',
+      pageType: "Page",
       title,
       pageNumber,
       description,
       content,
       contentType,
     });
-    
+
     await flipbook.save();
 
     res.status(201).json({ message: "Page added successfully.", flipbook });
@@ -216,7 +216,7 @@ export const updatePage = async (req, res) => {
       content: content || flipbook.pages[pageIndex].content,
       contentType: contentType || flipbook.pages[pageIndex].contentType,
       pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber,
-      pageType: 'Page' // Ensure pageType remains 'Page'
+      pageType: "Page", // Ensure pageType remains 'Page'
     };
 
     await flipbook.save();
@@ -270,66 +270,75 @@ export const publishFlipbook = async (req, res) => {
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
     }
+
+    // First, unpublish all existing published flipbooks
+    await PublishedFlipbook.updateMany(
+      {}, // match all documents
+      { isPublished: false }
+    );
     
     const validatedPages = flipbook.pages.map(page => {
       const basePage = {
         title: page.title,
         pageNumber: page.pageNumber
-
       };
 
       switch (page.pageType) {
-        case 'Page':
+        case "Page":
           return {
             ...basePage,
-            pageType: 'PublishedPage',
+            pageType: "PublishedPage",
             description: page.description,
             content: page.content,
-            contentType: page.contentType
+            contentType: page.contentType,
           };
 
-        case 'IndexPage':
+        case "IndexPage":
           return {
             ...basePage,
-            pageType: 'PublishedIndexPage',
+            pageType: "PublishedIndexPage",
             images: page.images || [],
             pagesTitles: page.pagesTitles || [],
-            isCustom: true
+            isCustom: true,
           };
 
-        case 'Gallery':
+        case "Gallery":
           console.log("Processing Gallery Page:", page); // Debug log
           return {
             ...basePage,
-            pageType: 'PublishedGalleryPage',
+            pageType: "PublishedGalleryPage",
             subtitle: page.subtitle,
-            imagesData: page.imagesData ? page.imagesData.map(img => ({
-              imagesDataTitle: img.imagesDataTitle,
-              imagesDataSubtitle: img.imagesDataSubtitle,
-              imagesDataImage: img.imagesDataImage
-            })) : [],
-            isCustom: true
+            imagesData: page.imagesData
+              ? page.imagesData.map((img) => ({
+                  imagesDataTitle: img.imagesDataTitle,
+                  imagesDataSubtitle: img.imagesDataSubtitle,
+                  imagesDataImage: img.imagesDataImage,
+                }))
+              : [],
+            isCustom: true,
           };
 
-        case 'Catalog':
+        case "Catalog":
           console.log("Processing Catalog Page:", page); // Debug log
           return {
             ...basePage,
-            pageType: 'PublishedCatalogPage',
+            pageType: "PublishedCatalogPage",
             subtitle: page.subtitle,
-            catalogItems: page.catalogItems ? page.catalogItems.map(item => ({
-              name: item.name,
-              price: item.price,
-              image: item.image,
-              amenities: item.amenities
-            })) : [],
-            isCustom: true
+            catalogItems: page.catalogItems
+              ? page.catalogItems.map((item) => ({
+                  name: item.name,
+                  price: item.price,
+                  image: item.image,
+                  amenities: item.amenities,
+                }))
+              : [],
+            isCustom: true,
           };
 
-        case 'Social':
+        case "Social":
           return {
             ...basePage,
-            pageType: 'PublishedSocialPage',
+            pageType: "PublishedSocialPage",
             subtitle: page.subtitle,
             street: page.street,
             city: page.city,
@@ -338,7 +347,7 @@ export const publishFlipbook = async (req, res) => {
             email: page.email,
             mapUrl: page.mapUrl,
             socialLinks: page.socialLinks,
-            isCustom: true
+            isCustom: true,
           };
 
         default:
@@ -346,19 +355,15 @@ export const publishFlipbook = async (req, res) => {
       }
     }).filter(page => page !== null);
 
-
     const publishedFlipbook = new PublishedFlipbook({
       name,
       flipbook: flipbook._id,
       pages: validatedPages,
       issue: issueName,
-      isPublished: true,
+      isPublished: true,  // Set the latest one to published
     });
 
     await publishedFlipbook.save();
-    
-    // Update original flipbook
-    await Flipbook.findByIdAndUpdate(flipbookId, { isPublished: true });
 
     // Return the populated published flipbook with complete data
     const populatedPublishedFlipbook = await PublishedFlipbook.findById(publishedFlipbook._id)
@@ -382,11 +387,10 @@ export const publishFlipbook = async (req, res) => {
 export const getPublishedFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
   try {
-    const flipbook = await PublishedFlipbook.findById(flipbookId)
-      .populate({
-        path: 'flipbook',
-        model: 'Flipbook'
-      });
+    const flipbook = await PublishedFlipbook.findById(flipbookId).populate({
+      path: "flipbook",
+      model: "Flipbook",
+    });
 
     if (!flipbook) {
       return res.status(404).json({ message: "Flipbook not found." });
@@ -401,11 +405,10 @@ export const getPublishedFlipbook = async (req, res) => {
 
 export const getAllPublishedFlipbooks = async (req, res) => {
   try {
-    const flipbooks = await PublishedFlipbook.find()
-      .populate({
-        path: 'flipbook',
-        model: 'Flipbook'
-      });
+    const flipbooks = await PublishedFlipbook.find().populate({
+      path: "flipbook",
+      model: "Flipbook",
+    });
 
     if (!flipbooks || flipbooks.length === 0) {
       console.log("No flipbooks found.");
@@ -482,7 +485,6 @@ export const updatePublishedFlipbook = async (req, res) => {
     const pageIndex = publishedFlipbook.pages.findIndex(
       (p) => p._id.toString() === pageId
     );
-  
 
     if (pageIndex === -1) {
       return res.status(404).json({ message: "Page not found." });
@@ -527,7 +529,7 @@ export const updatePublishedFlipbook = async (req, res) => {
 
 export const deletePublishedFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
-  let latestFlipbooks = []; 
+  let latestFlipbooks = [];
 
   try {
     // Validate MongoDB ObjectId format
