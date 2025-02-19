@@ -250,26 +250,13 @@ const useFlipbookStore = create((set) => ({
     try {
       set({ loading: true, error: null });
 
-      // Only allow unpublishing
-      const currentFlipbooks = await axiosInstance.get(
-        `/flipbook/published/get-published-flipbooks`
-      );
-      
-      const flipbookToToggle = currentFlipbooks.data.find(fb => fb._id === flipbookId);
-      
-      // If the flipbook is not published, don't do anything
-      if (!flipbookToToggle?.isPublished) {
-        set({ loading: false });
-        return;
-      }
-
-      // Only proceed with unpublishing
+      // Make the toggle request
       const response = await axiosInstance.get(
         `/flipbook/published/toggle-published/${flipbookId}`
       );
 
       if (response.status !== 200) {
-        throw new Error(response.data.message || "Failed to unpublish flipbook.");
+        throw new Error(response.data.message || "Failed to toggle flipbook publication status.");
       }
 
       // Fetch the latest state from the backend
@@ -283,7 +270,8 @@ const useFlipbookStore = create((set) => ({
         loading: false
       });
 
-      toast.success(`Flipbook unpublished successfully`);
+      const action = response.data.isPublished ? "published" : "unpublished";
+      toast.success(`Flipbook ${action} successfully`);
       return response.data;
     } catch (error) {
       const errorMessage =

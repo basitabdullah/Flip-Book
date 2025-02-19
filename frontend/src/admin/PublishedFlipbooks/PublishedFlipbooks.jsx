@@ -37,11 +37,8 @@ const PublishedFlipbooks = () => {
   const handleConfirmToggle = async () => {
     if (selectedFlipbook) {
       try {
-        // Only handle unpublishing if the flipbook is currently published
-        if (selectedFlipbook.isPublished) {
-          await togglePublishedFlipbook(selectedFlipbook._id);
-          await getPublishedFlipbooks();
-        }
+        await togglePublishedFlipbook(selectedFlipbook._id);
+        await getPublishedFlipbooks();
         handleCloseModal();
       } catch (error) {
         console.error("Error toggling flipbook publication:", error);

@@ -361,12 +361,12 @@ const Home = () => {
             </div>
           ))}
 
-          <div className="page">
+          {/* <div className="page">
             <div className="page-content">
               <ReviewsPage />
               <div className="page-number">{sortedPages.length + 1}</div>
             </div>
-          </div>
+          </div> */}
 
           <div key="thanks" className="page">
             <div className="page-content">

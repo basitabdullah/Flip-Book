@@ -32,7 +32,7 @@ const CatalogPage = ({ pageData }) => {
             </div>
             <div className="room-info">
               <h3>{room.name}</h3>
-              <p className="price">{room.price}<span>/night</span></p>
+              <p className="price">{room.price}<span>/booking</span></p>
               <div className="amenities">
                 {room.amenities.map((amenity, idx) => (
                   <span key={idx} className="amenity-tag">{amenity}</span>

@@ -1,11 +1,22 @@
 import { Flipbook, IndexPage } from "../models/flipbookModel.js";
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const uploadDir = 'backend/uploads/indexImages';
+
+// Ensure upload directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/indexPages/') 
+    cb(null, 'backend/uploads/indexImages/') 
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname)
@@ -32,13 +43,17 @@ const upload = multer({
 export const addIndexPage = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
+      console.error('Upload error:', err);
       return res.status(400).json({ 
         message: "Error uploading files", 
-        error: err 
+        error: err.message || err 
       });
     }
 
     try {
+      console.log('Request body:', req.body);
+      console.log('Uploaded files:', req.files);
+      
       const { flipbookId } = req.params;
       const { title, pageNumber } = req.body;
 
@@ -59,7 +74,7 @@ export const addIndexPage = async (req, res) => {
       }
 
       // Generate image paths - ensure each file is only processed once
-      const imagePaths = [...new Set(req.files.map(file => `/uploads/indexPages/${file.filename}`))];
+      const imagePaths = [...new Set(req.files.map(file => `/backend/uploads/indexImages/${file.filename}`))];
 
       const newIndexPage = new IndexPage({
         title,
@@ -77,6 +92,7 @@ export const addIndexPage = async (req, res) => {
         flipbook 
       });
     } catch (error) {
+      console.error('Error in addIndexPage:', error);
       res.status(500).json({ 
         message: "Error adding index page", 
         error: error.message 
@@ -114,7 +130,7 @@ export const updateIndexPage = async (req, res) => {
 
       // Generate new image paths if files were uploaded - ensure each file is only processed once
       const imagePaths = req.files?.length > 0 
-        ? [...new Set(req.files.map(file => `/uploads/indexPages/${file.filename}`))]
+        ? [...new Set(req.files.map(file => `/backend/uploads/indexImages/${file.filename}`))]
         : flipbook.pages[pageIndex].images;
 
       // Update the page

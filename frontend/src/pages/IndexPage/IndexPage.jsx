@@ -5,7 +5,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const IndexPage = ({pageData}) => {
+const IndexPage = ({ pageData }) => {
   const { publishedFlipbooks } = useFlipbookStore();
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -13,13 +13,12 @@ const IndexPage = ({pageData}) => {
     ? publishedFlipbooks.filter((flipbook) => flipbook.isPublished)
     : [];
 
-    
-    const publishedPages =
+  const publishedPages =
     filteredPublishedFlipbooks.length > 0
-    ? filteredPublishedFlipbooks[0].pages
-    : [];
-    
-    console.log(publishedPages);
+      ? filteredPublishedFlipbooks[0].pages
+      : [];
+
+  console.log(publishedPages);
   const settings = {
     infinite: true,
     speed: 500,
@@ -30,7 +29,7 @@ const IndexPage = ({pageData}) => {
     fade: true,
     cssEase: "linear",
     pauseOnHover: true,
-    arrows: false
+    arrows: false,
   };
 
   useEffect(() => {
@@ -41,9 +40,12 @@ const IndexPage = ({pageData}) => {
     return () => clearInterval(timer);
   }, [publishedPages.length]);
 
+  // const backendUrl = "https://kweb.im";
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
-  
+  const backendUrl = "http://localhost:5000";
+
+
+
   return (
     <div className="index-page">
       <div className="index-content">
@@ -55,25 +57,21 @@ const IndexPage = ({pageData}) => {
           <Slider {...settings}>
             {pageData.images.map((img) => (
               <div key={img} className="slide">
-                <img 
-                  src={`${backendUrl}${img}`}
-                  alt={`slide ${img}`} 
-                />
+                <img src={`${backendUrl}${img}`} alt={`slide ${img}`} />
               </div>
             ))}
           </Slider>
         </div>
 
-        <div className="other-pages-wrapper"> 
+        <div className="other-pages-wrapper">
           <div className="other-pages">
             {publishedPages.map((page) => (
-              <div
-                className="page-entry"
-                key={page.pageNumber}
-              >
-                <p className="num">{String(page.pageNumber).padStart(2, "0")}</p>
+              <div className="page-entry" key={page.pageNumber}>
+                <p className="num">
+                  {String(page.pageNumber).padStart(2, "0")}
+                </p>
                 <p className="page-title">{page.title}</p>
-              </div>  
+              </div>
             ))}
           </div>
         </div>
