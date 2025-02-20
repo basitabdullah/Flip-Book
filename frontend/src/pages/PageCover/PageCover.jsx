@@ -9,8 +9,11 @@ const PageCover = ({ backgroundImage, title, subtitle }) => {
     >
       <div className="overlay"></div> {/* Optional: Adds a dark overlay for better text visibility */}
       <div className="cover-content">
-        <h1 className="cover-title">{title}</h1>
         {subtitle && <h2 className="cover-subtitle">{subtitle}</h2>}
+        <h1 className="cover-title">{title}</h1>
+      </div>
+      <div className="cover-content-bottom">
+        <p>Copyright Alshaykh Resorts | e-catalogue 2025</p>
       </div>
     </div>
   );

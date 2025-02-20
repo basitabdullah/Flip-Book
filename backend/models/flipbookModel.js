@@ -73,6 +73,15 @@ const CatalogPage = BasePage.discriminator(
   })
 );
 
+// Catalog page schema
+const ReviewsOrMapPage = BasePage.discriminator(
+  "ReviewsOrMap",
+  new mongoose.Schema({
+    content: { type: String, required: true },
+    isCustom: { type: Boolean, default: true },
+  })
+);
+
 // Social page schema
 const SocialPage = BasePage.discriminator(
   "Social",
@@ -129,4 +138,5 @@ export {
   GalleryPage,
   CatalogPage,
   SocialPage,
+  ReviewsOrMapPage
 };

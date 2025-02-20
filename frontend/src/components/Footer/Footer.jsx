@@ -7,9 +7,9 @@ const Footer = () => {
   return (
     !loading && (
       <footer className="footer">
-        <p>&copy; {currentYear} Rose Wood Gulmarg</p>
-        <p>
-          Designed And Developed{" "}
+        <p> </p>
+        <p>&copy;
+        {currentYear} Gabfire Pvt Ltd | Designed And Developed{" "}
           <a
             target="_"
             href="https://www.gabfire.in/"

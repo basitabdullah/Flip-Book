@@ -2,10 +2,17 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import AddIndexPage from "../AddIndexPage/AddIndexPage";
 import AddGalleryPage from "../AddGalleryPage/AddGalleryPage";
-import { IoListOutline, IoImagesOutline, IoGridOutline, IoPeopleOutline } from "react-icons/io5";
+import { 
+  IoListOutline, 
+  IoImagesOutline, 
+  IoGridOutline, 
+  IoPeopleOutline,
+  IoMapOutline 
+} from "react-icons/io5";
 import "./AddCustomPage.scss";
 import AddCatalogPage from "../AddCatalogPage/AddCatalogPage";
 import AddSocialPage from "../AddSocialPage/AddSocialPage";
+import AddReviewsOrMapPage from "../AddReviewsOrMapPage/AddReviewsOrMapPage";
 
 const AddCustomPage = () => {
   const { flipbookId } = useParams();
@@ -35,6 +42,12 @@ const AddCustomPage = () => {
       name: "Social Page", 
       icon: <IoPeopleOutline className="icon" />,
       description: "Create a contact & social media page"
+    },
+    { 
+      id: "reviews-map", 
+      name: "Reviews/Map Page", 
+      icon: <IoMapOutline className="icon" />,
+      description: "Add embedded reviews or map"
     }
   ];
 
@@ -48,6 +61,8 @@ const AddCustomPage = () => {
         return <AddCatalogPage flipbookId={flipbookId} />;
       case "social":
         return <AddSocialPage flipbookId={flipbookId} />;
+      case "reviews-map":
+        return <AddReviewsOrMapPage flipbookId={flipbookId} />;
       default:
         return null;
     }

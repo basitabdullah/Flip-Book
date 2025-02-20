@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Allura&display=swap');
 
 .thanks-page {
   position: relative;
@@ -28,15 +27,13 @@
     z-index: 2;
 
     .thanks-title {
-      font-size: 4rem; // Large title text
+      font-size: 3rem; // Large title text
       margin-bottom: 1rem;
-      font-family: "Allura", serif;
       color: #dedede;
     }
 
     .thanks-subtitle {
-      font-size: 1.5rem;
-      font-family: "Allura", serif;
+      font-size: 1.2rem;
       color: #dedede;
     }
   }

@@ -17,10 +17,10 @@ import CoverPage from "../../pages/PageCover/PageCover";
 import CatalogPage from "../../pages/CatalogPage/CatalogPage";
 import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
-import ReviewsPage from "../../pages/ReviewsPage/ReviewsPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
 import { Link } from "react-router-dom";
+import ReviewsOrMapPage from '../ReviewsOrMapPage/ReviewsOrMapPage';
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -272,6 +272,18 @@ const Home = () => {
               <div className="page-number">{page.pageNumber}</div>
             </div>
           );
+        case "PublishedReviewsOrMapPage":
+          return (
+            <div className="page-content">
+              <ReviewsOrMapPage
+                pageData={{
+                  title: page.title,
+                  content: page.content
+                }}
+              />
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
         case "PublishedPage":
         default:
           return (
@@ -334,7 +346,7 @@ const Home = () => {
           maxHeight={window.innerWidth < 600 ? 500 : 550}
           ref={bookRef}
           showCover={true}
-          useMouseEvents={true}
+          useMouseEvents={false}
           drawShadow={true}
           maxShadowOpacity={0.8}
           flippingTime={500}

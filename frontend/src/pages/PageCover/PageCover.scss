@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Allura&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Radley:ital@0;1&display=swap");
 
 .page-cover {
   position: relative;
@@ -14,6 +14,9 @@
   text-align: center;
   color: white;
   overflow: hidden;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 
   .overlay {
     position: absolute;
@@ -35,18 +38,26 @@
     z-index: 2;
 
     .cover-title {
-      font-size: 4rem; // Large title text
-      margin-bottom: 1rem;
-      font-family: "Allura", serif;
+      font-size: 2.5rem; // Large title text
+      font-family: "Radley";
       color: #dedede;
     }
 
     .cover-subtitle {
-      font-size: 1.5rem;
-      font-family: "Allura", serif;
+      font-size: 0.7rem;
+      font-family: "Radley";
       color: #dedede;
+      margin-bottom: 1rem;
+    }
+  }
 
-
+  .cover-content-bottom {
+    background: rgb(174, 0, 0);
+    align-self: flex-start;
+    margin: 10px;
+    color: #fff;
+    p {
+      font-size: 0.5rem;
     }
   }
 }

@@ -65,14 +65,17 @@ const IndexPage = ({ pageData }) => {
 
         <div className="other-pages-wrapper">
           <div className="other-pages">
-            {publishedPages.map((page) => (
-              <div className="page-entry" key={page.pageNumber}>
-                <p className="num">
-                  {String(page.pageNumber).padStart(2, "0")}
-                </p>
-                <p className="page-title">{page.title}</p>
-              </div>
-            ))}
+            {publishedPages
+              .filter(page => page.pageNumber % 2 === 0)
+              .sort((a, b) => a.pageNumber - b.pageNumber)
+              .map((page) => (
+                <div className="page-entry" key={page.pageNumber}>
+                  <p className="num">
+                    {String(page.pageNumber).padStart(2, "0")}
+                  </p>
+                  <p className="page-title">{page.title}</p>
+                </div>
+              ))}
           </div>
         </div>
       </div>

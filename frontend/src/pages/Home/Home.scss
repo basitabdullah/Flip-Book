@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Calligraffitti&family=Ephesis&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Parisienne&family=Playwrite+HR:wght@100..400&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 .home {
   display: flex;
@@ -6,9 +5,9 @@
   align-items: center;
   min-height: 100vh;
   padding: clamp(10px, 2vw, 20px);
-  background: url("../../assets/background.png");
   background-size: cover;
   background-position: center;
+  background-image: url("https://img.freepik.com/free-photo/whitish-gray-textured-wallpaper-pattern_1194-6769.jpg?t=st=1738651849~exp=1738655449~hmac=a27f01cb5dbf8ba2b6498ba45bf582d0032df3b929d2b9a242154a8f90a1f0c2&w=1060");
 
   .page {
     box-shadow: inset -5px 0 20px -7px rgba(0, 0, 0, 0.2),
@@ -18,8 +17,8 @@
       padding: clamp(10px, 3vw, 20px);
       height: 100%;
       position: relative;
-      background-image: url("https://img.freepik.com/free-photo/whitish-gray-textured-wallpaper-pattern_1194-6769.jpg?t=st=1738651849~exp=1738655449~hmac=a27f01cb5dbf8ba2b6498ba45bf582d0032df3b929d2b9a242154a8f90a1f0c2&w=1060");
       background-size: cover;
+      background-color: #ffffff;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05),
         0 5px 15px rgba(0, 0, 0, 0.1);
 
@@ -46,11 +45,11 @@
         flex-direction: column;
 
         h1 {
-          font-size: clamp(0.9rem, 3vw, 1.2rem);
+          font-size: clamp(0.9rem, 3vw, 1rem);
           margin-bottom: clamp(0.6rem, 2vw, 1rem);
           color: #222;
-          font-weight: 600;
-          font-family: "Raleway", sans-serif;
+          font-weight: 700;
+          
           text-align: center;
 
           @media (max-width: 380px) {
@@ -60,9 +59,9 @@
         }
 
         .page-description {
-          font-size: clamp(0.75rem, 2vw, 0.8rem);
+          font-size: clamp(0.8rem, 2vw, 0.85rem);
           line-height: 1.5;
-          color: #666;
+          color: #121212;
           margin-bottom: clamp(0.6rem, 2vw, 1rem);
 
           @media (min-width: 451px) {
