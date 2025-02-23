@@ -5,10 +5,12 @@ import useCatalogPageStore from '../../stores/useCatalogPageStore';
 import useSocialPageStore from '../../stores/useSocialPageStore';
 import useIndexPageStore from '../../stores/useIndexPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
+import useReviewsOrMapStore from '../../stores/useReviewsOrMapStore';
 import IndexPageCard from './IndexPageCard';
 import GalleryPageCard from './GalleryPageCard';
 import CatalogPageCard from './CatalogPageCard';
 import SocialPageCard from './SocialPageCard';
+import ReviewsOrMapPageCard from './ReviewsOrMapPageCard';
 import './CustomPageEditor.scss';
 import Loader from '../../components/Loader/Loader';
 
@@ -18,6 +20,7 @@ const CustomPageEditor = () => {
   const { galleryPages, loading: galleryLoading, error: galleryError, fetchGalleryPages } = useGalleryPageStore();
   const { catalogPages, loading: catalogLoading, error: catalogError, fetchCatalogPages } = useCatalogPageStore();
   const { socialPages, loading: socialLoading, error: socialError, fetchSocialPages } = useSocialPageStore();
+  const { reviewsOrMapPages, loading: reviewsOrMapLoading, error: reviewsOrMapError, fetchReviewsOrMapPages } = useReviewsOrMapStore();
   const { getFlipbookById, loading: flipbookLoading } = useFlipbookStore();
 
   useEffect(() => {
@@ -28,10 +31,11 @@ const CustomPageEditor = () => {
         await fetchGalleryPages(id);
         await fetchCatalogPages(id);
         await fetchSocialPages(id);
+        await fetchReviewsOrMapPages(id);
       }
     };
     loadData();
-  }, [id, getFlipbookById, fetchIndexPages, fetchGalleryPages, fetchCatalogPages, fetchSocialPages]);
+  }, [id, getFlipbookById, fetchIndexPages, fetchGalleryPages, fetchCatalogPages, fetchSocialPages, fetchReviewsOrMapPages]);
 
   const renderPageCard = (page) => {
     switch (page.pageType) {
@@ -75,21 +79,31 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
+      case 'ReviewsOrMap':
+        return (
+          <ReviewsOrMapPageCard
+            key={`${page._id}-${page.pageNumber}`}
+            pageData={page}
+            pageNumber={page.pageNumber}
+            loading={reviewsOrMapLoading}
+            flipbookId={id}
+          />
+        );
       default:
         return null;
     }
   };
 
-  if (indexLoading || galleryLoading || catalogLoading || flipbookLoading || socialLoading) return <Loader/>;
-  if (indexError || galleryError || catalogError || socialError) return <div>Error: {indexError || galleryError || catalogError || socialError}</div>;
+  if (indexLoading || galleryLoading || catalogLoading || flipbookLoading || socialLoading || reviewsOrMapLoading) return <Loader/>;
+  if (indexError || galleryError || catalogError || socialError || reviewsOrMapError) return <div>Error: {indexError || galleryError || catalogError || socialError || reviewsOrMapError}</div>;
 
-  const allPages = [...indexPages, ...galleryPages, ...catalogPages, ...socialPages].sort((a, b) => a.pageNumber - b.pageNumber);
+  const allPages = [...indexPages, ...galleryPages, ...catalogPages, ...socialPages, ...reviewsOrMapPages].sort((a, b) => a.pageNumber - b.pageNumber);
 
   if (!allPages || allPages.length === 0) {
     return (
       <div className="no-pages-message">
         <p>No custom pages available</p>
-        <p>Add an Index, Gallery, Social or Catalog page to get started</p>
+        <p>Add an Index, Gallery, Social, Reviews/Map or Catalog page to get started</p>
       </div>
     );
   }

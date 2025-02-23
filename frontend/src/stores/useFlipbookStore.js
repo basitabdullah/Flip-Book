@@ -43,11 +43,28 @@ const useFlipbookStore = create((set) => ({
   updatePage: async (pageId, pageData, flipbookId) => {
     try {
       set({ loading: true });
-      const { version, ...updateData } = pageData;
+      
+      let config = {};
+      let updateData;
+
+      if (pageData instanceof FormData) {
+        // For FormData (file uploads)
+        config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        };
+        updateData = pageData;
+      } else {
+        // For JSON data
+        const { version, ...rest } = pageData;
+        updateData = rest;
+      }
 
       const response = await axiosInstance.put(
         `/flipbook/${flipbookId}/pages/${pageId}`,
-        updateData
+        updateData,
+        config
       );
 
       if (!response.data) {
@@ -59,6 +76,7 @@ const useFlipbookStore = create((set) => ({
       return response.data;
     } catch (error) {
       console.error("Error updating page:", error.response || error);
+      set({ loading: false });
       throw error.response?.data?.message || error.message;
     }
   },

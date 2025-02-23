@@ -18,7 +18,6 @@ const IndexPage = ({ pageData }) => {
       ? filteredPublishedFlipbooks[0].pages
       : [];
 
-  console.log(publishedPages);
   const settings = {
     infinite: true,
     speed: 500,
@@ -40,11 +39,7 @@ const IndexPage = ({ pageData }) => {
     return () => clearInterval(timer);
   }, [publishedPages.length]);
 
-  // const backendUrl = "https://kweb.im";
-
-  const backendUrl = "http://localhost:5000";
-
-
+  const backendUrl = "https://kweb.im";
 
   return (
     <div className="index-page">
@@ -66,7 +61,7 @@ const IndexPage = ({ pageData }) => {
         <div className="other-pages-wrapper">
           <div className="other-pages">
             {publishedPages
-              .filter(page => page.pageNumber % 2 === 0)
+              .filter((page) => page.pageNumber % 2 === 0)
               .sort((a, b) => a.pageNumber - b.pageNumber)
               .map((page) => (
                 <div className="page-entry" key={page.pageNumber}>

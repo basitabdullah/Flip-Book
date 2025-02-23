@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Dashboard.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore"; // Import the Zustand store
-import { Link, Routes, Route, useParams, useNavigate, useLocation } from "react-router-dom";
+import {
+  Link,
+  Routes,
+  Route,
+  useParams,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import PublishedFlipbooks from "../PublishedFlipbooks/PublishedFlipbooks";
 import ScheduledFlipbooks from "../ScheduledFlipbooks/ScheduledFlipbooks";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import FlipbookList from "../FlipbookList/FlipbookList";
 import AddPage from "../AddPage/AddPage";
 import AddCustomPage from "../AddCustomPage/AddCustomPage";
@@ -44,7 +51,7 @@ function Dashboard() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        sidebarRef.current && 
+        sidebarRef.current &&
         !sidebarRef.current.contains(event.target) &&
         toggleButtonRef.current &&
         !toggleButtonRef.current.contains(event.target)
@@ -53,10 +60,10 @@ function Dashboard() {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -65,13 +72,13 @@ function Dashboard() {
   };
 
   // Only show back button if not on the main flipbook list
-  const showBackButton = !location.pathname.endsWith('/flipbooks');
+  const showBackButton = !location.pathname.endsWith("/flipbooks");
 
   return (
     <div className="dashboard">
-      <div 
+      <div
         ref={sidebarRef}
-        className={`sidebar ${isSidebarOpen ? 'active' : ''}`}
+        className={`sidebar ${isSidebarOpen ? "active" : ""}`}
       >
         <div className="logo">Flipbook Admin</div>
         <nav>
@@ -100,18 +107,15 @@ function Dashboard() {
       <div className="main-content">
         <div className="header">
           <div className="header-content">
-            <button 
+            <button
               ref={toggleButtonRef}
-              className="mobile-menu-toggle" 
+              className="mobile-menu-toggle"
               onClick={toggleSidebar}
             >
               <IoMenuOutline />
             </button>
 
-            <button 
-              onClick={() => navigate(-1)} 
-              className="header-back-button"
-            >
+            <button onClick={() => navigate(-1)} className="header-back-button">
               <IoArrowBackOutline className="icon" />
             </button>
 
@@ -135,7 +139,10 @@ function Dashboard() {
           />
           <Route path="/scheduled" element={<ScheduledFlipbooks />} />
           <Route path="/add-page/:id" element={<AddPage />} />
-          <Route path="/add-custom-page/:flipbookId" element={<AddCustomPage />} />
+          <Route
+            path="/add-custom-page/:flipbookId"
+            element={<AddCustomPage />}
+          />
           <Route path="/custom-pages/:id" element={<CustomPageEditor />} />
           <Route path="/published" element={<PublishedFlipbooks />} />
           <Route path="/flipbooks" element={<FlipbookList />} />
@@ -151,7 +158,7 @@ function FlipbookEditor({
   error,
   publishFlipbook,
   scheduleFlipbook,
-  getFlipbookById
+  getFlipbookById,
 }) {
   const { id } = useParams();
 
@@ -198,12 +205,18 @@ function FlipbookEditor({
   return (
     <>
       <div className="publish-buttons">
-        <button onClick={() => setOpenPublishModal(true)} className="action-button primary">
+        <button
+          onClick={() => setOpenPublishModal(true)}
+          className="action-button primary"
+        >
           <IoBookOutline className="icon" />
           Publish New Issue
         </button>
         <div className="divider">|</div>
-        <button onClick={() => setIsScheduling(!isScheduling)} className="action-button secondary">
+        <button
+          onClick={() => setIsScheduling(!isScheduling)}
+          className="action-button secondary"
+        >
           <IoTimeOutline className="icon" />
           Schedule Publication
         </button>
@@ -225,7 +238,10 @@ function FlipbookEditor({
         </Link>
         <div className="divider">|</div>
 
-        <Link to={`/admin/admin-dashboard/custom-pages/${id}`} className="action-button editor animated">
+        <Link
+          to={`/admin/admin-dashboard/custom-pages/${id}`}
+          className="action-button editor animated"
+        >
           <FaEdit className="icon" />
           Custom Page Editor
         </Link>
@@ -246,9 +262,10 @@ function FlipbookEditor({
                 <p className="error-message">{error}</p>
               </div>
             )}
-            {(!flipbook.pages || 
-              flipbook.pages.filter(page => !page.isCustom && page.pageType !== 'IndexPage').length === 0
-            ) && (
+            {(!flipbook.pages ||
+              flipbook.pages.filter(
+                (page) => !page.isCustom && page.pageType !== "IndexPage"
+              ).length === 0) && (
               <div className="no-pages-state">
                 <p>No normal pages available</p>
                 <p>Check for custom pages!</p>
@@ -258,7 +275,9 @@ function FlipbookEditor({
             {flipbook.pages &&
               flipbook.pages.length > 0 &&
               [...flipbook.pages]
-                .filter(page => !page.isCustom && page.pageType !== 'IndexPage')
+                .filter(
+                  (page) => !page.isCustom && page.pageType !== "IndexPage"
+                )
                 .sort((a, b) => a.pageNumber - b.pageNumber)
                 .map((page) => (
                   <PageCard
@@ -304,7 +323,13 @@ function FlipbookEditor({
             {/* Buttons */}
             <div className="modal-actions">
               <button
-                onClick={() => handlePublishFlipbook(flipbook._id, publishName, publishIssueName)}
+                onClick={() =>
+                  handlePublishFlipbook(
+                    flipbook._id,
+                    publishName,
+                    publishIssueName
+                  )
+                }
                 className="create-btn"
               >
                 Publish
@@ -353,20 +378,23 @@ function FlipbookEditor({
               <input
                 type="datetime-local"
                 onChange={(e) => setScheduleDate(e.target.value)}
-                value={scheduleDate.toLocaleString('en-CA', {
-                  timeZone: 'Asia/Kolkata'
-                }).replace(/,/g, '').slice(0, 16)}
-                min={new Date().toLocaleString('en-CA', {
-                  timeZone: 'Asia/Kolkata'
-                }).replace(/,/g, '').slice(0, 16)}
+                value={scheduleDate
+                  .toLocaleString("en-CA", {
+                    timeZone: "Asia/Kolkata",
+                  })
+                  .replace(/,/g, "")
+                  .slice(0, 16)}
+                min={new Date()
+                  .toLocaleString("en-CA", {
+                    timeZone: "Asia/Kolkata",
+                  })
+                  .replace(/,/g, "")
+                  .slice(0, 16)}
               />
             </div>
 
             <div className="modal-actions">
-              <button
-                onClick={handleSchedulePublish}
-                className="create-btn"
-              >
+              <button onClick={handleSchedulePublish} className="create-btn">
                 Schedule Publication
               </button>
               <button
@@ -386,18 +414,22 @@ function FlipbookEditor({
 function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const updatePage = useFlipbookStore((state) => state.updatePage);
   const deletePage = useFlipbookStore((state) => state.deletePage);
-  
+
   console.log("PageData received:", pageData); // Debug log
-  
+
   // Initialize state based on page type
   const [title, setTitle] = useState(pageData?.title || "");
   const [description, setDescription] = useState(pageData?.description || "");
   const [contentType, setContentType] = useState(pageData?.contentType || "");
   const [content, setContent] = useState(pageData?.content || "");
-  
+
   // Add state for index page specific fields
   const [images, setImages] = useState(pageData?.images || []);
   const [pagesTitles, setPagesTitles] = useState(pageData?.pagesTitles || []);
+
+  // Add these state variables at the top of the PageCard component
+  const [uploadMethod, setUploadMethod] = useState("url");
+  const [file, setFile] = useState(null);
 
   // Update state when pageData changes
   useEffect(() => {
@@ -414,37 +446,37 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const textareaRef = useRef(null);
 
   const handleUpdate = async () => {
-    let updateData;
-
-    // If pageType is not specified, default to 'Page'
-    const pageType = pageData.pageType || 'Page';
-
-    if (pageType === 'Page') {
-      updateData = {
-        title,
-        pageNumber,
-        pageType: 'Page',
-        description,
-        content,
-        contentType
-      };
-    } else if (pageType === 'IndexPage') {
-      updateData = {
-        title,
-        pageNumber,
-        pageType: 'IndexPage',
-        description,
-        content,
-        contentType,
-        images,
-        pagesTitles
-      };
-    }
-
     try {
+      let updateData;
+      let previewContent = content;
+      
+      if (uploadMethod === "file" && file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("title", title);
+        formData.append("pageNumber", pageNumber);
+        formData.append("description", description);
+        formData.append("contentType", contentType);
+        formData.append("pageType", "Page");
+
+        updateData = formData;
+        previewContent = URL.createObjectURL(file);
+      } else {
+        updateData = {
+          title,
+          pageNumber,
+          description,
+          content: content.startsWith('blob:') ? '' : content, // Don't send blob URLs to server
+          contentType,
+          pageType: "Page"
+        };
+      }
+
       await updatePage(pageData._id, updateData, flipbookId);
+      setContent(previewContent); // Update content with preview URL
     } catch (error) {
       console.error("Failed to update page:", error);
+      toast.error("Failed to update page");
     }
   };
 
@@ -462,45 +494,23 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
     setContent(e.target.value);
   };
 
-  const renderContent = () => {
-    switch (contentType) {
-      case "image":
-        return content ? (
-          <img src={content} alt={`Page ${pageNumber}`} />
-        ) : (
-          <span>Enter image URL</span>
-        );
-      case "video":
-        const youtubeEmbedUrl = getYouTubeEmbedUrl(content);
-        return content ? (
-          <iframe
-            src={youtubeEmbedUrl}
-            title={`YouTube video for page ${pageNumber}`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <span>Enter YouTube URL</span>
-        );
-      case "map":
-        return content ? (
-          <iframe
-            src={content}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        ) : (
-          <span>Paste Google Maps embed code URL here</span>
-        );
-      default:
-        return <span>Select content type</span>;
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (contentType === "image" && !selectedFile.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+      if (contentType === "video" && !selectedFile.type.startsWith("video/")) {
+        toast.error("Please select a video file");
+        return;
+      }
+      setFile(selectedFile);
+      setContent(''); // Clear URL when file is selected
     }
   };
+
+  
 
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return "";
@@ -521,31 +531,8 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
     return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
   };
 
-  const getGoogleMapEmbedUrl = (url) => {
-    if (!url) return "";
-
-    if (url.includes("google.com/maps/embed")) {
-      return url;
-    }
-
-    if (url.includes("google.com/maps")) {
-      const placeMatch = url.match(/place\/([^\/]+)/);
-      const coordsMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-
-      if (placeMatch) {
-        return `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${placeMatch[1]}`;
-      } else if (coordsMatch) {
-        return `https://www.google.com/maps/embed/v1/view?key=YOUR_GOOGLE_MAPS_API_KEY&center=${coordsMatch[1]},${coordsMatch[2]}&zoom=15`;
-      }
-    }
-
-    return `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${encodeURIComponent(
-      url
-    )}`;
-  };
-
   // Default to 'Page' type if not specified
-  const pageType = pageData.pageType || 'Page';
+  const pageType = pageData.pageType || "Page";
 
   return (
     <div className="page-card">
@@ -579,17 +566,55 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
       </div>
 
       <div className="form-group">
-        <label>Content URL</label>
-        <input
-          type="text"
-          value={content}
-          onChange={handleContentChange}
-          placeholder={`Enter ${contentType} URL`}
-        />
+        <label>Upload Method</label>
+        <select
+          value={uploadMethod}
+          onChange={(e) => {
+            setUploadMethod(e.target.value);
+            setContent('');
+            setFile(null);
+          }}
+        >
+          <option value="url">URL</option>
+          <option value="file">File Upload</option>
+        </select>
       </div>
 
-      <div className={`content-preview ${!content ? "empty" : ""}`}>
-        {renderContent()}
+      <div className="form-group">
+        {uploadMethod === "url" ? (
+          <>
+            <label>Content URL</label>
+            <input
+              type="text"
+              value={content}
+              onChange={handleContentChange}
+              placeholder={`Enter ${contentType} URL`}
+            />
+          </>
+        ) : (
+          <>
+            <label>Upload File</label>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              accept={contentType === "image" ? "image/*" : "video/*"}
+            />
+            {file && (
+              <div className="file-info">
+                <p>Selected file: {file.name}</p>
+                <button 
+                  className="remove-file" 
+                  onClick={() => {
+                    setFile(null);
+                    setContent('');
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="form-group">
@@ -607,13 +632,17 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
       </div>
 
       {/* Additional fields only for IndexPage type */}
-      {pageType === 'IndexPage' && (
+      {pageType === "IndexPage" && (
         <>
           <div className="form-group">
             <label>Thumbnail Images</label>
             <textarea
-              value={images.join('\n')}
-              onChange={(e) => setImages(e.target.value.split('\n').filter(url => url.trim()))}
+              value={images.join("\n")}
+              onChange={(e) =>
+                setImages(
+                  e.target.value.split("\n").filter((url) => url.trim())
+                )
+              }
               placeholder="Enter image URLs (one per line)"
               style={{
                 resize: "vertical",
@@ -642,14 +671,18 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
                     value={page.pageNumber}
                     onChange={(e) => {
                       const newPagesTitles = [...pagesTitles];
-                      newPagesTitles[index].pageNumber = parseInt(e.target.value);
+                      newPagesTitles[index].pageNumber = parseInt(
+                        e.target.value
+                      );
                       setPagesTitles(newPagesTitles);
                     }}
                     placeholder="Page number"
                   />
                   <button
                     onClick={() => {
-                      const newPagesTitles = pagesTitles.filter((_, i) => i !== index);
+                      const newPagesTitles = pagesTitles.filter(
+                        (_, i) => i !== index
+                      );
                       setPagesTitles(newPagesTitles);
                     }}
                   >
@@ -659,7 +692,10 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
               ))}
               <button
                 onClick={() => {
-                  setPagesTitles([...pagesTitles, { title: '', pageNumber: '' }]);
+                  setPagesTitles([
+                    ...pagesTitles,
+                    { title: "", pageNumber: "" },
+                  ]);
                 }}
               >
                 Add Page

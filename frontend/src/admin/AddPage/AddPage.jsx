@@ -1,6 +1,7 @@
 import "./AddPage.scss";
 import { useState } from "react";
-import useFlipbookStore  from "../../stores/useFlipbookStore";
+import useFlipbookStore from "../../stores/useFlipbookStore";
+
 function AddPage() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -8,17 +9,30 @@ function AddPage() {
     const [content, setContent] = useState("");
     const [pageNumber, setPageNumber] = useState("");
     const [formError, setFormError] = useState("");
+    const [uploadMethod, setUploadMethod] = useState("url");
+    const [file, setFile] = useState(null);
     const { loading, addPage, flipbook, error } = useFlipbookStore();
   
     const renderContentPreview = () => {
       switch (contentType) {
         case "image":
+          if (uploadMethod === "file" && file) {
+            return <img src={URL.createObjectURL(file)} alt="Preview" />;
+          }
           return content ? (
             <img src={content} alt="Preview" />
           ) : (
-            <span>Enter image URL</span>
+            <span>Enter image URL or upload an image</span>
           );
         case "video":
+          if (uploadMethod === "file" && file) {
+            return (
+              <video controls>
+                <source src={URL.createObjectURL(file)} type={file.type} />
+                Your browser does not support the video tag.
+              </video>
+            );
+          }
           const youtubeEmbedUrl = getYouTubeEmbedUrl(content);
           return content ? (
             <iframe
@@ -29,7 +43,7 @@ function AddPage() {
               allowFullScreen
             />
           ) : (
-            <span>Enter YouTube URL</span>
+            <span>Enter YouTube URL or upload a video</span>
           );
         case "map":
           return content ? (
@@ -65,16 +79,41 @@ function AddPage() {
       return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
     };
   
+    const handleFileChange = (e) => {
+      const selectedFile = e.target.files[0];
+      if (selectedFile) {
+        if (contentType === "image" && !selectedFile.type.startsWith("image/")) {
+          setFormError("Please select an image file");
+          return;
+        }
+        if (contentType === "video" && !selectedFile.type.startsWith("video/")) {
+          setFormError("Please select a video file");
+          return;
+        }
+        setFile(selectedFile);
+        setFormError("");
+      }
+    };
+
     const handleSubmit = async (e) => {
       e.preventDefault();
       setFormError("");
   
       try {
+        let finalContent = content;
+        
+        if (uploadMethod === "file" && file) {
+          const formData = new FormData();
+          formData.append("file", file);
+          
+          finalContent = URL.createObjectURL(file);
+        }
+
         await addPage(
           {
             title,
             description,
-            content,
+            content: finalContent,
             contentType,
             pageNumber: parseInt(pageNumber) || undefined,
           },
@@ -86,6 +125,8 @@ function AddPage() {
         setContent("");
         setPageNumber("");
         setContentType("image");
+        setFile(null);
+        setUploadMethod("url");
       } catch (error) {
         setFormError(error);
       }
@@ -119,15 +160,41 @@ function AddPage() {
               <option value="map">Map</option>
             </select>
           </div>
+
+          {contentType !== "map" && (
+            <div className="form-group">
+              <label>Upload Method</label>
+              <select
+                value={uploadMethod}
+                onChange={(e) => setUploadMethod(e.target.value)}
+              >
+                <option value="url">URL</option>
+                <option value="file">File Upload</option>
+              </select>
+            </div>
+          )}
   
           <div className="form-group">
-            <label>Content URL</label>
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={`Enter ${contentType} URL`}
-            />
+            {uploadMethod === "url" ? (
+              <>
+                <label>Content URL</label>
+                <input
+                  type="text"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder={`Enter ${contentType} URL`}
+                />
+              </>
+            ) : (
+              <>
+                <label>Upload File</label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept={contentType === "image" ? "image/*" : "video/*"}
+                />
+              </>
+            )}
           </div>
   
           <div className="content-preview">{renderContentPreview()}</div>
@@ -165,4 +232,4 @@ function AddPage() {
     );
   }
 
-  export default AddPage
+  export default AddPage;

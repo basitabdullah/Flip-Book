@@ -109,6 +109,14 @@ const PublishedSocialPage = BasePublishedPage.discriminator(
   })
 );
 
+// Published reviews or map page
+const PublishedReviewsOrMapPage = BasePublishedPage.discriminator(
+  "PublishedReviewsOrMapPage",
+  new mongoose.Schema({
+    content: { type: String, required: true },
+    isCustom: { type: Boolean, default: true },
+  })
+);
 const publishedFlipbookSchema = new mongoose.Schema({
   issue: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -135,4 +143,5 @@ export {
   PublishedGalleryPage,
   PublishedCatalogPage,
   PublishedSocialPage,
+  PublishedReviewsOrMapPage
 };

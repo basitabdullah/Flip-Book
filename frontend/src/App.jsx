@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/published-editor/:flipbookId" element={<PublishedEditor />} />
         <Route path="/admin/scheduled-flipbooks" element={<ScheduledFlipbooks />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
       <Toaster />
     </BrowserRouter>
   );

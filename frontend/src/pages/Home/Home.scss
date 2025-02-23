@@ -1,13 +1,15 @@
-
 .home {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: clamp(10px, 2vw, 20px);
+  align-items: flex-start;
+  min-height: calc(100vh - 50px);
   background-size: cover;
   background-position: center;
-  background-image: url("https://img.freepik.com/free-photo/whitish-gray-textured-wallpaper-pattern_1194-6769.jpg?t=st=1738651849~exp=1738655449~hmac=a27f01cb5dbf8ba2b6498ba45bf582d0032df3b929d2b9a242154a8f90a1f0c2&w=1060");
+  background-color: #212121;
+  overflow: hidden;
+  padding-top: 20px;
+  
+
 
   .page {
     box-shadow: inset -5px 0 20px -7px rgba(0, 0, 0, 0.2),

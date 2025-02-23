@@ -1,6 +1,46 @@
 import mongoose from "mongoose";
 import { Flipbook } from "../models/flipbookModel.js";
 import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const uploadDir = 'backend/uploads/pageContent';
+
+// Ensure upload directory exists
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'backend/uploads/pageContent/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|mp4|webm|mov/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb('Error: Only images and videos are allowed!');
+    }
+  }
+}).single('file');
+
 // Get a flipbook by ID
 
 export const getAllFlipbooks = async (req, res) => {
@@ -119,113 +159,113 @@ export const getPageByNumber = async (req, res) => {
 
 // Create a new page
 export const createPage = async (req, res) => {
-  const { flipbookId } = req.params;
-  const { title, pageNumber, description, content, contentType } = req.body;
-
-  try {
-    // Find the specific flipbook by ID
-    const flipbook = await Flipbook.findById(flipbookId);
-
-    // If the flipbook does not exist
-    if (!flipbook) {
-      return res.status(404).json({ message: "Flipbook not found." });
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'Error uploading file' });
     }
 
-    // Check if a page with the same page number already exists
-    const existingPage = flipbook.pages.find(
-      (p) => p.pageNumber === parseInt(pageNumber, 10)
-    );
-    if (existingPage) {
-      return res.status(400).json({ message: "Page number already exists." });
+    const { flipbookId } = req.params;
+    const { title, pageNumber, description, contentType } = req.body;
+
+    try {
+      const flipbook = await Flipbook.findById(flipbookId);
+      if (!flipbook) {
+        return res.status(404).json({ message: "Flipbook not found." });
+      }
+
+      const existingPage = flipbook.pages.find(
+        (p) => p.pageNumber === parseInt(pageNumber, 10)
+      );
+      if (existingPage) {
+        return res.status(400).json({ message: "Page number already exists." });
+      }
+
+      let content = req.body.content;
+      
+      // If file was uploaded, use its path
+      if (req.file) {
+        content = `/uploads/pageContent/${req.file.filename}`;
+      }
+
+      flipbook.pages.push({
+        pageType: "Page",
+        title,
+        pageNumber,
+        description,
+        content,
+        contentType,
+      });
+
+      await flipbook.save();
+      res.status(201).json({ message: "Page added successfully.", flipbook });
+    } catch (error) {
+      console.error("Error creating page:", error);
+      res.status(500).json({ message: error.message });
     }
-
-    // Add the new page to the flipbook with pageType 'Page'
-    flipbook.pages.push({
-      pageType: "Page",
-      title,
-      pageNumber,
-      description,
-      content,
-      contentType,
-    });
-
-    await flipbook.save();
-
-    res.status(201).json({ message: "Page added successfully.", flipbook });
-  } catch (error) {
-    console.error("Error creating page:", error);
-    res.status(500).json({ message: error.message });
-  }
+  });
 };
 
 // Update an existing page
 export const updatePage = async (req, res) => {
-  const { title, description, content, pageNumber, contentType } = req.body;
-  const { pageId } = req.params;
-  const { flipbookId } = req.params;
-
-  console.log("Received request with:", {
-    flipbookId,
-    pageId,
-    body: req.body,
-  });
-
-  // Validate MongoDB ObjectId format
-  if (
-    !mongoose.Types.ObjectId.isValid(flipbookId) ||
-    !mongoose.Types.ObjectId.isValid(pageId)
-  ) {
-    return res
-      .status(400)
-      .json({ message: "Invalid flipbook or page ID format" });
-  }
-
-  try {
-    // Find the specific flipbook by ID
-    const flipbook = await Flipbook.findById(flipbookId);
-    console.log("Flipbook query result:", flipbook);
-
-    if (!flipbook) {
-      return res.status(404).json({ message: "Flipbook not found." });
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'Error uploading file' });
     }
 
-    // Find the page by ID within the flipbook's pages array
-    const pageIndex = flipbook.pages.findIndex(
-      (p) => p._id.toString() === pageId
-    );
+    const { title, description, pageNumber, contentType } = req.body;
+    const { pageId, flipbookId } = req.params;
 
-    if (pageIndex === -1) {
-      return res.status(404).json({ message: "Page not found." });
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(flipbookId) || !mongoose.Types.ObjectId.isValid(pageId)) {
+      return res.status(400).json({ message: "Invalid flipbook or page ID format" });
     }
 
-    // Check if the new page number already exists (if pageNumber is being changed)
-    if (pageNumber && pageNumber !== flipbook.pages[pageIndex].pageNumber) {
-      const pageExists = flipbook.pages.some(
-        (p, idx) => idx !== pageIndex && p.pageNumber === pageNumber
-      );
-      if (pageExists) {
-        return res.status(400).json({ message: "Page number already exists." });
+    try {
+      const flipbook = await Flipbook.findById(flipbookId);
+      if (!flipbook) {
+        return res.status(404).json({ message: "Flipbook not found." });
       }
+
+      const pageIndex = flipbook.pages.findIndex(p => p._id.toString() === pageId);
+      if (pageIndex === -1) {
+        return res.status(404).json({ message: "Page not found." });
+      }
+
+      // Check for duplicate page number
+      if (pageNumber && pageNumber !== flipbook.pages[pageIndex].pageNumber) {
+        const pageExists = flipbook.pages.some(
+          (p, idx) => idx !== pageIndex && p.pageNumber === pageNumber
+        );
+        if (pageExists) {
+          return res.status(400).json({ message: "Page number already exists." });
+        }
+      }
+
+      // Handle content update
+      let content = req.body.content;
+      if (req.file) {
+        // If new file is uploaded, use its path
+        content = `/uploads/pageContent/${req.file.filename}`;
+      }
+
+      // Update the page while preserving pageType
+      flipbook.pages[pageIndex] = {
+        ...flipbook.pages[pageIndex],
+        title: title || flipbook.pages[pageIndex].title,
+        description: description || flipbook.pages[pageIndex].description,
+        content: content || flipbook.pages[pageIndex].content,
+        contentType: contentType || flipbook.pages[pageIndex].contentType,
+        pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber,
+        pageType: "Page",
+      };
+
+      await flipbook.save();
+      res.status(200).json({ message: "Page updated successfully.", flipbook });
+    } catch (error) {
+      console.error("Error updating page:", error);
+      res.status(500).json({ message: error.message });
     }
-
-    // Update the page while preserving pageType
-    flipbook.pages[pageIndex] = {
-      ...flipbook.pages[pageIndex],
-      title: title || flipbook.pages[pageIndex].title,
-      description: description || flipbook.pages[pageIndex].description,
-      content: content || flipbook.pages[pageIndex].content,
-      contentType: contentType || flipbook.pages[pageIndex].contentType,
-      pageNumber: pageNumber || flipbook.pages[pageIndex].pageNumber,
-      pageType: "Page", // Ensure pageType remains 'Page'
-    };
-
-    await flipbook.save();
-
-    res.status(200).json({ message: "Page updated successfully.", flipbook });
-  } catch (error) {
-    console.error("Error updating page:", error);
-    res.status(500).json({ message: error.message });
-  }
+  });
 };
 
 // Delete a page
@@ -347,6 +387,14 @@ export const publishFlipbook = async (req, res) => {
             email: page.email,
             mapUrl: page.mapUrl,
             socialLinks: page.socialLinks,
+            isCustom: true,
+          };
+
+        case "ReviewsOrMap":
+          return {
+            ...basePage,
+            pageType: "PublishedReviewsOrMapPage",
+            content: page.content,
             isCustom: true,
           };
 
