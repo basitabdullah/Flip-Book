@@ -30,6 +30,7 @@ const Login = () => {
       navigate('/');
     } catch (err) {
       console.error('Login failed');
+      toast.error('Invalid email or password');
     }
   };
 

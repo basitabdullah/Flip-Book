@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import useGalleryPageStore from '../../stores/useGalleryPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
@@ -10,13 +10,16 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const [title, setTitle] = useState(pageData?.title || '');
   const [subtitle, setSubtitle] = useState(pageData?.subtitle || '');
   const [imagesData, setImagesData] = useState(pageData?.imagesData || []);
+  const [inputTypes, setInputTypes] = useState(imagesData.map(() => 'url'));
+  const fileInputRef = useRef(null);
 
-  const handleAddImage = () => {
+  const handleAddImage = () => {  
     setImagesData([...imagesData, {
       imagesDataTitle: '',
       imagesDataSubtitle: '',
       imagesDataImage: ''
     }]);
+    setInputTypes([...inputTypes, 'url']);
   };
 
   const handleUpdateImageData = (index, field, value) => {
@@ -30,6 +33,28 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
   const handleRemoveImage = (index) => {
     setImagesData(imagesData.filter((_, i) => i !== index));
+  };
+
+  const handleFileUpload = async (index) => {
+    const file = fileInputRef.current.files[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const { imageUrl } = await response.json();
+      handleUpdateImageData(index, 'imagesDataImage', imageUrl);
+    } catch (error) {
+      toast.error('Failed to upload image');
+    }
   };
 
   const handleUpdate = async () => {
@@ -116,12 +141,52 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
                   onChange={(e) => handleUpdateImageData(index, 'imagesDataSubtitle', e.target.value)}
                   placeholder="Image Subtitle"
                 />
-                <input
-                  type="text"
-                  value={image.imagesDataImage}
-                  onChange={(e) => handleUpdateImageData(index, 'imagesDataImage', e.target.value)}
-                  placeholder="Image URL"
-                />
+                <div className="image-input-group">
+                  <select 
+                    value={inputTypes[index]} 
+                    onChange={(e) => {
+                      const newInputTypes = [...inputTypes];
+                      newInputTypes[index] = e.target.value;
+                      setInputTypes(newInputTypes);
+                    }}
+                    className="input-type-select"
+                  >
+                    <option value="url">URL</option>
+                    <option value="upload">Upload</option>
+                  </select>
+                  
+                  {inputTypes[index] === 'url' ? (
+                    <input
+                      type="text"
+                      value={image.imagesDataImage}
+                      onChange={(e) => handleUpdateImageData(index, 'imagesDataImage', e.target.value)}
+                      placeholder="Image URL"
+                    />
+                  ) : (
+                    <div className="upload-container">
+                      <input
+                        type="text"
+                        value={image.imagesDataImage}
+                        placeholder="No file chosen"
+                        readOnly
+                      />
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={() => handleFileUpload(index)}
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current.click()}
+                        className="upload-btn"
+                      >
+                        Upload
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveImage(index)}

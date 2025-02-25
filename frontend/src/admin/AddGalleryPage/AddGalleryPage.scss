@@ -15,9 +15,11 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
+      color: #444;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       padding: 8px 12px;
       border: 1px solid #ddd;
@@ -27,6 +29,7 @@
       &:focus {
         outline: none;
         border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
       }
     }
   }
@@ -35,7 +38,7 @@
     margin-top: 30px;
     border: 1px solid #ddd;
     padding: 20px;
-    border-radius: 4px;
+    border-radius: 8px;
 
     h4 {
       margin-bottom: 15px;
@@ -44,36 +47,71 @@
 
     .image-entry {
       display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 15px;
+      align-items: flex-start;
+      margin-bottom: 20px;
       padding: 15px;
       background-color: #f8f9fa;
-      border-radius: 4px;
+      border-radius: 6px;
 
       .image-fields {
         flex: 1;
-        display: grid;
+        display: flex;
+        flex-direction: column;
         gap: 10px;
-        grid-template-columns: repeat(3, 1fr);
-      }
 
-      input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
+        input[type="text"],
+        input[type="file"] {
+          width: 100%;
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 14px;
+
+          &:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+          }
+        }
+
+        input[type="file"] {
+          padding: 6px;
+          background-color: white;
+
+          &::file-selector-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+
+            &:hover {
+              background-color: #0056b3;
+            }
+          }
+        }
       }
 
       .remove-btn {
-        padding: 8px 12px;
+        padding: 8px 16px;
         background-color: #dc3545;
         color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        font-size: 14px;
 
         &:hover {
           background-color: #c82333;
+        }
+
+        &:disabled {
+          background-color: #6c757d;
+          cursor: not-allowed;
         }
       }
     }
@@ -86,6 +124,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 14px;
       margin-top: 10px;
 
       &:hover {
@@ -110,8 +149,23 @@
     }
 
     &:disabled {
-      background-color: #ccc;
+      background-color: #6c757d;
       cursor: not-allowed;
     }
+  }
+
+  // Error message styling
+  .error-message {
+    color: #dc3545;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+
+  // Preview image styling
+  .image-preview {
+    margin-top: 10px;
+    max-width: 200px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
   }
 } 

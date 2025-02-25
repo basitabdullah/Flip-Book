@@ -7,14 +7,16 @@ import { FaShareAlt } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BiScreenshot } from "react-icons/bi";
 import { useUserStore } from "../../stores/useUserStore";
+import { IoLogOutOutline } from "react-icons/io5";
 
 const Navigation = ({ bookRef, onStartSnipping }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTocModal, setShowTocModal] = useState(false);
-  const { user } = useUserStore();
+  const { user, logout } = useUserStore();
+  const navigate = useNavigate();
   const goForward = () => {
     if (bookRef?.current) {
       bookRef.current.pageFlip().flipNext();
@@ -26,8 +28,6 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
       bookRef.current.pageFlip().flipPrev();
     }
   };
-
- 
 
   const handleShare = () => {
     setShowShareModal(true);
@@ -56,6 +56,11 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
     setShowTocModal(true);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <>
       <header className="navigation">
@@ -73,9 +78,16 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
             <FaShareAlt />
           </div>
          
-          <Link to="/login" className="button" title="login">
-            <CgProfile />
-          </Link>
+          {user ? (
+            <div className="button" title="Logout" onClick={handleLogout}>
+              <IoLogOutOutline />
+            </div>
+          ) : (
+            <Link to="/login" className="button" title="login">
+              <CgProfile />
+            </Link>
+          )}
+
           {user && user.role === "admin" && (
             <Link to="/admin/admin-dashboard/flipbooks" className="button" title="Search">
               <FaLock />

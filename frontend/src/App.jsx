@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import "./styles/global.scss";
@@ -10,8 +10,15 @@ import { Toaster } from "react-hot-toast";
 import PublishedEditor from './admin/PublishedEditor/PublishedEditor';
 import ScheduledFlipbooks from './admin/ScheduledFlipbooks/ScheduledFlipbooks';
 import ScrollToTop from "./components/ScrollToTop";
+import { useUserStore } from "./stores/useUserStore";
 
 const App = () => {
+  const { checkAuth } = useUserStore();
+  
+  useEffect(() => {
+    checkAuth();
+  }, []);
+  
   return (
     <BrowserRouter>
     <ScrollToTop />

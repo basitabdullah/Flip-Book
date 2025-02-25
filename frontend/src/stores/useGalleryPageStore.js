@@ -41,9 +41,37 @@ const useGalleryPageStore = create((set, get) => ({
   addGalleryPage: async (flipbookId, pageData) => {
     try {
       set({ loading: true, error: null });
+
+      // Create a new FormData to ensure proper formatting
+      const formData = new FormData();
+      
+      // Add basic fields
+      formData.append('title', pageData.get('title'));
+      formData.append('pageNumber', pageData.get('pageNumber'));
+      formData.append('subtitle', pageData.get('subtitle'));
+      
+      // Parse and re-stringify imagesData to ensure it's an array
+      const imagesDataString = pageData.get('imagesData');
+      const imagesData = JSON.parse(imagesDataString);
+      if (!Array.isArray(imagesData)) {
+        throw new Error('ImagesData should be an array');
+      }
+      formData.append('imagesData', JSON.stringify(imagesData));
+
+      // Add any image files
+      const files = pageData.getAll('images');
+      files.forEach(file => {
+        formData.append('images', file);
+      });
+
       const response = await axiosInstance.post(
         `/flipbook/${flipbookId}/gallery`,
-        pageData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
 
       if (!response.data || !response.data.flipbook) {
@@ -66,9 +94,28 @@ const useGalleryPageStore = create((set, get) => ({
   updateGalleryPage: async (flipbookId, pageId, pageData) => {
     try {
       set({ loading: true, error: null });
+      
+      const formData = new FormData();
+      formData.append("title", pageData.title);
+      formData.append("pageNumber", pageData.pageNumber);
+      formData.append("subtitle", pageData.subtitle);
+      formData.append("imagesData", JSON.stringify(pageData.imagesData));
+
+      // Append multiple images if they exist
+      if (pageData.images) {
+        pageData.images.forEach((file) => {
+          formData.append("images", file);
+        });
+      }
+
       const response = await axiosInstance.put(
         `/flipbook/${flipbookId}/gallery/${pageId}`,
-        pageData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
 
       if (!response.data || !response.data.flipbook) {

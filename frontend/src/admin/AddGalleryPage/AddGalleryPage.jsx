@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useFlipbookStore from '../../stores/useFlipbookStore';
+import useGalleryPageStore from '../../stores/useGalleryPageStore';
 import { toast } from 'react-hot-toast';
 import './AddGalleryPage.scss';
 
@@ -14,8 +14,10 @@ const AddGalleryPage = ({ flipbookId }) => {
       imagesDataImage: ''
     }
   ]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadMethod, setUploadMethod] = useState('url');
   
-  const { addGalleryPage, loading, getFlipbookById } = useFlipbookStore();
+  const { addGalleryPage, loading } = useGalleryPageStore();
 
   const handleAddImage = () => {
     setImagesData([
@@ -37,9 +39,24 @@ const AddGalleryPage = ({ flipbookId }) => {
     setImagesData(updatedImages);
   };
 
+  const handleFileChange = (e, index) => {
+    const file = e.target.files[0];
+    if (file) {
+      const newFiles = [...selectedFiles];
+      newFiles[index] = file;
+      setSelectedFiles(newFiles);
+    } else {
+      const newFiles = [...selectedFiles];
+      newFiles[index] = null;
+      setSelectedFiles(newFiles);
+      handleUpdateImage(index, 'imagesDataImage', '');
+    }
+  };
+
   const handleRemoveImage = (index) => {
     if (imagesData.length > 1) {
       setImagesData(imagesData.filter((_, i) => i !== index));
+      setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
     } else {
       toast.error('At least one image is required');
     }
@@ -57,7 +74,7 @@ const AddGalleryPage = ({ flipbookId }) => {
     const isValidImages = imagesData.every(img => 
       img.imagesDataTitle && 
       img.imagesDataSubtitle && 
-      img.imagesDataImage
+      (img.imagesDataImage || uploadMethod === 'file')
     );
 
     if (!isValidImages) {
@@ -72,22 +89,33 @@ const AddGalleryPage = ({ flipbookId }) => {
         return;
       }
 
-      // Call the store method with the correct data structure including pageType
-      await addGalleryPage(flipbookId, {
-        pageType: 'Gallery', // Add this to match the discriminator
-        title,
-        pageNumber: parsedPageNumber,
-        subtitle,
-        imagesData: imagesData.map(img => ({
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('pageNumber', parsedPageNumber);
+      formData.append('subtitle', subtitle);
+
+      // Handle image data differently based on upload method
+      if (uploadMethod === 'file') {
+        // Send image metadata without URLs
+        const imageMetadata = imagesData.map(img => ({
           imagesDataTitle: img.imagesDataTitle,
           imagesDataSubtitle: img.imagesDataSubtitle,
-          imagesDataImage: img.imagesDataImage
-        })),
-        isCustom: true // Add this to match the schema
-      });
+          imagesDataImage: '' // Backend will handle file paths
+        }));
+        formData.append('imagesData', JSON.stringify(imageMetadata));
 
-      // Refresh the flipbook data
-      await getFlipbookById(flipbookId);
+        // Append actual files
+        selectedFiles.forEach((file, index) => {
+          if (file) {
+            formData.append('images', file);
+          }
+        });
+      } else {
+        // For URL method, send the data as is
+        formData.append('imagesData', JSON.stringify(imagesData));
+      }
+
+      await addGalleryPage(flipbookId, formData);
 
       // Reset form
       setTitle('');
@@ -98,6 +126,8 @@ const AddGalleryPage = ({ flipbookId }) => {
         imagesDataSubtitle: '', 
         imagesDataImage: '' 
       }]);
+      setSelectedFiles([]);
+      setUploadMethod('url');
 
       toast.success('Gallery page added successfully');
     } catch (error) {
@@ -144,6 +174,17 @@ const AddGalleryPage = ({ flipbookId }) => {
           />
         </div>
 
+        <div className="form-group">
+          <label>Upload Method</label>
+          <select
+            value={uploadMethod}
+            onChange={(e) => setUploadMethod(e.target.value)}
+          >
+            <option value="url">URL</option>
+            <option value="file">File Upload</option>
+          </select>
+        </div>
+
         <div className="images-section">
           <h4>Images</h4>
           {imagesData.map((image, index) => (
@@ -163,13 +204,23 @@ const AddGalleryPage = ({ flipbookId }) => {
                   placeholder="Image subtitle"
                   required
                 />
-                <input
-                  type="text"
-                  value={image.imagesDataImage}
-                  onChange={(e) => handleUpdateImage(index, 'imagesDataImage', e.target.value)}
-                  placeholder="Image URL"
-                  required
-                />
+                {uploadMethod === 'url' ? (
+                  <input
+                    type="text"
+                    value={image.imagesDataImage}
+                    onChange={(e) => handleUpdateImage(index, 'imagesDataImage', e.target.value)}
+                    placeholder="Image URL"
+                    required
+                  />
+                ) : (
+                  <input
+                    type="file"
+                    onChange={(e) => handleFileChange(e, index)}
+                    accept="image/*"
+                    key={`file-input-${index}`}
+                    required={!image.imagesDataImage}
+                  />
+                )}
               </div>
               <button
                 type="button"
