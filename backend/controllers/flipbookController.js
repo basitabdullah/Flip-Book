@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import { Flipbook } from "../models/flipbookModel.js";
 import { PublishedFlipbook } from "../models/publishedFlipbookModel.js";
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const uploadDir = 'backend/uploads/pageContent';
+const uploadDir = "backend/uploads/pageContent";
 
 // Ensure upload directory exists
 if (!fs.existsSync(uploadDir)) {
@@ -18,11 +18,11 @@ if (!fs.existsSync(uploadDir)) {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'backend/uploads/pageContent/');
+    cb(null, "backend/uploads/pageContent/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 
 const upload = multer({
@@ -30,16 +30,18 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|mp4|webm|mov/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = allowedTypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (extname && mimetype) {
       return cb(null, true);
     } else {
-      cb('Error: Only images and videos are allowed!');
+      cb("Error: Only images and videos are allowed!");
     }
-  }
-}).single('file');
+  },
+}).single("file");
 
 // Get a flipbook by ID
 
@@ -161,7 +163,9 @@ export const getPageByNumber = async (req, res) => {
 export const createPage = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message || 'Error uploading file' });
+      return res
+        .status(400)
+        .json({ message: err.message || "Error uploading file" });
     }
 
     const { flipbookId } = req.params;
@@ -181,7 +185,7 @@ export const createPage = async (req, res) => {
       }
 
       let content = req.body.content;
-      
+
       // If file was uploaded, use its path
       if (req.file) {
         content = `/uploads/pageContent/${req.file.filename}`;
@@ -209,15 +213,22 @@ export const createPage = async (req, res) => {
 export const updatePage = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message || 'Error uploading file' });
+      return res
+        .status(400)
+        .json({ message: err.message || "Error uploading file" });
     }
 
     const { title, description, pageNumber, contentType } = req.body;
     const { pageId, flipbookId } = req.params;
 
     // Validate MongoDB ObjectId format
-    if (!mongoose.Types.ObjectId.isValid(flipbookId) || !mongoose.Types.ObjectId.isValid(pageId)) {
-      return res.status(400).json({ message: "Invalid flipbook or page ID format" });
+    if (
+      !mongoose.Types.ObjectId.isValid(flipbookId) ||
+      !mongoose.Types.ObjectId.isValid(pageId)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Invalid flipbook or page ID format" });
     }
 
     try {
@@ -226,7 +237,9 @@ export const updatePage = async (req, res) => {
         return res.status(404).json({ message: "Flipbook not found." });
       }
 
-      const pageIndex = flipbook.pages.findIndex(p => p._id.toString() === pageId);
+      const pageIndex = flipbook.pages.findIndex(
+        (p) => p._id.toString() === pageId
+      );
       if (pageIndex === -1) {
         return res.status(404).json({ message: "Page not found." });
       }
@@ -237,7 +250,9 @@ export const updatePage = async (req, res) => {
           (p, idx) => idx !== pageIndex && p.pageNumber === pageNumber
         );
         if (pageExists) {
-          return res.status(400).json({ message: "Page number already exists." });
+          return res
+            .status(400)
+            .json({ message: "Page number already exists." });
         }
       }
 
@@ -316,109 +331,112 @@ export const publishFlipbook = async (req, res) => {
       {}, // match all documents
       { isPublished: false }
     );
-    
-    const validatedPages = flipbook.pages.map(page => {
-      const basePage = {
-        title: page.title,
-        pageNumber: page.pageNumber
-      };
 
-      switch (page.pageType) {
-        case "Page":
-          return {
-            ...basePage,
-            pageType: "PublishedPage",
-            description: page.description,
-            content: page.content,
-            contentType: page.contentType,
-          };
+    const validatedPages = flipbook.pages
+      .map((page) => {
+        const basePage = {
+          title: page.title,
+          pageNumber: page.pageNumber,
+        };
 
-        case "IndexPage":
-          return {
-            ...basePage,
-            pageType: "PublishedIndexPage",
-            images: page.images || [],
-            pagesTitles: page.pagesTitles || [],
-            isCustom: true,
-          };
+        switch (page.pageType) {
+          case "Page":
+            return {
+              ...basePage,
+              pageType: "PublishedPage",
+              description: page.description,
+              content: page.content,
+              contentType: page.contentType,
+            };
 
-        case "Gallery":
-          console.log("Processing Gallery Page:", page); // Debug log
-          return {
-            ...basePage,
-            pageType: "PublishedGalleryPage",
-            subtitle: page.subtitle,
-            imagesData: page.imagesData
-              ? page.imagesData.map((img) => ({
-                  imagesDataTitle: img.imagesDataTitle,
-                  imagesDataSubtitle: img.imagesDataSubtitle,
-                  imagesDataImage: img.imagesDataImage,
-                }))
-              : [],
-            isCustom: true,
-          };
+          case "IndexPage":
+            return {
+              ...basePage,
+              pageType: "PublishedIndexPage",
+              images: page.images || [],
+              pagesTitles: page.pagesTitles || [],
+              isCustom: true,
+            };
 
-        case "Catalog":
-          console.log("Processing Catalog Page:", page); // Debug log
-          return {
-            ...basePage,
-            pageType: "PublishedCatalogPage",
-            subtitle: page.subtitle,
-            catalogItems: page.catalogItems
-              ? page.catalogItems.map((item) => ({
-                  name: item.name,
-                  price: item.price,
-                  image: item.image,
-                  amenities: item.amenities,
-                }))
-              : [],
-            isCustom: true,
-          };
+          case "Gallery":
+            console.log("Processing Gallery Page:", page); // Debug log
+            return {
+              ...basePage,
+              pageType: "PublishedGalleryPage",
+              subtitle: page.subtitle,
+              imagesData: page.imagesData
+                ? page.imagesData.map((img) => ({
+                    imagesDataTitle: img.imagesDataTitle,
+                    imagesDataSubtitle: img.imagesDataSubtitle,
+                    imagesDataImage: img.imagesDataImage,
+                  }))
+                : [],
+              isCustom: true,
+            };
 
-        case "Social":
-          return {
-            ...basePage,
-            pageType: "PublishedSocialPage",
-            subtitle: page.subtitle,
-            street: page.street,
-            city: page.city,
-            postalCode: page.postalCode,
-            phone: page.phone,
-            email: page.email,
-            mapUrl: page.mapUrl,
-            socialLinks: page.socialLinks,
-            isCustom: true,
-          };
+          case "Catalog":
+            console.log("Processing Catalog Page:", page); // Debug log
+            return {
+              ...basePage,
+              pageType: "PublishedCatalogPage",
+              subtitle: page.subtitle,
+              catalogItems: page.catalogItems
+                ? page.catalogItems.map((item) => ({
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    amenities: item.amenities,
+                  }))
+                : [],
+              isCustom: true,
+            };
 
-        case "ReviewsOrMap":
-          return {
-            ...basePage,
-            pageType: "PublishedReviewsOrMapPage",
-            content: page.content,
-            isCustom: true,
-          };
+          case "Social":
+            return {
+              ...basePage,
+              pageType: "PublishedSocialPage",
+              subtitle: page.subtitle,
+              street: page.street,
+              city: page.city,
+              postalCode: page.postalCode,
+              phone: page.phone,
+              email: page.email,
+              mapUrl: page.mapUrl,
+              socialLinks: page.socialLinks,
+              isCustom: true,
+            };
 
-        default:
-          return null;
-      }
-    }).filter(page => page !== null);
+          case "ReviewsOrMap":
+            return {
+              ...basePage,
+              pageType: "PublishedReviewsOrMapPage",
+              content: page.content,
+              isCustom: true,
+            };
+
+          default:
+            return null;
+        }
+      })
+      .filter((page) => page !== null);
 
     const publishedFlipbook = new PublishedFlipbook({
       name,
       flipbook: flipbook._id,
       pages: validatedPages,
       issue: issueName,
-      isPublished: true,  // Set the latest one to published
+      isPublished: true, // Set the latest one to published
     });
 
     await publishedFlipbook.save();
 
     // Return the populated published flipbook with complete data
-    const populatedPublishedFlipbook = await PublishedFlipbook.findById(publishedFlipbook._id)
-      .populate({
-        path: 'flipbook',
-        model: 'Flipbook'
-      });
+    const populatedPublishedFlipbook = await PublishedFlipbook.findById(
+      publishedFlipbook._id
+    ).populate({
+      path: "flipbook",
+      model: "Flipbook",
+    });
 
     res.status(200).json({
       message: "Flipbook published successfully.",

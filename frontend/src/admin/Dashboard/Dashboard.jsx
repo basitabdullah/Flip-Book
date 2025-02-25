@@ -448,32 +448,27 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const handleUpdate = async () => {
     try {
       let updateData;
-      let previewContent = content;
+      let finalContent = content;
       
       if (uploadMethod === "file" && file) {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("title", title);
-        formData.append("pageNumber", pageNumber);
-        formData.append("description", description);
-        formData.append("contentType", contentType);
-        formData.append("pageType", "Page");
-
-        updateData = formData;
-        previewContent = URL.createObjectURL(file);
-      } else {
-        updateData = {
-          title,
-          pageNumber,
-          description,
-          content: content.startsWith('blob:') ? '' : content, // Don't send blob URLs to server
-          contentType,
-          pageType: "Page"
-        };
+        
+        finalContent = URL.createObjectURL(file);
       }
 
+      updateData = {
+        title,
+        description,
+        content: finalContent,
+        contentType,
+        pageNumber,
+        pageType: "Page"
+      };
+
       await updatePage(pageData._id, updateData, flipbookId);
-      setContent(previewContent); // Update content with preview URL
+      setContent(finalContent);
+      toast.success("Page updated successfully");
     } catch (error) {
       console.error("Failed to update page:", error);
       toast.error("Failed to update page");

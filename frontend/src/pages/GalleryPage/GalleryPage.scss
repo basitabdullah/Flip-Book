@@ -1,7 +1,7 @@
 .gallery-page {
   padding: 20px;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
   color: #333;
 
   h1 {
