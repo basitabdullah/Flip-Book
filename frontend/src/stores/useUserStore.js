@@ -62,7 +62,7 @@ export const useUserStore = create((set, get) => ({
       set({ user: res.data, checkingAuth: false });
     } catch (error) {
       set({ user: null, checkingAuth: false });
-      toast.error(error.response.message || "An unexpected error occured");
+      // toast.error(error.response.message || "An unexpected error occured");
     }
   },
 }));

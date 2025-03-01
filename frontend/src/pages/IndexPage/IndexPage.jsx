@@ -39,7 +39,11 @@ const IndexPage = ({ pageData }) => {
     return () => clearInterval(timer);
   }, [publishedPages.length]);
 
-  const backendUrl = "https://kweb.im";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
+
+  const formatImagePath = (path) => {
+    return path.replace(/\\/g, '/');
+  };
 
   return (
     <div className="index-page">
@@ -52,7 +56,10 @@ const IndexPage = ({ pageData }) => {
           <Slider {...settings}>
             {pageData.images.map((img) => (
               <div key={img} className="slide">
-                <img src={`${backendUrl}${img}`} alt={`slide ${img}`} />
+                <img 
+                  src={`${backendUrl}${formatImagePath(img)}`} 
+                  alt={`slide ${img}`} 
+                />
               </div>
             ))}
           </Slider>

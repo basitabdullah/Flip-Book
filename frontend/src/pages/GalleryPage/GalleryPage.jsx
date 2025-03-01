@@ -4,7 +4,9 @@ import './GalleryPage.scss';
 const GalleryPage = ({ pageData }) => {
   console.log('Gallery Page Data:', pageData);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const orientation = "horizontal";
 
+  
   useEffect(() => {
     if (pageData?.imagesData?.length) {
       const timer = setInterval(() => {
@@ -22,6 +24,7 @@ const GalleryPage = ({ pageData }) => {
   };
 
   if (!pageData) return null;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
 
   return (
     <div className="gallery-page">
@@ -36,8 +39,8 @@ const GalleryPage = ({ pageData }) => {
           {pageData.imagesData.map((image, index) => (
             <div key={index} className="carousel-slide">
               <img 
-                src={image.imagesDataImage} 
-                alt={image.imagesDataTitle} 
+                src={`${backendUrl}${image.imagesDataImage}`} 
+                alt={`${backendUrl}${image.imagesDataImage}`} 
                 loading="lazy" 
               />
               <div className="slide-content">
