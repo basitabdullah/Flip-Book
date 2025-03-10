@@ -1,27 +1,64 @@
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import useGalleryPageStore from '../../stores/useGalleryPageStore';
-import useCatalogPageStore from '../../stores/useCatalogPageStore';
-import useSocialPageStore from '../../stores/useSocialPageStore';
-import useIndexPageStore from '../../stores/useIndexPageStore';
-import useFlipbookStore from '../../stores/useFlipbookStore';
-import useReviewsOrMapStore from '../../stores/useReviewsOrMapStore';
-import IndexPageCard from './IndexPageCard';
-import GalleryPageCard from './GalleryPageCard';
-import CatalogPageCard from './CatalogPageCard';
-import SocialPageCard from './SocialPageCard';
-import ReviewsOrMapPageCard from './ReviewsOrMapPageCard';
-import './CustomPageEditor.scss';
-import Loader from '../../components/Loader/Loader';
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import useGalleryPageStore from "../../stores/useGalleryPageStore";
+import useCatalogPageStore from "../../stores/useCatalogPageStore";
+import useSocialPageStore from "../../stores/useSocialPageStore";
+import useIndexPageStore from "../../stores/useIndexPageStore";
+import useFlipbookStore from "../../stores/useFlipbookStore";
+import useReviewsOrMapStore from "../../stores/useReviewsOrMapStore";
+import useBackCoverStore from "../../stores/useBackCoverStore";
+import IndexPageCard from "./IndexPageCard";
+import GalleryPageCard from "./GalleryPageCard";
+import CatalogPageCard from "./CatalogPageCard";
+import SocialPageCard from "./SocialPageCard";
+import ReviewsOrMapPageCard from "./ReviewsOrMapPageCard";
+import BackPageCard from "./BackPageCard";
+import "./CustomPageEditor.scss";
+import Loader from "../../components/Loader/Loader";
 
 const CustomPageEditor = () => {
   const { id } = useParams();
-  const { indexPages, loading: indexLoading, error: indexError, fetchIndexPages } = useIndexPageStore();
-  const { galleryPages, loading: galleryLoading, error: galleryError, fetchGalleryPages } = useGalleryPageStore();
-  const { catalogPages, loading: catalogLoading, error: catalogError, fetchCatalogPages } = useCatalogPageStore();
-  const { socialPages, loading: socialLoading, error: socialError, fetchSocialPages } = useSocialPageStore();
-  const { reviewsOrMapPages, loading: reviewsOrMapLoading, error: reviewsOrMapError, fetchReviewsOrMapPages } = useReviewsOrMapStore();
-  const { getFlipbookById, loading: flipbookLoading } = useFlipbookStore();
+  const {
+    indexPages,
+    loading: indexLoading,
+    error: indexError,
+    fetchIndexPages,
+  } = useIndexPageStore();
+  const {
+    galleryPages,
+    loading: galleryLoading,
+    error: galleryError,
+    fetchGalleryPages,
+  } = useGalleryPageStore();
+  const {
+    catalogPages,
+    loading: catalogLoading,
+    error: catalogError,
+    fetchCatalogPages,
+  } = useCatalogPageStore();
+  const {
+    socialPages,
+    loading: socialLoading,
+    error: socialError,
+    fetchSocialPages,
+  } = useSocialPageStore();
+  const {
+    reviewsOrMapPages,
+    loading: reviewsOrMapLoading,
+    error: reviewsOrMapError,
+    fetchReviewsOrMapPages,
+  } = useReviewsOrMapStore();
+  const {
+    backCovers,
+    loading: backLoading,
+    error: backError,
+    fetchBackCovers,
+  } = useBackCoverStore();
+  const {
+    getFlipbookById,
+    loading: flipbookLoading,
+    flipbook,
+  } = useFlipbookStore();
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,14 +69,31 @@ const CustomPageEditor = () => {
         await fetchCatalogPages(id);
         await fetchSocialPages(id);
         await fetchReviewsOrMapPages(id);
+        await fetchBackCovers(id);
       }
     };
     loadData();
-  }, [id, getFlipbookById, fetchIndexPages, fetchGalleryPages, fetchCatalogPages, fetchSocialPages, fetchReviewsOrMapPages]);
+  }, [
+    id,
+    getFlipbookById,
+    fetchIndexPages,
+    fetchGalleryPages,
+    fetchCatalogPages,
+    fetchSocialPages,
+    fetchReviewsOrMapPages,
+    fetchBackCovers,
+  ]);
 
   const renderPageCard = (page) => {
+    if (!page) {
+      console.warn("Null or undefined page data");
+      return null;
+    }
+
+    console.log("Rendering page:", page.pageType, page);
+
     switch (page.pageType) {
-      case 'IndexPage':
+      case "IndexPage":
         return (
           <IndexPageCard
             key={`${page._id}-${page.pageNumber}`}
@@ -49,7 +103,7 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
-      case 'Gallery':
+      case "Gallery":
         return (
           <GalleryPageCard
             key={`${page._id}-${page.pageNumber}`}
@@ -59,7 +113,7 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
-      case 'Catalog':
+      case "Catalog":
         return (
           <CatalogPageCard
             key={`${page._id}-${page.pageNumber}`}
@@ -69,7 +123,7 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
-      case 'Social':
+      case "Social":
         return (
           <SocialPageCard
             key={`${page._id}-${page.pageNumber}`}
@@ -79,7 +133,7 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
-      case 'ReviewsOrMap':
+      case "ReviewsOrMap":
         return (
           <ReviewsOrMapPageCard
             key={`${page._id}-${page.pageNumber}`}
@@ -89,21 +143,84 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
+      case "BackCover":
+        return (
+          <BackPageCard
+            key={`${page._id}-${page.pageNumber}`}
+            pageData={page}
+            pageNumber={page.pageNumber}
+            loading={backLoading}
+            flipbookId={id}
+          />
+        );
+
       default:
+        console.warn("Unknown page type:", page.pageType);
         return null;
     }
   };
 
-  if (indexLoading || galleryLoading || catalogLoading || flipbookLoading || socialLoading || reviewsOrMapLoading) return <Loader/>;
-  if (indexError || galleryError || catalogError || socialError || reviewsOrMapError) return <div>Error: {indexError || galleryError || catalogError || socialError || reviewsOrMapError}</div>;
+  if (
+    indexLoading ||
+    galleryLoading ||
+    catalogLoading ||
+    flipbookLoading ||
+    socialLoading ||
+    reviewsOrMapLoading ||
+    backLoading
+  )
+    return <Loader />;
+  if (
+    indexError ||
+    galleryError ||
+    catalogError ||
+    socialError ||
+    reviewsOrMapError ||
+    backError
+  )
+    return (
+      <div>
+        Error:{" "}
+        {indexError ||
+          galleryError ||
+          catalogError ||
+          socialError ||
+          reviewsOrMapError ||
+          backError}
+      </div>
+    );
 
-  const allPages = [...indexPages, ...galleryPages, ...catalogPages, ...socialPages, ...reviewsOrMapPages].sort((a, b) => a.pageNumber - b.pageNumber);
+  // Make sure backCovers is always an array
+  const backPagesArray = Array.isArray(backCovers)
+    ? backCovers
+    : backCovers
+    ? [backCovers]
+    : [];
+
+  // Combine all pages and sort by page number
+  const allPages = [
+    ...indexPages,
+    ...galleryPages,
+    ...catalogPages,
+    ...socialPages,
+    ...reviewsOrMapPages,
+    ...backPagesArray,
+  ].sort((a, b) => a.pageNumber - b.pageNumber);
+
+  // Modify the map function to add logging
+  const renderedPages = allPages.map((page) => {
+    console.log("Attempting to render page:", page);
+    return renderPageCard(page);
+  });
 
   if (!allPages || allPages.length === 0) {
     return (
       <div className="no-pages-message">
         <p>No custom pages available</p>
-        <p>Add an Index, Gallery, Social, Reviews/Map or Catalog page to get started</p>
+        <p>
+          Add an Index, Gallery, Social, Reviews/Map, Back Page or Catalog page
+          to get started
+        </p>
       </div>
     );
   }
@@ -111,11 +228,10 @@ const CustomPageEditor = () => {
   return (
     <div className="custom-page-editor">
       <h2>Custom Pages Editor</h2>
-      <div className="pages-container">
-        {allPages.map(renderPageCard)}
-      </div>
+
+      <div className="pages-container">{renderedPages}</div>
     </div>
   );
 };
 
-export default CustomPageEditor; 
+export default CustomPageEditor;

@@ -201,6 +201,29 @@ $border-radius: 8px;
     border-radius: 4px;
     margin: 20px 0;
   }
+
+  .debug-info {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+    
+    p {
+      margin: 5px 0;
+      font-family: monospace;
+    }
+  }
+
+  .add-test-page-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
 }
 
 // Responsive adjustments

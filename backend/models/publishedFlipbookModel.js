@@ -26,7 +26,14 @@ const PublishedPage = BasePublishedPage.discriminator(
     },
   })
 );
-
+const PublishedBackCover = BasePublishedPage.discriminator(
+  "PublishedBackCover",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    image: { type: String, required: true },
+    isCustom: { type: Boolean, default: true },
+  })
+);
 // Published index page
 const PublishedIndexPage = BasePublishedPage.discriminator(
   "PublishedIndexPage",
@@ -143,5 +150,6 @@ export {
   PublishedGalleryPage,
   PublishedCatalogPage,
   PublishedSocialPage,
-  PublishedReviewsOrMapPage
+  PublishedReviewsOrMapPage,
+  PublishedBackCover
 };

@@ -7,12 +7,14 @@ import {
   IoImagesOutline, 
   IoGridOutline, 
   IoPeopleOutline,
-  IoMapOutline 
+  IoMapOutline,
+  IoBookOutline
 } from "react-icons/io5";
 import "./AddCustomPage.scss";
 import AddCatalogPage from "../AddCatalogPage/AddCatalogPage";
 import AddSocialPage from "../AddSocialPage/AddSocialPage";
 import AddReviewsOrMapPage from "../AddReviewsOrMapPage/AddReviewsOrMapPage";
+import AddBackCover from "../AddBackCover/AddBackCover";
 
 const AddCustomPage = () => {
   const { flipbookId } = useParams();
@@ -48,6 +50,12 @@ const AddCustomPage = () => {
       name: "Reviews/Map Page", 
       icon: <IoMapOutline className="icon" />,
       description: "Add embedded reviews or map"
+    },
+    { 
+      id: "back-cover", 
+      name: "Back Cover", 
+      icon: <IoBookOutline className="icon" />,
+      description: "Create the back cover page"
     }
   ];
 
@@ -63,6 +71,8 @@ const AddCustomPage = () => {
         return <AddSocialPage flipbookId={flipbookId} />;
       case "reviews-map":
         return <AddReviewsOrMapPage flipbookId={flipbookId} />;
+      case "back-cover":
+        return <AddBackCover flipbookId={flipbookId} />;
       default:
         return null;
     }

@@ -56,6 +56,15 @@ const GalleryPage = BasePage.discriminator(
   })
 );
 
+// backCover page schema
+const BackCover = BasePage.discriminator(
+  "BackCover",
+  new mongoose.Schema({
+    subtitle: { type: String, required: true },
+    image: { type: String, required: true },
+    isCustom: { type: Boolean, default: true },
+  })
+);
 // Catalog page schema
 const CatalogPage = BasePage.discriminator(
   "Catalog",
@@ -138,5 +147,6 @@ export {
   GalleryPage,
   CatalogPage,
   SocialPage,
-  ReviewsOrMapPage
+  ReviewsOrMapPage,
+  BackCover,
 };

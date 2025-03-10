@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './GalleryPage.scss';
 
 const GalleryPage = ({ pageData }) => {
-  console.log('Gallery Page Data:', pageData);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const orientation = "horizontal";
 
   
   useEffect(() => {

@@ -12,7 +12,11 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import catalogRoutes from "./routes/catalogRoutes.js";
 import socialRoutes from "./routes/socialRoutes.js";
 import reviewsOrMapRoutes from "./routes/reviewsOrMapRoutes.js";
+import backCoverRoutes from './routes/backCoverRoutes.js';
 import "./services/schedulerService.js";
+import EventEmitter from 'events';
+// Increase the listener limit
+EventEmitter.defaultMaxListeners = 15;
 dotenv.config();
 const app = express();
 
@@ -33,6 +37,7 @@ app.use(cors(corsOptions));
 app.use("/api/auth", authRoutes);
 app.use("/api/flipbook", flipbookRoutes);
 app.use("/api/scheduled-flipbooks", scheduledFlipbookRoutes);
+app.use('/api', backCoverRoutes);
 app.use("/api", indexPageRoutes);
 app.use("/api", galleryRoutes);
 app.use("/api", catalogRoutes);

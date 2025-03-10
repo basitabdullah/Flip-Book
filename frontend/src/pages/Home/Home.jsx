@@ -20,7 +20,7 @@ import SocialPage from "../../pages/SocialPage/SocialPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
 import { Link } from "react-router-dom";
-import ReviewsOrMapPage from '../ReviewsOrMapPage/ReviewsOrMapPage';
+import ReviewsOrMapPage from "../ReviewsOrMapPage/ReviewsOrMapPage";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -189,6 +189,8 @@ const Home = () => {
           .sort((a, b) => a.pageNumber - b.pageNumber)
       : [];
   }, [publishedPages]);
+  console.log(sortedPages);
+  
 
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
@@ -278,7 +280,21 @@ const Home = () => {
               <ReviewsOrMapPage
                 pageData={{
                   title: page.title,
-                  content: page.content
+                  content: page.content,
+                }}
+              />
+              <div className="page-number">{page.pageNumber}</div>
+            </div>
+          );
+
+          case "PublishedBackCover":
+          return (
+            <div className="page-content">
+              <ThanksPage
+                pageData={{
+                  title: page.title,
+                  subtitle: page.subtitle,
+                  image : page.image
                 }}
               />
               <div className="page-number">{page.pageNumber}</div>
@@ -373,19 +389,12 @@ const Home = () => {
             </div>
           ))}
 
-          {/* <div className="page">
-            <div className="page-content">
-              <ReviewsPage />
-              <div className="page-number">{sortedPages.length + 1}</div>
-            </div>
-          </div> */}
-
-          <div key="thanks" className="page">
+          {/* <div key="thanks" className="page">
             <div className="page-content">
               <ThanksPage />
               <div className="page-number">{sortedPages.length + 2}</div>
             </div>
-          </div>
+          </div> */}
         </HTMLFlipBook>
 
         <div className="navigation-arrow left" onClick={goToPreviousPage}>

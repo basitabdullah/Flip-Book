@@ -414,6 +414,15 @@ export const publishFlipbook = async (req, res) => {
               isCustom: true,
             };
 
+            case "BackCover":
+              return {
+                ...basePage,
+                pageType: "PublishedBackCover",
+                subtitle: page.subtitle,
+                image : page.image,
+                isCustom: true,
+              };
+
           default:
             return null;
         }
