@@ -21,6 +21,8 @@ import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
 import { Link } from "react-router-dom";
 import ReviewsOrMapPage from "../ReviewsOrMapPage/ReviewsOrMapPage";
+import BlurText from "../../reactBits/BlurText/BlurText";
+import SplitText from "../../reactBits/SplitText/SplitText";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -190,7 +192,6 @@ const Home = () => {
       : [];
   }, [publishedPages]);
   console.log(sortedPages);
-  
 
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
@@ -287,14 +288,14 @@ const Home = () => {
             </div>
           );
 
-          case "PublishedBackCover":
+        case "PublishedBackCover":
           return (
             <div className="page-content">
               <ThanksPage
                 pageData={{
                   title: page.title,
                   subtitle: page.subtitle,
-                  image : page.image
+                  image: page.image,
                 }}
               />
               <div className="page-number">{page.pageNumber}</div>
@@ -306,10 +307,36 @@ const Home = () => {
             <div className="page-content">
               <div className="content custom-scrollbar">
                 <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
-                  {page.title}
+                  <SplitText
+                    text={page.title}
+                    className="text-2xl font-semibold text-center"
+                    delay={100}
+                    animationFrom={{
+                      opacity: 0,
+                      transform: "translate3d(0,50px,0)",
+                    }}
+                    animationTo={{
+                      opacity: 1,
+                      transform: "translate3d(0,0,0)",
+                    }}
+                    easing="easeOutCubic"
+                    threshold={0.2}
+                    rootMargin="-50px"
+                  />
                 </h1>
+
                 {renderContent(page)}
-                <p className="page-description">{page.description}</p>
+
+                <p className="page-description">
+                  {" "}
+                  <BlurText
+                    text={page.description}
+                    delay={10}
+                    animateBy="words"
+                    direction="top"
+                    className="text-2xl mb-8"
+                  />
+                </p>
               </div>
               <div className="page-number">{page.pageNumber}</div>
             </div>
@@ -378,7 +405,7 @@ const Home = () => {
               <CoverPage
                 backgroundImage={flipbookImage}
                 title={flipbookName}
-                subtitle={"Experience the beauty of nature with us"}
+                subtitle={"Experience the quality of daynamic e-catalogue."}
               />
             </div>
           </div>
@@ -388,13 +415,6 @@ const Home = () => {
               {renderPageContent(page)}
             </div>
           ))}
-
-          {/* <div key="thanks" className="page">
-            <div className="page-content">
-              <ThanksPage />
-              <div className="page-number">{sortedPages.length + 2}</div>
-            </div>
-          </div> */}
         </HTMLFlipBook>
 
         <div className="navigation-arrow left" onClick={goToPreviousPage}>

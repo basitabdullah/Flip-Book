@@ -100,26 +100,27 @@ function AddPage() {
       setFormError("");
   
       try {
-        let finalContent = content;
+        const formData = new FormData();
         
+        // Always add the basic page data
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("contentType", contentType);
+        formData.append("pageNumber", parseInt(pageNumber) || "");
+
+        // Handle file upload
         if (uploadMethod === "file" && file) {
-          const formData = new FormData();
           formData.append("file", file);
-          
-          finalContent = URL.createObjectURL(file);
+        } else if (uploadMethod === "url" && content) {
+          formData.append("content", content);
+        } else {
+          throw new Error("Please provide either a file or URL content");
         }
 
-        await addPage(
-          {
-            title,
-            description,
-            content: finalContent,
-            contentType,
-            pageNumber: parseInt(pageNumber) || undefined,
-          },
-          flipbook._id
-        );
-  
+        // Call the addPage function with the FormData
+        await addPage(formData, flipbook._id);
+
+        // Reset form after successful submission
         setTitle("");
         setDescription("");
         setContent("");
@@ -127,8 +128,10 @@ function AddPage() {
         setContentType("image");
         setFile(null);
         setUploadMethod("url");
+        
       } catch (error) {
-        setFormError(error);
+        console.error("Error submitting page:", error);
+        setFormError(error.message || "Failed to add page");
       }
     };
   

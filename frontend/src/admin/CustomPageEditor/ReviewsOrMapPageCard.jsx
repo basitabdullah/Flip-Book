@@ -29,12 +29,13 @@ const ReviewsOrMapPageCard = ({ pageData, pageNumber, loading, flipbookId }) => 
         _id: pageData._id
       };
 
-      await updateReviewsOrMapPage(flipbookId, pageNumber, updatedData);
+      await updateReviewsOrMapPage(flipbookId, pageData._id, updatedData);
       await getFlipbookById(flipbookId);
       setIsEditing(false);
-      toast.success('Reviews/Map page updated successfully');
+      // toast.success('Reviews/Map page updated successfully');
     } catch (error) {
       toast.error('Failed to update page');
+      
     }
   };
 

@@ -17,14 +17,9 @@ const useBackCoverStore = create((set, get) => ({
         throw new Error("Flipbook not found");
       }
       
-      console.log("All pages in flipbook:", flipbook.pages);
-      
-      // Look for both 'BackPage' and 'BackCover' page types
       const backCovers = flipbook.pages.filter(
         (page) => page.pageType === "BackPage" || page.pageType === "BackCover"
       );
-      
-      console.log("Filtered back covers:", backCovers);
       
       set({
         backCovers,
@@ -37,7 +32,6 @@ const useBackCoverStore = create((set, get) => ({
         error: error.message,
         backCovers: [],
       });
-      console.error("Error fetching back covers:", error);
       throw error;
     }
   },
@@ -46,9 +40,6 @@ const useBackCoverStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       
-      console.log("Adding back cover with data:", formData);
-      
-      // Using the correct API endpoint from backend routes
       const response = await axiosInstance.post(
         `/flipbook/${flipbookId}/backcover`,
         formData,
@@ -59,34 +50,24 @@ const useBackCoverStore = create((set, get) => ({
         }
       );
       
-      console.log("Add back cover response:", response.data);
-      
-      if (!response.data) {
-        throw new Error("Invalid response from server");
-      }
-      
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
       
       await get().fetchBackCovers(flipbookId);
       return response.data;
     } catch (error) {
-      console.error("Error adding back cover:", error);
       const errorMessage = error.response?.data?.message || error.message || "Failed to add back cover";
       set({ loading: false, error: errorMessage });
       throw errorMessage;
     }
   },
   
-  updateBackCover: async (flipbookId, pageNumber, formData) => {
+  updateBackCover: async (flipbookId, pageId, formData) => {
     try {
       set({ loading: true, error: null });
       
-      console.log("Updating back cover with data:", formData);
-      
-      // Using the correct API endpoint from backend routes
       const response = await axiosInstance.put(
-        `/flipbook/${flipbookId}/backcover/${pageNumber}`,
+        `/flipbook/${flipbookId}/backcover/${pageId}`,
         formData,
         {
           headers: {
@@ -95,41 +76,33 @@ const useBackCoverStore = create((set, get) => ({
         }
       );
       
-      console.log("Update back cover response:", response.data);
-      
-      if (!response.data) {
-        throw new Error("Invalid response from server");
-      }
-      
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
       
       await get().fetchBackCovers(flipbookId);
       return response.data;
     } catch (error) {
-      console.error("Error updating back cover:", error);
       const errorMessage = error.response?.data?.message || error.message || "Failed to update back cover";
       set({ loading: false, error: errorMessage });
       throw errorMessage;
     }
   },
   
-  deleteBackCover: async (flipbookId, pageNumber) => {
+  deleteBackCover: async (flipbookId, pageId) => {
     try {
       set({ loading: true, error: null });
       
-      console.log("Deleting back cover");
-      
-      // Using the correct API endpoint from backend routes
-      const response = await axiosInstance.delete(
-        `/flipbook/${flipbookId}/backcover/${pageNumber}`
-      );
-      
-      console.log("Delete back cover response:", response.data);
-      
-      if (!response.data) {
-        throw new Error("Invalid response from server");
+      // Make sure we have valid IDs
+      if (!flipbookId || !pageId) {
+        throw new Error("Missing required IDs for deletion");
       }
+      
+      const response = await axiosInstance.delete(`/flipbook/${flipbookId}/backcover/${pageId}`);
+      
+      set(state => ({
+        backCovers: state.backCovers.filter(cover => cover._id !== pageId),
+        loading: false
+      }));
       
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
@@ -137,7 +110,6 @@ const useBackCoverStore = create((set, get) => ({
       await get().fetchBackCovers(flipbookId);
       return response.data;
     } catch (error) {
-      console.error("Error deleting back cover:", error);
       const errorMessage = error.response?.data?.message || error.message || "Failed to delete back cover";
       set({ loading: false, error: errorMessage });
       throw errorMessage;

@@ -86,11 +86,8 @@ const CustomPageEditor = () => {
 
   const renderPageCard = (page) => {
     if (!page) {
-      console.warn("Null or undefined page data");
       return null;
     }
-
-    console.log("Rendering page:", page.pageType, page);
 
     switch (page.pageType) {
       case "IndexPage":
@@ -153,9 +150,7 @@ const CustomPageEditor = () => {
             flipbookId={id}
           />
         );
-
       default:
-        console.warn("Unknown page type:", page.pageType);
         return null;
     }
   };
@@ -207,12 +202,6 @@ const CustomPageEditor = () => {
     ...backPagesArray,
   ].sort((a, b) => a.pageNumber - b.pageNumber);
 
-  // Modify the map function to add logging
-  const renderedPages = allPages.map((page) => {
-    console.log("Attempting to render page:", page);
-    return renderPageCard(page);
-  });
-
   if (!allPages || allPages.length === 0) {
     return (
       <div className="no-pages-message">
@@ -228,8 +217,9 @@ const CustomPageEditor = () => {
   return (
     <div className="custom-page-editor">
       <h2>Custom Pages Editor</h2>
-
-      <div className="pages-container">{renderedPages}</div>
+      <div className="pages-container">
+        {allPages.map(renderPageCard)}
+      </div>
     </div>
   );
 };

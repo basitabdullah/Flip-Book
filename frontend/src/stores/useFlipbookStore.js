@@ -72,7 +72,6 @@ const useFlipbookStore = create((set) => ({
       }
 
       set({ flipbook: response.data.flipbook, loading: false });
-      toast.success("Page updated successfully");
       return response.data;
     } catch (error) {
       console.error("Error updating page:", error.response || error);

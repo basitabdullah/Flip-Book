@@ -359,7 +359,6 @@ export const publishFlipbook = async (req, res) => {
             };
 
           case "Gallery":
-            console.log("Processing Gallery Page:", page); // Debug log
             return {
               ...basePage,
               pageType: "PublishedGalleryPage",
@@ -375,7 +374,6 @@ export const publishFlipbook = async (req, res) => {
             };
 
           case "Catalog":
-            console.log("Processing Catalog Page:", page); // Debug log
             return {
               ...basePage,
               pageType: "PublishedCatalogPage",
