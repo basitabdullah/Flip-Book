@@ -1,10 +1,45 @@
 import { Flipbook, CatalogPage } from "../models/flipbookModel.js";
+import multer from "multer";
+import fs from "fs";
+
+// Ensure upload directory exists
+const uploadDir = "backend/uploads/catalogImages";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Not an image! Please upload only images."), false);
+  }
+};
+
+export const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
 
 // Add catalog page
 export const addCatalogPage = async (req, res) => {
   try {
     const { flipbookId } = req.params;
-    const { title, pageNumber, subtitle, catalogItems, position } = req.body;
+    const { title, pageNumber, subtitle, position } = req.body;
+    let catalogItems = JSON.parse(req.body.catalogItems || '[]');
 
     // Find the flipbook by its ID
     const flipbook = await Flipbook.findById(flipbookId);
@@ -30,6 +65,14 @@ export const addCatalogPage = async (req, res) => {
       });
     }
 
+    // Handle file uploads if any
+    if (req.files?.length > 0) {
+      catalogItems = catalogItems.map((item, index) => ({
+        ...item,
+        image: req.files[index] ? req.files[index].path : item.image,
+      }));
+    }
+
     // Validate catalogItems structure
     if (!Array.isArray(catalogItems)) {
       return res
@@ -50,7 +93,7 @@ export const addCatalogPage = async (req, res) => {
     if (!isValidItems) {
       return res.status(400).json({
         message:
-          "Each catalog item must have name, price, image,position and at least one amenity",
+          "Each catalog item must have name, price, image, and at least one amenity",
       });
     }
 
@@ -61,7 +104,7 @@ export const addCatalogPage = async (req, res) => {
       subtitle,
       catalogItems,
       position: position || "vertical",
-      pageType: "Catalog", // Explicitly set the pageType
+      pageType: "Catalog",
       isCustom: true,
     });
 
@@ -87,7 +130,8 @@ export const addCatalogPage = async (req, res) => {
 export const updateCatalogPage = async (req, res) => {
   try {
     const { flipbookId, pageId } = req.params;
-    const { title, subtitle, catalogItems, pageNumber, position } = req.body;
+    const { title, subtitle, position, pageNumber } = req.body;
+    let catalogItems = JSON.parse(req.body.catalogItems || '[]');
 
     // Find the flipbook
     const flipbook = await Flipbook.findById(flipbookId);
@@ -126,29 +170,35 @@ export const updateCatalogPage = async (req, res) => {
       }
     }
 
+    // Handle file uploads if any
+    if (req.files?.length > 0) {
+      catalogItems = catalogItems.map((item, index) => ({
+        ...item,
+        image: req.files[index] ? req.files[index].path : item.image,
+      }));
+    }
+
     // Validate catalogItems if provided
-    if (catalogItems) {
-      if (!Array.isArray(catalogItems)) {
-        return res
-          .status(400)
-          .json({ message: "CatalogItems should be an array" });
-      }
+    if (!Array.isArray(catalogItems)) {
+      return res
+        .status(400)
+        .json({ message: "CatalogItems should be an array" });
+    }
 
-      const isValidItems = catalogItems.every(
-        (item) =>
-          item.name &&
-          item.price &&
-          item.image &&
-          Array.isArray(item.amenities) &&
-          item.amenities.length > 0
-      );
+    const isValidItems = catalogItems.every(
+      (item) =>
+        item.name &&
+        item.price &&
+        item.image &&
+        Array.isArray(item.amenities) &&
+        item.amenities.length > 0
+    );
 
-      if (!isValidItems) {
-        return res.status(400).json({
-          message:
-            "Each catalog item must have name, price, image, and at least one amenity",
-        });
-      }
+    if (!isValidItems) {
+      return res.status(400).json({
+        message:
+          "Each catalog item must have name, price, image, and at least one amenity",
+      });
     }
 
     // Update the page

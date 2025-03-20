@@ -20,6 +20,8 @@ const AddCatalogPage = ({ flipbookId }) => {
       amenities: [],
     },
   ]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadMethods, setUploadMethods] = useState(["url"]);
 
   const handleAddItem = () => {
     setCatalogItems([
@@ -31,6 +33,8 @@ const AddCatalogPage = ({ flipbookId }) => {
         amenities: [],
       },
     ]);
+    setUploadMethods([...uploadMethods, "url"]);
+    setSelectedFiles([...selectedFiles, null]);
   };
 
   const handleUpdateItem = (index, field, value) => {
@@ -53,6 +57,42 @@ const AddCatalogPage = ({ flipbookId }) => {
 
   const handleRemoveItem = (index) => {
     setCatalogItems(catalogItems.filter((_, i) => i !== index));
+    setUploadMethods(uploadMethods.filter((_, i) => i !== index));
+    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
+  };
+
+  const handleFileChange = (e, index) => {
+    const file = e.target.files[0];
+    if (file) {
+      const newFiles = [...selectedFiles];
+      newFiles[index] = file;
+      setSelectedFiles(newFiles);
+
+      // Preview the image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleUpdateItem(index, "image", reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadMethodChange = (index, method) => {
+    const newMethods = [...uploadMethods];
+    newMethods[index] = method;
+    setUploadMethods(newMethods);
+
+    // Reset the image and file when changing methods
+    const updatedItems = [...catalogItems];
+    updatedItems[index] = {
+      ...updatedItems[index],
+      image: "",
+    };
+    setCatalogItems(updatedItems);
+
+    const newFiles = [...selectedFiles];
+    newFiles[index] = null;
+    setSelectedFiles(newFiles);
   };
 
   const handleSubmit = async (e) => {
@@ -60,15 +100,27 @@ const AddCatalogPage = ({ flipbookId }) => {
     setLoading(true);
 
     try {
-      await addCatalogPage(flipbookId, {
-        title,
-        pageNumber: parseInt(pageNumber),
-        subtitle,
-        catalogItems,
-        position,
-        pageType: "Catalog",
-        isCustom: true,
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("pageNumber", pageNumber);
+      formData.append("subtitle", subtitle);
+      formData.append("position", position);
+
+      // Prepare catalog items data
+      const itemsForSubmission = catalogItems.map((item, index) => ({
+        ...item,
+        image: uploadMethods[index] === "url" ? item.image : "", // Clear image URL if using file upload
+      }));
+      formData.append("catalogItems", JSON.stringify(itemsForSubmission));
+
+      // Append files for items using file upload
+      selectedFiles.forEach((file, index) => {
+        if (uploadMethods[index] === "file" && file) {
+          formData.append("images", file);
+        }
       });
+
+      await addCatalogPage(flipbookId, formData);
 
       // Refresh flipbook data
       await getFlipbookById(flipbookId);
@@ -85,12 +137,13 @@ const AddCatalogPage = ({ flipbookId }) => {
           amenities: [],
         },
       ]);
+      setSelectedFiles([null]);
+      setUploadMethods(["url"]);
 
       toast.success("Catalog page added successfully");
     } catch (error) {
       toast.error(error.message || "Failed to add catalog page");
       console.log(error);
-        
     } finally {
       setLoading(false);
     }
@@ -181,16 +234,43 @@ const AddCatalogPage = ({ flipbookId }) => {
               </div>
 
               <div className="form-group">
-                <label>Image URL</label>
-                <input
-                  type="text"
-                  value={item.image}
-                  onChange={(e) =>
-                    handleUpdateItem(index, "image", e.target.value)
-                  }
-                  placeholder="Image URL"
-                  required
-                />
+                <label>Image</label>
+                <div className="image-input-group">
+                  <select
+                    value={uploadMethods[index]}
+                    onChange={(e) => handleUploadMethodChange(index, e.target.value)}
+                    className="upload-method-select"
+                  >
+                    <option value="url">URL</option>
+                    <option value="file">File Upload</option>
+                  </select>
+
+                  {uploadMethods[index] === "url" ? (
+                    <input
+                      type="text"
+                      value={item.image}
+                      onChange={(e) =>
+                        handleUpdateItem(index, "image", e.target.value)
+                      }
+                      placeholder="Image URL"
+                      required
+                    />
+                  ) : (
+                    <div className="file-upload-container">
+                      <input
+                        type="file"
+                        onChange={(e) => handleFileChange(e, index)}
+                        accept="image/*"
+                        required={!item.image}
+                      />
+                      {item.image && (
+                        <div className="image-preview">
+                          <img src={item.image} alt="Preview" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="form-group">
@@ -199,18 +279,20 @@ const AddCatalogPage = ({ flipbookId }) => {
                   type="text"
                   value={item.amenities.join(", ")}
                   onChange={(e) => handleUpdateAmenities(index, e.target.value)}
-                  placeholder="Amenity 1, Amenity 2, ..."
+                  placeholder="Enter amenities"
                   required
                 />
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleRemoveItem(index)}
-                className="remove-btn"
-              >
-                Remove Item
-              </button>
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveItem(index)}
+                  className="remove-btn"
+                >
+                  ×
+                </button>
+              )}
             </div>
           ))}
         </div>
