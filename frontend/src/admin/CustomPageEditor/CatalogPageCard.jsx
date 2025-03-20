@@ -9,6 +9,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(pageData?.title || '');
   const [subtitle, setSubtitle] = useState(pageData?.subtitle || '');
+  const [position, setPosition] = useState(pageData?.position || 'vertical');
   const [catalogItems, setCatalogItems] = useState(pageData?.catalogItems || []);
 
   const handleAddItem = () => {
@@ -49,6 +50,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
         pageNumber,
         subtitle,
         catalogItems,
+        position,
         pageType: 'Catalog',
         isCustom: true
       });
@@ -99,6 +101,18 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
             placeholder="Subtitle"
             className="subtitle-input"
           />
+          
+          <div className="form-group">
+            <label>Position</label>
+            <select
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              className="position-select"
+            >
+              <option value="vertical">Vertical</option>
+              <option value="horizontal">Horizontal</option>
+            </select>
+          </div>
 
           <div className="catalog-items">
             <button onClick={handleAddItem} className="add-item-btn">
@@ -149,6 +163,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
         <div className="view-mode">
           <h3>{title}</h3>
           <h4>{subtitle}</h4>
+          <p className="position-info">Layout: {position}</p>
           <div className="catalog-section">
             <div className="catalog-grid">
               {catalogItems.map((item, index) => (

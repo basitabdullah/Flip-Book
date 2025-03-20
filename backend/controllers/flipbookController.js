@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { log } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const uploadDir = "backend/uploads/pageContent";
@@ -378,6 +379,7 @@ export const publishFlipbook = async (req, res) => {
               ...basePage,
               pageType: "PublishedCatalogPage",
               subtitle: page.subtitle,
+              position : page.position,
               catalogItems: page.catalogItems
                 ? page.catalogItems.map((item) => ({
                     name: item.name,

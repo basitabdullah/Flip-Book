@@ -70,6 +70,11 @@ const CatalogPage = BasePage.discriminator(
   "Catalog",
   new mongoose.Schema({
     subtitle: { type: String, required: true },
+    position: {
+      type: String,
+      enum: ["vertical", "horizontal"],
+      default: "vertical",
+    },
     catalogItems: [
       {
         name: { type: String, required: true },

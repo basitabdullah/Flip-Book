@@ -1,37 +1,43 @@
-import React, { useState } from 'react';
-import useCatalogPageStore from '../../stores/useCatalogPageStore';
-import useFlipbookStore from '../../stores/useFlipbookStore';
-import { toast } from 'react-hot-toast';
-import './AddCatalogPage.scss';
+import React, { useState } from "react";
+import useCatalogPageStore from "../../stores/useCatalogPageStore";
+import useFlipbookStore from "../../stores/useFlipbookStore";
+import { toast } from "react-hot-toast";
+import "./AddCatalogPage.scss";
 
 const AddCatalogPage = ({ flipbookId }) => {
   const { addCatalogPage } = useCatalogPageStore();
   const { getFlipbookById } = useFlipbookStore();
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState('');
-  const [pageNumber, setPageNumber] = useState('');
-  const [subtitle, setSubtitle] = useState('');
-  const [catalogItems, setCatalogItems] = useState([{
-    name: '',
-    price: '',
-    image: '',
-    amenities: []
-  }]);
+  const [title, setTitle] = useState("");
+  const [pageNumber, setPageNumber] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [position, setPosition] = useState("vertical");
+  const [catalogItems, setCatalogItems] = useState([
+    {
+      name: "",
+      price: "",
+      image: "",
+      amenities: [],
+    },
+  ]);
 
   const handleAddItem = () => {
-    setCatalogItems([...catalogItems, {
-      name: '',
-      price: '',
-      image: '',
-      amenities: []
-    }]);
+    setCatalogItems([
+      ...catalogItems,
+      {
+        name: "",
+        price: "",
+        image: "",
+        amenities: [],
+      },
+    ]);
   };
 
   const handleUpdateItem = (index, field, value) => {
     const updatedItems = [...catalogItems];
     updatedItems[index] = {
       ...updatedItems[index],
-      [field]: value
+      [field]: value,
     };
     setCatalogItems(updatedItems);
   };
@@ -40,7 +46,7 @@ const AddCatalogPage = ({ flipbookId }) => {
     const updatedItems = [...catalogItems];
     updatedItems[index] = {
       ...updatedItems[index],
-      amenities: value.split(',').map(item => item.trim())
+      amenities: value.split(",").map((item) => item.trim()),
     };
     setCatalogItems(updatedItems);
   };
@@ -59,27 +65,32 @@ const AddCatalogPage = ({ flipbookId }) => {
         pageNumber: parseInt(pageNumber),
         subtitle,
         catalogItems,
-        pageType: 'Catalog',
-        isCustom: true
+        position,
+        pageType: "Catalog",
+        isCustom: true,
       });
 
       // Refresh flipbook data
       await getFlipbookById(flipbookId);
 
       // Reset form
-      setTitle('');
-      setPageNumber('');
-      setSubtitle('');
-      setCatalogItems([{
-        name: '',
-        price: '',
-        image: '',
-        amenities: []
-      }]);
+      setTitle("");
+      setPageNumber("");
+      setSubtitle("");
+      setCatalogItems([
+        {
+          name: "",
+          price: "",
+          image: "",
+          amenities: [],
+        },
+      ]);
 
-      toast.success('Catalog page added successfully');
+      toast.success("Catalog page added successfully");
     } catch (error) {
-      toast.error(error.message || 'Failed to add catalog page');
+      toast.error(error.message || "Failed to add catalog page");
+      console.log(error);
+        
     } finally {
       setLoading(false);
     }
@@ -89,6 +100,16 @@ const AddCatalogPage = ({ flipbookId }) => {
     <div className="add-catalog-page">
       <h3>Add Catalog Page</h3>
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Position</label>
+          <select
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+          >
+            <option value="horizontal">horizontal</option>
+            <option value="vertical">vertical</option>
+          </select>
+        </div>
         <div className="form-group">
           <label>Title</label>
           <input
@@ -138,7 +159,9 @@ const AddCatalogPage = ({ flipbookId }) => {
                 <input
                   type="text"
                   value={item.name}
-                  onChange={(e) => handleUpdateItem(index, 'name', e.target.value)}
+                  onChange={(e) =>
+                    handleUpdateItem(index, "name", e.target.value)
+                  }
                   placeholder="Item name"
                   required
                 />
@@ -149,7 +172,9 @@ const AddCatalogPage = ({ flipbookId }) => {
                 <input
                   type="text"
                   value={item.price}
-                  onChange={(e) => handleUpdateItem(index, 'price', e.target.value)}
+                  onChange={(e) =>
+                    handleUpdateItem(index, "price", e.target.value)
+                  }
                   placeholder="Item price"
                   required
                 />
@@ -160,7 +185,9 @@ const AddCatalogPage = ({ flipbookId }) => {
                 <input
                   type="text"
                   value={item.image}
-                  onChange={(e) => handleUpdateItem(index, 'image', e.target.value)}
+                  onChange={(e) =>
+                    handleUpdateItem(index, "image", e.target.value)
+                  }
                   placeholder="Image URL"
                   required
                 />
@@ -170,7 +197,7 @@ const AddCatalogPage = ({ flipbookId }) => {
                 <label>Amenities (comma-separated)</label>
                 <input
                   type="text"
-                  value={item.amenities.join(', ')}
+                  value={item.amenities.join(", ")}
                   onChange={(e) => handleUpdateAmenities(index, e.target.value)}
                   placeholder="Amenity 1, Amenity 2, ..."
                   required
@@ -188,16 +215,12 @@ const AddCatalogPage = ({ flipbookId }) => {
           ))}
         </div>
 
-        <button
-          type="submit"
-          className="submit-btn"
-          disabled={loading}
-        >
-          {loading ? 'Adding...' : 'Add Catalog Page'}
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Adding..." : "Add Catalog Page"}
         </button>
       </form>
     </div>
   );
 };
 
-export default AddCatalogPage; 
+export default AddCatalogPage;

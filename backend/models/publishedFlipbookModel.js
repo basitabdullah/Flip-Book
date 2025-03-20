@@ -70,6 +70,11 @@ const PublishedCatalogPage = BasePublishedPage.discriminator(
   "PublishedCatalogPage",
   new mongoose.Schema({
     subtitle: { type: String, required: true },
+    position: {
+      type: String,
+      enum: ["vertical", "horizontal"],
+      default: "vertical",
+    },
     catalogItems: [
       {
         name: { type: String, required: true },
@@ -151,5 +156,5 @@ export {
   PublishedCatalogPage,
   PublishedSocialPage,
   PublishedReviewsOrMapPage,
-  PublishedBackCover
+  PublishedBackCover,
 };
