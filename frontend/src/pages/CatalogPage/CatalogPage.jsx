@@ -26,7 +26,7 @@ const CatalogPage = ({ pageData }) => {
                 <h3>{room.name}</h3>
                 <p className="price">
                   {room.price}
-                  <span>/booking</span>
+                  {/* <span>/booking</span> */}
                 </p>
                 <div className="amenities">
                   {room.amenities.map((amenity, idx) => (
@@ -55,7 +55,7 @@ const CatalogPage = ({ pageData }) => {
               </div>
               <p className="catalog-price">
                 {room.price}
-                <span>/booking</span>
+                {/* <span>/booking</span> */}
               </p>
               <button className="catalog-book-now pulse-animation">
                 Book now

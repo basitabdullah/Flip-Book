@@ -99,6 +99,33 @@
             color: #c5a880;
           }
         }
+
+        .multi-contact {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+
+          a {
+            position: relative;
+            padding-left: 0.8rem;
+            
+            &:not(:last-child) {
+              margin-bottom: 0.1rem;
+            }
+
+            &:before {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 50%;
+              transform: translateY(-50%);
+              width: 3px;
+              height: 3px;
+              border-radius: 50%;
+              background-color: #c5a880;
+            }
+          }
+        }
       }
     }
   }

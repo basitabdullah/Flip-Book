@@ -30,16 +30,18 @@
     width: 100%;
     text-align: center;
     z-index: 2;
+    padding: 20px;
 
     .thanks-title {
-      font-size: 3rem; // Large title text
+      font-size: 2.5rem; // Large title text
       margin-bottom: 1rem;
       color: #dedede;
+      text-transform: capitalize;
     }
 
     .thanks-subtitle {
       font-size: 1.2rem;
-      color: #dedede;
+      color: #c4c4c4;
     }
   }
 }

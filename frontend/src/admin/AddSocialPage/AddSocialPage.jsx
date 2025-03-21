@@ -151,8 +151,7 @@ const AddSocialPage = () => {
             name="street"
             value={formData.street}
             onChange={handleChange}
-            placeholder="Street"
-            required
+            placeholder="Street Address (Optional)"
           />
         </div>
         <div className="form-group">
@@ -167,39 +166,33 @@ const AddSocialPage = () => {
         </div>
         <div className="form-group">
           <input
-            type="number"
+            type="text"
             name="postalCode"
             value={formData.postalCode}
             onChange={handleChange}
             placeholder="Postal Code"
             required
-            min="0"
-            pattern="[0-9]*"
-            inputMode="numeric"
           />
         </div>
         <div className="form-group">
-          <input
-            type="number"
+          <textarea
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="Phone Number"
-            required
-            min="0"
-            pattern="[0-9]*"
-            inputMode="numeric"
+            placeholder="Phone Numbers (Separate multiple numbers with commas)"
+            rows="2"
           />
+          <small className="helper-text">Example: +1 234-567-8900, +1 234-567-8901</small>
         </div>
         <div className="form-group">
-          <input
-            type="email"
+          <textarea
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Email"
-            required
+            placeholder="Email Addresses (Separate multiple emails with commas)"
+            rows="2"
           />
+          <small className="helper-text">Example: contact@example.com, support@example.com</small>
         </div>
         <div className="form-section">
           <h3>Location Details</h3>
@@ -209,8 +202,7 @@ const AddSocialPage = () => {
               name="mapUrl"
               value={formData.mapUrl}
               onChange={handleChange}
-              placeholder="Google Maps URL"
-              required
+              placeholder="Google Maps URL (Optional)"
             />
           </div>
           {showMapPreview && (

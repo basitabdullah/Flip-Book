@@ -102,19 +102,18 @@ const SocialPage = BasePage.discriminator(
   new mongoose.Schema({
     subtitle: { type: String, required: true },
 
-    street: { type: String, required: true },
+    street: { type: String },
     city: { type: String, required: true },
     postalCode: { type: Number, required: true },
 
-    phone: { type: Number, required: true },
-    email: { type: String, required: true },
+    phone: { type: String },
+    email: { type: String },
 
-    mapUrl: { type: String, required: true },
+    mapUrl: { type: String },
     socialLinks: [
       {
         platform: {
           type: String,
-          required: true,
           enum: ["facebook", "instagram", "twitter", "youtube"],
         },
         url: {
