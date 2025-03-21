@@ -6,8 +6,9 @@ export const useUserStore = create((set, get) => ({
   user: null,
   loading: false,
   checkingAuth: true,
+  isAuthenticated: false,
 
-  signup: async ({ name, email, password, confirmPassword }) => {
+  signup: async ({ name, email, password, confirmPassword, phone }) => {
     set({ loading: true });
     if (password !== confirmPassword) {
       set({ loading: false });
@@ -18,11 +19,12 @@ export const useUserStore = create((set, get) => ({
         name,
         email,
         password,
+        phone
       });
-      set({ user: res.data.user, loading: false });
+      set({ user: res.data.user, loading: false, isAuthenticated: true });
       toast.success(`Welcome, ${name}`);
     } catch (error) {
-      set({ loading: false });
+      set({ loading: false, isAuthenticated: false });
       toast.error(error.response.data.message || "An unexpected error occured");
     }
   },
@@ -35,11 +37,11 @@ export const useUserStore = create((set, get) => ({
         email,
         password,
       });
-      set({ user: res.data.user, loading: false });
+      set({ user: res.data.user, loading: false, isAuthenticated: true });
       toast.success('Login Successfull');
       return res.data;
     } catch (error) {
-      set({ loading: false });
+      set({ loading: false, isAuthenticated: false });
       throw error;
     }
   },
@@ -47,8 +49,10 @@ export const useUserStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.get("/auth/logout");
-      set({ user: null });
+      set({ user: null, isAuthenticated: false });
       toast.success("Logged Out Successfully!");
+      // Refresh the page after logout
+      window.location.reload();
     } catch (error) {
       toast.error(error.response.data.message || "An unexpected error occured");
     }
@@ -58,10 +62,17 @@ export const useUserStore = create((set, get) => ({
     set({ checkingAuth: true });
     try {
       const res = await axiosInstance.get("/auth/profile");
-
-      set({ user: res.data, checkingAuth: false });
+      set({ 
+        user: res.data, 
+        checkingAuth: false,
+        isAuthenticated: true 
+      });
     } catch (error) {
-      set({ user: null, checkingAuth: false });
+      set({ 
+        user: null, 
+        checkingAuth: false,
+        isAuthenticated: false 
+      });
       // toast.error(error.response.message || "An unexpected error occured");
     }
   },

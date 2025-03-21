@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { IoArrowBack } from 'react-icons/io5';
+import { useUserStore } from '../../stores/useUserStore';
+import { useNavigate, Link } from 'react-router-dom';
 import './Register.scss';
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { signup, loading } = useUserStore();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    phone: ''
   });
 
   const handleChange = (e) => {
@@ -18,21 +23,27 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
+    try {
+      await signup({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phone: formData.phone
+      });
+      navigate('/admin/admin-dashboard');
+    } catch (error) {
+      console.error('Registration error:', error);
     }
-    // Handle registration logic here
-    console.log('Registration attempted with:', formData);
   };
 
   return (
     <div className="register-container">
-      <a href="/" className="back-button">
+      <Link to="/" className="back-button">
         <IoArrowBack /> Back
-      </a>
+      </Link>
       <div className="register-box">
         <h2>Create Account</h2>
         <form onSubmit={handleSubmit} className="register-form">
@@ -44,6 +55,7 @@ const Register = () => {
               onChange={handleChange}
               required
               placeholder="Full Name"
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -54,6 +66,20 @@ const Register = () => {
               onChange={handleChange}
               required
               placeholder="Email"
+              disabled={loading}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              placeholder="Phone Number"
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit phone number"
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -65,6 +91,7 @@ const Register = () => {
               required
               placeholder="Password"
               minLength="6"
+              disabled={loading}
             />
           </div>
           <div className="form-group">
@@ -76,14 +103,19 @@ const Register = () => {
               required
               placeholder="Confirm Password"
               minLength="6"
+              disabled={loading}
             />
           </div>
-          <button type="submit" className="register-button">
-            Register
+          <button 
+            type="submit" 
+            className="register-button"
+            disabled={loading}
+          >
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
         <p className="login-link">
-          Already have an account? <a href="/login">Login here</a>
+          Already have an account? <Link to="/login">Login here</Link>
         </p>
       </div>
     </div>

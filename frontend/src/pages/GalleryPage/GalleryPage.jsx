@@ -37,8 +37,8 @@ const GalleryPage = ({ pageData }) => {
           {pageData.imagesData.map((image, index) => (
             <div key={index} className="carousel-slide">
               <img 
-                src={`${backendUrl}${image.imagesDataImage}`} 
-                alt={`${backendUrl}${image.imagesDataImage}`} 
+                src={`${backendUrl}/backend/${image.imagesDataImage}`} 
+                alt={`${backendUrl}/backend/${image.imagesDataImage}`} 
                 loading="lazy" 
               />
               <div className="slide-content">

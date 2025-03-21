@@ -16,30 +16,29 @@ import {
   getAllFlipbooks,
   deleteFlipbook,
 } from "../controllers/flipbookController.js";
+import { protectRoute, adminRoute } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+// Page routes (Admin only)
+router.get("/pages", protectRoute, adminRoute, getAllPages);
+router.get("/pages/:pageNumber", protectRoute, adminRoute, getPageByNumber);
+router.post("/pages/:flipbookId", protectRoute, adminRoute, createPage);
+router.put("/:flipbookId/pages/:pageId", protectRoute, adminRoute, updatePage);
+router.delete("/pages/:pageId", protectRoute, adminRoute, deletePage);
 
-// Page routes
-router.get("/pages", getAllPages);
-router.get("/pages/:pageNumber", getPageByNumber);
-router.post("/pages/:flipbookId", createPage);
-router.put("/:flipbookId/pages/:pageId", updatePage);
-router.delete("/pages/:pageId", deletePage);
+// Flipbook routes (Admin only)
+router.post("/createflipbook", protectRoute, adminRoute, createFlipbook);
+router.get("/singleflipbook/:id", protectRoute, adminRoute, getFlipbookById);
+router.get('/allflipbooks', protectRoute, adminRoute, getAllFlipbooks);
+router.delete("/:flipbookId", protectRoute, adminRoute, deleteFlipbook);
 
-// Flipbook routes
-router.post("/createflipbook", createFlipbook);
-router.get("/singleflipbook/:id", getFlipbookById);
-router.get('/allflipbooks', getAllFlipbooks);
-router.delete("/:flipbookId", deleteFlipbook);
-
-//Publish Routes
-router.post("/instantpublish/:flipbookId", publishFlipbook);
-router.get("/published/get-published-flipbook/:flipbookId", getPublishedFlipbook);
-router.get("/published/get-published-flipbooks", getAllPublishedFlipbooks);
-router.get("/published/toggle-published/:flipbookId", togglePublishedFlipbook);
-router.put("/published/:flipbookId/pages/:pageId", updatePublishedFlipbook);
-router.delete("/published/:flipbookId", deletePublishedFlipbook);
-
+// Publish Routes (Mixed access)
+router.post("/instantpublish/:flipbookId", protectRoute, adminRoute, publishFlipbook);
+router.get("/published/get-published-flipbook/:flipbookId", protectRoute, getPublishedFlipbook); // Public after auth
+router.get("/published/get-published-flipbooks", protectRoute, getAllPublishedFlipbooks); // Public after auth
+router.get("/published/toggle-published/:flipbookId", protectRoute, adminRoute, togglePublishedFlipbook);
+router.put("/published/:flipbookId/pages/:pageId", protectRoute, adminRoute, updatePublishedFlipbook);
+router.delete("/published/:flipbookId", protectRoute, adminRoute, deletePublishedFlipbook);
 
 export default router;
