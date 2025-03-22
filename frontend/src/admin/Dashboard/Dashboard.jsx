@@ -16,6 +16,7 @@ import FlipbookList from "../FlipbookList/FlipbookList";
 import AddPage from "../AddPage/AddPage";
 import AddCustomPage from "../AddCustomPage/AddCustomPage";
 import CustomPageEditor from "../CustomPageEditor/CustomPageEditor";
+import UserPanel from "../UserPanel/UserPanel";
 import { IoBookOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { IoAddOutline } from "react-icons/io5";
@@ -23,7 +24,7 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { IoGridOutline } from "react-icons/io5";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaUsers } from "react-icons/fa";
 import { IoMenuOutline } from "react-icons/io5";
 
 function Dashboard() {
@@ -101,6 +102,11 @@ function Dashboard() {
             <IoCheckmarkDoneOutline className="icon" />
             Published Versions
           </Link>
+
+          <Link to="/admin/admin-dashboard/users" className="nav-item">
+            <FaUsers className="icon" />
+            User Management
+          </Link>
         </nav>
       </div>
 
@@ -146,6 +152,7 @@ function Dashboard() {
           <Route path="/custom-pages/:id" element={<CustomPageEditor />} />
           <Route path="/published" element={<PublishedFlipbooks />} />
           <Route path="/flipbooks" element={<FlipbookList />} />
+          <Route path="/users" element={<UserPanel />} />
         </Routes>
       </div>
     </div>
@@ -447,27 +454,20 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
 
   const handleUpdate = async () => {
     try {
-      let updateData;
-      let finalContent = content;
-      
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('contentType', contentType);
+      formData.append('pageNumber', pageNumber);
+      formData.append('pageType', 'Page');
+
       if (uploadMethod === "file" && file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        
-        finalContent = URL.createObjectURL(file);
+        formData.append('file', file);
+      } else {
+        formData.append('content', content);
       }
 
-      updateData = {
-        title,
-        description,
-        content: finalContent,
-        contentType,
-        pageNumber,
-        pageType: "Page"
-      };
-
-      await updatePage(pageData._id, updateData, flipbookId);
-      setContent(finalContent);
+      await updatePage(pageData._id, formData, flipbookId);
       toast.success("Page updated successfully");
     } catch (error) {
       console.error("Failed to update page:", error);

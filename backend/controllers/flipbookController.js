@@ -189,7 +189,7 @@ export const createPage = async (req, res) => {
 
       // If file was uploaded, use its path
       if (req.file) {
-        content = `/uploads/pageContent/${req.file.filename}`;
+        content = req.file.path;
       }
 
       flipbook.pages.push({
@@ -260,8 +260,7 @@ export const updatePage = async (req, res) => {
       // Handle content update
       let content = req.body.content;
       if (req.file) {
-        // If new file is uploaded, use its path
-        content = `/uploads/pageContent/${req.file.filename}`;
+        content = req.file.path;
       }
 
       // Update the page while preserving pageType

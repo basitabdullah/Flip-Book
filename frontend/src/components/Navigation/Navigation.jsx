@@ -93,10 +93,10 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
               <FaLock />
             </Link>
           )}
-
-          <div className="button" title="Take Screenshot">
+           {/* for now removed */}
+          {/* <div className="button" title="Take Screenshot">
             <BiScreenshot onClick={onStartSnipping} />
-          </div>
+          </div> */}
         </div>
       </header>
 

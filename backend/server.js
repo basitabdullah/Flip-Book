@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import flipbookRoutes from "./routes/flipbookRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import scheduledFlipbookRoutes from "./routes/scheduledFlipbookRoutes.js";
 import indexPageRoutes from "./routes/indexPageRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
@@ -35,6 +36,7 @@ app.use(cors(corsOptions));
 
 // ROUTES
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/flipbook", flipbookRoutes);
 app.use("/api/scheduled-flipbooks", scheduledFlipbookRoutes);
 app.use('/api', backCoverRoutes);
