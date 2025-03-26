@@ -12,6 +12,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const [subtitle, setSubtitle] = useState(pageData?.subtitle || '');
   const [position, setPosition] = useState(pageData?.position || 'vertical');
   const [catalogItems, setCatalogItems] = useState(pageData?.catalogItems || []);
+  const [booknowLink, setBooknowLink] = useState(pageData?.booknowLink || '');
   const [selectedFiles, setSelectedFiles] = useState(Array(pageData?.catalogItems?.length || 0).fill(null));
   const [uploadMethods, setUploadMethods] = useState(Array(pageData?.catalogItems?.length || 0).fill('url'));
 
@@ -91,6 +92,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
       formData.append('pageNumber', pageNumber);
       formData.append('subtitle', subtitle);
       formData.append('position', position);
+      formData.append('booknowLink', booknowLink);
 
       // Prepare catalog items data
       const itemsForSubmission = catalogItems.map((item, index) => ({
@@ -141,23 +143,39 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
       {isEditing ? (
         <div className="edit-mode">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Page Title"
-            className="title-input"
-          />
-          <input
-            type="text"
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
-            placeholder="Subtitle"
-            className="subtitle-input"
-          />
+          <div className="input-group">
+            <label>Page Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter page title"
+              className="title-input"
+            />
+          </div>
+          <div className="input-group">
+            <label>Subtitle</label>
+            <input
+              type="text"
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              placeholder="Enter subtitle"
+              className="subtitle-input"
+            />
+          </div>
+          <div className="input-group">
+            <label>Booking Link</label>
+            <input
+              type="text"
+              value={booknowLink}
+              onChange={(e) => setBooknowLink(e.target.value)}
+              placeholder="Enter booking link (optional)"
+              className="booknow-link-input"
+            />
+          </div>
           
           <div className="form-group">
-            <label>Position</label>
+            <label>Layout Position</label>
             <select
               value={position}
               onChange={(e) => setPosition(e.target.value)}
@@ -170,47 +188,62 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
           <div className="catalog-items">
             <button onClick={handleAddItem} className="add-item-btn">
-              Add Item
+              Add Catalog Item
             </button>
             {catalogItems.map((item, index) => (
               <div key={index} className="catalog-item-edit">
-                <input
-                  type="text"
-                  value={item.name}
-                  onChange={(e) => handleUpdateItem(index, 'name', e.target.value)}
-                  placeholder="Item Name"
-                />
-                <input
-                  type="text"
-                  value={item.price}
-                  onChange={(e) => handleUpdateItem(index, 'price', e.target.value)}
-                  placeholder="Price"
-                />
+                <div className="input-group">
+                  <label>Item Name</label>
+                  <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => handleUpdateItem(index, 'name', e.target.value)}
+                    placeholder="Enter item name"
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Price</label>
+                  <input
+                    type="text"
+                    value={item.price}
+                    onChange={(e) => handleUpdateItem(index, 'price', e.target.value)}
+                    placeholder="Enter price"
+                  />
+                </div>
                 <div className="image-input-group">
-                  <select
-                    value={uploadMethods[index]}
-                    onChange={(e) => handleUploadMethodChange(index, e.target.value)}
-                    className="upload-method-select"
-                  >
-                    <option value="url">URL</option>
-                    <option value="file">File Upload</option>
-                  </select>
+                  <div className="input-group">
+                    <label>Image Upload Method</label>
+                    <select
+                      value={uploadMethods[index]}
+                      onChange={(e) => handleUploadMethodChange(index, e.target.value)}
+                      className="upload-method-select"
+                    >
+                      <option value="url">URL</option>
+                      <option value="file">File Upload</option>
+                    </select>
+                  </div>
 
                   {uploadMethods[index] === 'url' ? (
-                    <input
-                      type="text"
-                      value={item.image}
-                      onChange={(e) => handleUpdateItem(index, 'image', e.target.value)}
-                      placeholder="Image URL"
-                    />
+                    <div className="input-group">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        value={item.image}
+                        onChange={(e) => handleUpdateItem(index, 'image', e.target.value)}
+                        placeholder="Enter image URL"
+                      />
+                    </div>
                   ) : (
                     <div className="file-upload-container">
-                      <input
-                        type="file"
-                        onChange={(e) => handleFileChange(e, index)}
-                        accept="image/*"
-                        required={!item.image}
-                      />
+                      <div className="input-group">
+                        <label>Upload Image</label>
+                        <input
+                          type="file"
+                          onChange={(e) => handleFileChange(e, index)}
+                          accept="image/*"
+                          required={!item.image}
+                        />
+                      </div>
                       {item.image && (
                         <div className="image-preview">
                           <img 
@@ -224,12 +257,15 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
                     </div>
                   )}
                 </div>
-                <input
-                  type="text"
-                  value={item.amenities.join(', ')}
-                  onChange={(e) => handleUpdateAmenities(index, e.target.value)}
-                  placeholder="Amenities (comma-separated)"
-                />
+                <div className="input-group">
+                  <label>Amenities</label>
+                  <input
+                    type="text"
+                    value={item.amenities.join(', ')}
+                    onChange={(e) => handleUpdateAmenities(index, e.target.value)}
+                    placeholder="Enter amenities (comma-separated)"
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveItem(index)}
@@ -250,6 +286,11 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
           <h3>{title}</h3>
           <h4>{subtitle}</h4>
           <p className="position-info">Layout: {position}</p>
+          {booknowLink && (
+            <p className="booknow-link-info">
+              Booking Link: <a href={booknowLink} target="_blank" rel="noopener noreferrer">{booknowLink}</a>
+            </p>
+          )}
           <div className="catalog-section">
             <div className="catalog-grid">
               {catalogItems.map((item, index) => (

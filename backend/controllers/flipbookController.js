@@ -378,7 +378,8 @@ export const publishFlipbook = async (req, res) => {
               ...basePage,
               pageType: "PublishedCatalogPage",
               subtitle: page.subtitle,
-              position : page.position,
+              position: page.position,
+              booknowLink: page.booknowLink,
               catalogItems: page.catalogItems
                 ? page.catalogItems.map((item) => ({
                     name: item.name,

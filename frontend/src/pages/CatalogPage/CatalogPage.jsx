@@ -3,6 +3,7 @@ import "./CatalogPage.scss";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 const CatalogPage = ({ pageData }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
+console.log(pageData);
 
   return (
     <div className="catalog-page">
@@ -41,7 +42,15 @@ const CatalogPage = ({ pageData }) => {
                     </span>
                   ))}
                 </div>
-                <button className="book-button">Book Now</button>
+                <button className="book-button">
+                  <a
+                    href={pageData.booknowLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Book Now
+                  </a>
+                </button>
               </div>
             </div>
           ))}
@@ -63,9 +72,14 @@ const CatalogPage = ({ pageData }) => {
                 {room.price}
                 {/* <span>/booking</span> */}
               </p>
-              <button className="catalog-book-now pulse-animation">
+              <a
+                href={pageData.booknowLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="catalog-book-now pulse-animation"
+              >
                 Book now
-              </button>
+              </a>
             </div>
           ))}
         </div>

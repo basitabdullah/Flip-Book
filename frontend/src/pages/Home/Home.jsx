@@ -257,6 +257,7 @@ const Home = () => {
                   subtitle: page.subtitle,
                   catalogItems: page.catalogItems,
                   position: page.position,
+                  booknowLink: page.booknowLink,
                 }}
               />
               <div className="page-number">{page.pageNumber}</div>

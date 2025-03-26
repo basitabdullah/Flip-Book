@@ -12,6 +12,7 @@ const AddCatalogPage = ({ flipbookId }) => {
   const [pageNumber, setPageNumber] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [position, setPosition] = useState("vertical");
+  const [booknowLink, setBooknowLink] = useState("");
   const [catalogItems, setCatalogItems] = useState([
     {
       name: "",
@@ -105,6 +106,7 @@ const AddCatalogPage = ({ flipbookId }) => {
       formData.append("pageNumber", pageNumber);
       formData.append("subtitle", subtitle);
       formData.append("position", position);
+      formData.append("booknowLink", booknowLink);
 
       // Prepare catalog items data
       const itemsForSubmission = catalogItems.map((item, index) => ({
@@ -129,6 +131,7 @@ const AddCatalogPage = ({ flipbookId }) => {
       setTitle("");
       setPageNumber("");
       setSubtitle("");
+      setBooknowLink("");
       setCatalogItems([
         {
           name: "",
@@ -194,6 +197,16 @@ const AddCatalogPage = ({ flipbookId }) => {
             onChange={(e) => setSubtitle(e.target.value)}
             placeholder="Enter subtitle"
             required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Book Now Link</label>
+          <input
+            type="text"
+            value={booknowLink}
+            onChange={(e) => setBooknowLink(e.target.value)}
+            placeholder="Enter book now link (optional)"
           />
         </div>
 

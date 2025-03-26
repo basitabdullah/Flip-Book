@@ -131,7 +131,7 @@ export const addCatalogPage = async (req, res) => {
 export const updateCatalogPage = async (req, res) => {
   try {
     const { flipbookId, pageId } = req.params;
-    const { title, subtitle, position, pageNumber } = req.body;
+    const { title, subtitle, position, pageNumber, booknowLink } = req.body;
     let catalogItems = JSON.parse(req.body.catalogItems || '[]');
 
     // Find the flipbook
@@ -210,6 +210,7 @@ export const updateCatalogPage = async (req, res) => {
       catalogItems,
       pageNumber: parseInt(pageNumber),
       position: position || flipbook.pages[pageIndex].position,
+      booknowLink: booknowLink || flipbook.pages[pageIndex].booknowLink,
       pageType: "Catalog",
       isCustom: true,
     };

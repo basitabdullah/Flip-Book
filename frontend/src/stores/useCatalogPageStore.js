@@ -47,7 +47,6 @@ const useCatalogPageStore = create((set, get) => ({
       if (!response.data || !response.data.flipbook) {
         throw new Error("Invalid response from server");
       }
-     console.log(pageData);
      
       const { getFlipbookById } = useFlipbookStore.getState();
       await getFlipbookById(flipbookId);
