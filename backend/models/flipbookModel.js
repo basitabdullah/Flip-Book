@@ -75,6 +75,7 @@ const CatalogPage = BasePage.discriminator(
       enum: ["vertical", "horizontal"],
       default: "vertical",
     },
+    booknowLink: {type : String},
     catalogItems: [
       {
         name: { type: String, required: true },

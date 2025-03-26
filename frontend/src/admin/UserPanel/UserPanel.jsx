@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './UserPanel.scss';
-import { FaUser, FaEnvelope, FaPhone, FaTrash, FaUserCog } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaUserCog } from 'react-icons/fa';
+import { MdOutlineDeleteOutline } from "react-icons/md";
 import {useUserStore} from '../../stores/useUserStore';
 import Loader from '../../components/Loader/Loader';
 import { toast } from 'react-hot-toast';
@@ -135,7 +136,7 @@ const UserPanel = () => {
                           onClick={() => setShowDeleteConfirm(user)}
                           title="Delete User"
                         >
-                          <FaTrash />
+                          <MdOutlineDeleteOutline />
                         </button>
                       </div>
                     )}

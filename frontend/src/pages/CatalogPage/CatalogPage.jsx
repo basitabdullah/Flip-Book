@@ -20,7 +20,13 @@ const CatalogPage = ({ pageData }) => {
               onClick={() => setSelectedRoom(index)}
             >
               <div className="room-image">
-                <img src={room.image} alt={room.name} loading="lazy" />
+                <img
+                  src={
+                    import.meta.env.VITE_BACKEND_URL_UPLOADS + "/" + room.image
+                  }
+                  alt={room.name}
+                  loading="lazy"
+                />
               </div>
               <div className="room-info">
                 <h3>{room.name}</h3>

@@ -38,7 +38,7 @@ export const upload = multer({
 export const addCatalogPage = async (req, res) => {
   try {
     const { flipbookId } = req.params;
-    const { title, pageNumber, subtitle, position } = req.body;
+    const { title, pageNumber, subtitle, position ,booknowLink} = req.body;
     let catalogItems = JSON.parse(req.body.catalogItems || '[]');
 
     // Find the flipbook by its ID
@@ -102,6 +102,7 @@ export const addCatalogPage = async (req, res) => {
       title,
       pageNumber: parseInt(pageNumber, 10),
       subtitle,
+      booknowLink,
       catalogItems,
       position: position || "vertical",
       pageType: "Catalog",
