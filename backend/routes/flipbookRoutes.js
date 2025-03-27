@@ -35,8 +35,8 @@ router.delete("/:flipbookId", protectRoute, adminRoute, deleteFlipbook);
 
 // Publish Routes (Mixed access)
 router.post("/instantpublish/:flipbookId", protectRoute, adminRoute, publishFlipbook);
-router.get("/published/get-published-flipbook/:flipbookId", protectRoute, getPublishedFlipbook); // Public after auth
-router.get("/published/get-published-flipbooks", protectRoute, getAllPublishedFlipbooks); // Public after auth
+router.get("/published/get-published-flipbook/:flipbookId", getPublishedFlipbook); // Public access
+router.get("/published/get-published-flipbooks", getAllPublishedFlipbooks); // Public access
 router.get("/published/toggle-published/:flipbookId", protectRoute, adminRoute, togglePublishedFlipbook);
 router.put("/published/:flipbookId/pages/:pageId", protectRoute, adminRoute, updatePublishedFlipbook);
 router.delete("/published/:flipbookId", protectRoute, adminRoute, deletePublishedFlipbook);

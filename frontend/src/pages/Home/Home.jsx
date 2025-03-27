@@ -19,10 +19,12 @@ import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ReviewsOrMapPage from "../ReviewsOrMapPage/ReviewsOrMapPage";
 import BlurText from "../../reactBits/BlurText/BlurText";
 import SplitText from "../../reactBits/SplitText/SplitText";
+import LoginPopup from "../../components/LoginPopup/LoginPopup";
+import { useUserStore } from "../../stores/useUserStore";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -30,13 +32,24 @@ const Home = () => {
   const [isSnipping, setIsSnipping] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
-
-  const { loading, error, publishedFlipbooks, getPublishedFlipbooks } =
+  const navigate = useNavigate();
+  const { loading, publishedFlipbooks, getPublishedFlipbooks } =
     useFlipbookStore();
+  const { user, checkingAuth, checkAuth } = useUserStore();
 
   useEffect(() => {
+    console.log('Home useEffect - Initial state:', { user, checkingAuth });
     getPublishedFlipbooks();
-  }, [getPublishedFlipbooks]);
+    checkAuth().then(() => {
+      console.log('Auth check completed');
+    }).catch(error => {
+      console.error('Auth check failed:', error);
+    });
+  }, [getPublishedFlipbooks, checkAuth]);
+
+  useEffect(() => {
+    console.log('Home state updated:', { user, checkingAuth });
+  }, [user, checkingAuth]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -92,7 +105,9 @@ const Home = () => {
           return (
             <img
               loading="lazy"
-              src={`${import.meta.env.VITE_BACKEND_URL_UPLOADS}/${page.content}`}
+              src={`${import.meta.env.VITE_BACKEND_URL_UPLOADS}/${
+                page.content
+              }`}
               alt={page.title}
             />
           );
@@ -356,42 +371,7 @@ const Home = () => {
 
   if (loading) return <Loader />;
 
-  if (error) {
-    return (
-      <div className="error-wrapper">
-        <div className="error-container">
-          <div className="error-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <h2 className="error-title">Access Required</h2>
-          <p className="error-message">Please log in to access this content</p>
-          <Link to="/login" className="login-button">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-              />
-            </svg>
-            Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
+  
   const currentFlipbook = filteredPublishedFlipbooks[0];
   const flipbookImage = currentFlipbook?.flipbook?.image;
   const flipbookName = currentFlipbook?.name;
@@ -410,6 +390,8 @@ const Home = () => {
     >
       <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
       <div className="home">
+        {console.log('Home render:', { checkingAuth, user })}
+        {!checkingAuth && !user && <LoginPopup />}
         <HTMLFlipBook
           width={Math.min(window.innerWidth * 0.8, 450)}
           height={window.innerWidth < 600 ? 500 : 600}

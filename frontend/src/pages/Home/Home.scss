@@ -296,78 +296,7 @@
 }
 
 // Add error component styles
-.error-wrapper {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
 
-  .error-container {
-    max-width: 400px;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06),
-      0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-    text-align: center;
-
-    .error-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 1.5rem;
-      color: #ef4444;
-      animation: pulse 2s infinite;
-    }
-
-    .error-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .error-message {
-      color: #4b5563;
-      margin-bottom: 1.5rem;
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    .login-button {
-      background-color: #3b82f6;
-      color: white;
-      padding: 0.75rem 2rem;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-
-      &:hover {
-        background-color: #2563eb;
-        transform: translateY(-1px);
-      }
-
-      &:active {
-        transform: translateY(0);
-      }
-
-      svg {
-        width: 20px;
-        height: 20px;
-      }
-    }
-  }
-}
 
 @keyframes slideUp {
   from {
