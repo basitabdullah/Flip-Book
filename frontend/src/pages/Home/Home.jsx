@@ -36,6 +36,7 @@ const Home = () => {
   const { loading, publishedFlipbooks, getPublishedFlipbooks } =
     useFlipbookStore();
   const { user, checkingAuth, checkAuth } = useUserStore();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
 
   useEffect(() => {
     console.log('Home useEffect - Initial state:', { user, checkingAuth });
@@ -81,6 +82,14 @@ const Home = () => {
       : "";
   }, []);
 
+  const getImageSrc = (imagePath) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('backend/uploads/')) {
+      return `${backendUrl}/${imagePath}`;
+    }
+    return imagePath;
+  };
+
   const renderContent = useCallback(
     (page) => {
       switch (page.contentType) {
@@ -105,9 +114,7 @@ const Home = () => {
           return (
             <img
               loading="lazy"
-              src={`${import.meta.env.VITE_BACKEND_URL_UPLOADS}/${
-                page.content
-              }`}
+              src={getImageSrc(page.content)}
               alt={page.title}
             />
           );
@@ -127,7 +134,7 @@ const Home = () => {
           return null;
       }
     },
-    [getYouTubeEmbedUrl]
+    [getYouTubeEmbedUrl, getImageSrc]
   );
 
   const handleStartSnipping = () => {

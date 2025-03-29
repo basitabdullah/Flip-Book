@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import "./CatalogPage.scss";
-import { LiaExchangeAltSolid } from "react-icons/lia";
+
 const CatalogPage = ({ pageData }) => {
   const [selectedRoom, setSelectedRoom] = useState(null);
-console.log(pageData);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
+
+  const getImageSrc = (imagePath) => {
+    // Check if the path starts with /backend/ to determine if it's an uploaded file
+    if (imagePath.startsWith('/backend/')) {
+      return `${backendUrl}/${imagePath}`;
+    }
+    return imagePath;
+  };
+
+  if (!pageData) return null;
 
   return (
     <div className="catalog-page">
@@ -22,9 +32,7 @@ console.log(pageData);
             >
               <div className="room-image">
                 <img
-                  src={
-                    import.meta.env.VITE_BACKEND_URL_UPLOADS + "/" + room.image
-                  }
+                  src={getImageSrc(room.image)}
                   alt={room.name}
                   loading="lazy"
                 />
@@ -59,7 +67,7 @@ console.log(pageData);
         <div className="catalog-horizonatal-wrapper">
           {pageData.catalogItems.map((room, index) => (
             <div key={index} className="catalog-item">
-              <img src={room.image} alt={room.name} loading="lazy" />
+              <img src={getImageSrc(room.image)} alt={room.name} loading="lazy" />
               <h4>{room.name}</h4>
               <div className="catalog-amenities">
                 {room.amenities.map((amenity, idx) => (

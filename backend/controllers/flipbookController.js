@@ -6,13 +6,12 @@ import path from "path";
 import fs from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { log } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const uploadDir = "backend/uploads/pageContent";
 
 // Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
+if (!fs.existsSync(uploadDir)) {  
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
@@ -22,27 +21,24 @@ const storage = multer.diskStorage({
     cb(null, "backend/uploads/pageContent/");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|mp4|webm|mov/;
-    const extname = allowedTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-      return cb(null, true);
-    } else {
-      cb("Error: Only images and videos are allowed!");
-    }
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
   },
-}).single("file");
+  fileFilter: (req, file, cb) => {
+    // Accept images only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  }
+}).single('image');
 
 // Get a flipbook by ID
 
@@ -79,25 +75,38 @@ export const getFlipbookById = async (req, res) => {
 };
 
 export const createFlipbook = async (req, res) => {
-  const { name, image } = req.body;
-
   try {
-    // Create a new flipbook
-    const newFlipbook = new Flipbook({
-      name,
-      image,
-      pages: [], // Initially no pages
+    // Handle file upload
+    upload(req, res, async function(err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: 'File upload error: ' + err.message });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      // Get the uploaded file path
+      const imagePath = req.file ? req.file.path : req.body.image;
+      const { name } = req.body;
+
+      // Create a new flipbook
+      const newFlipbook = new Flipbook({
+        name,
+        image: imagePath,
+        pages: [], // Initially no pages
+      });
+
+      await newFlipbook.save();
+
+      res.status(201).json({ 
+        message: "Flipbook created successfully.", 
+        newFlipbook 
+      });
     });
-
-    await newFlipbook.save();
-
-    res
-      .status(201)
-      .json({ message: "Flipbook created successfully.", newFlipbook });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const deleteFlipbook = async (req, res) => {
   const { flipbookId } = req.params;
 
@@ -126,6 +135,7 @@ export const deleteFlipbook = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 // Get all pages in the flipbook
 export const getAllPages = async (req, res) => {
   try {
@@ -653,6 +663,47 @@ export const deletePublishedFlipbook = async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting published flipbook:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateFlipbook = async (req, res) => {
+  try {
+    // Handle file upload
+    upload(req, res, async function(err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: 'File upload error: ' + err.message });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      const { flipbookId } = req.params;
+      const { name } = req.body;
+
+      // Get the uploaded file path if a new image was uploaded
+      const imagePath = req.file ? req.file.path : req.body.image;
+
+      // Find and update the flipbook
+      const updatedFlipbook = await Flipbook.findByIdAndUpdate(
+        flipbookId,
+        {
+          name,
+          ...(imagePath && { image: imagePath }), // Only update image if a new one was uploaded
+        },
+        { new: true }
+      );
+
+      if (!updatedFlipbook) {
+        return res.status(404).json({ message: "Flipbook not found" });
+      }
+
+      res.status(200).json({
+        message: "Flipbook updated successfully",
+        updatedFlipbook,
+      });
+    });
+  } catch (error) {
+    console.error("Error updating flipbook:", error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -3,7 +3,7 @@ import './GalleryPage.scss';
 
 const GalleryPage = ({ pageData }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
   
   useEffect(() => {
     if (pageData?.imagesData?.length) {
@@ -22,7 +22,14 @@ const GalleryPage = ({ pageData }) => {
   };
 
   if (!pageData) return null;
-  const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
+
+  const getImageSrc = (imagePath) => {
+    // Check if the path starts with /uploads/ to determine if it's an uploaded file
+    if (imagePath.startsWith('/uploads/')) {
+      return `${backendUrl}/backend${imagePath}`;
+    }
+    return imagePath;
+  };
 
   return (
     <div className="gallery-page">
@@ -37,8 +44,8 @@ const GalleryPage = ({ pageData }) => {
           {pageData.imagesData.map((image, index) => (
             <div key={index} className="carousel-slide">
               <img 
-                src={`${backendUrl}/backend/${image.imagesDataImage}`} 
-                alt={`${backendUrl}/backend/${image.imagesDataImage}`} 
+                src={getImageSrc(image.imagesDataImage)}
+                alt={image.imagesDataTitle || 'Gallery image'} 
                 loading="lazy" 
               />
               <div className="slide-content">

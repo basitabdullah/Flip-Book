@@ -480,17 +480,18 @@ const useFlipbookStore = create((set) => ({
     }
   },
 
-  createFlipbook: async (name, image) => {
+  createFlipbook: async (formData) => {
     try {
       set({ loading: true, error: null });
 
-      // Send a POST request with the required data (name and image)
-      const response = await axiosInstance.post("/flipbook/createflipbook", {
-        name,
-        image,
+      // Send a POST request with FormData
+      const response = await axiosInstance.post("/flipbook/createflipbook", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
         
-      // Update the state with the new flipbook, without auto-publishing
+      // Update the state with the new flipbook
       set((state) => ({
         flipbooks: [...state.flipbooks, response.data.newFlipbook],
         loading: false,
