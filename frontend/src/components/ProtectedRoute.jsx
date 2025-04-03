@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useUserStore } from '../stores/useUserStore';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useUserStore } from "../stores/useUserStore";
 
 const ProtectedRoute = ({ children }) => {
   const { user, isAuthenticated, checkingAuth } = useUserStore();
@@ -14,11 +14,11 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" />;
   }
 
-  if (user.role !== 'admin') {
+  if (user.role !== "admin" && user.role !== "editor" && user.role !== "atk") {
     return <Navigate to="/" />;
   }
 
   return children;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const uploadDir = "backend/uploads/pageContent";
 
 // Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {  
+if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
@@ -21,24 +21,27 @@ const storage = multer.diskStorage({
     cb(null, "backend/uploads/pageContent/");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
 });
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
     // Accept images only
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-      return cb(new Error('Only image files are allowed!'), false);
+      return cb(new Error("Only image files are allowed!"), false);
     }
     cb(null, true);
-  }
-}).single('image');
+  },
+}).single("image");
 
 // Get a flipbook by ID
 
@@ -77,9 +80,11 @@ export const getFlipbookById = async (req, res) => {
 export const createFlipbook = async (req, res) => {
   try {
     // Handle file upload
-    upload(req, res, async function(err) {
+    upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: 'File upload error: ' + err.message });
+        return res
+          .status(400)
+          .json({ message: "File upload error: " + err.message });
       } else if (err) {
         return res.status(400).json({ message: err.message });
       }
@@ -97,9 +102,9 @@ export const createFlipbook = async (req, res) => {
 
       await newFlipbook.save();
 
-      res.status(201).json({ 
-        message: "Flipbook created successfully.", 
-        newFlipbook 
+      res.status(201).json({
+        message: "Flipbook created successfully.",
+        newFlipbook,
       });
     });
   } catch (error) {
@@ -424,14 +429,14 @@ export const publishFlipbook = async (req, res) => {
               isCustom: true,
             };
 
-            case "BackCover":
-              return {
-                ...basePage,
-                pageType: "PublishedBackCover",
-                subtitle: page.subtitle,
-                image : page.image,
-                isCustom: true,
-              };
+          case "BackCover":
+            return {
+              ...basePage,
+              pageType: "PublishedBackCover",
+              subtitle: page.subtitle,
+              image: page.image,
+              isCustom: true,
+            };
 
           default:
             return null;
@@ -463,6 +468,11 @@ export const publishFlipbook = async (req, res) => {
     });
   } catch (error) {
     console.error("Error publishing flipbook:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: "The publication with this issue name already exists.",
+      });
+    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -670,9 +680,11 @@ export const deletePublishedFlipbook = async (req, res) => {
 export const updateFlipbook = async (req, res) => {
   try {
     // Handle file upload
-    upload(req, res, async function(err) {
+    upload(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: 'File upload error: ' + err.message });
+        return res
+          .status(400)
+          .json({ message: "File upload error: " + err.message });
       } else if (err) {
         return res.status(400).json({ message: err.message });
       }

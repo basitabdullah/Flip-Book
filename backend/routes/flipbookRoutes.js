@@ -15,6 +15,7 @@ import {
   deletePublishedFlipbook,
   getAllFlipbooks,
   deleteFlipbook,
+  updateFlipbook,
 } from "../controllers/flipbookController.js";
 import { protectRoute, adminRoute } from "../middlewares/authMiddleware.js";
 
@@ -31,6 +32,7 @@ router.delete("/pages/:pageId", protectRoute, adminRoute, deletePage);
 router.post("/createflipbook", protectRoute, adminRoute, createFlipbook);
 router.get("/singleflipbook/:id", protectRoute, adminRoute, getFlipbookById);
 router.get('/allflipbooks', protectRoute, adminRoute, getAllFlipbooks);
+router.put("/:flipbookId", protectRoute, adminRoute, updateFlipbook);
 router.delete("/:flipbookId", protectRoute, adminRoute, deleteFlipbook);
 
 // Publish Routes (Mixed access)

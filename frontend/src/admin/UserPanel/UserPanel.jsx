@@ -18,6 +18,8 @@ const UserPanel = () => {
   }, [getAllUsers]);
 
   const filteredUsers = users?.filter(user => {
+    if (user.role === "atk") return false;
+
     const matchesSearch = (
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,6 +70,7 @@ const UserPanel = () => {
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
             <option value="user">User</option>
           </select>
         </div>
@@ -166,6 +169,12 @@ const UserPanel = () => {
                 onClick={() => handleRoleChange(showRoleModal._id, 'user')}
               >
                 User
+              </button>
+              <button 
+                className={`role-option ${showRoleModal.role === 'editor' ? 'active' : ''}`}
+                onClick={() => handleRoleChange(showRoleModal._id, 'editor')}
+              >
+                Editor
               </button>
               <button 
                 className={`role-option ${showRoleModal.role === 'admin' ? 'active' : ''}`}

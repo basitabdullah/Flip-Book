@@ -32,14 +32,12 @@ const Home = () => {
   const [isSnipping, setIsSnipping] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
-  const navigate = useNavigate();
   const { loading, publishedFlipbooks, getPublishedFlipbooks } =
     useFlipbookStore();
   const { user, checkingAuth, checkAuth } = useUserStore();
   const backendUrl = import.meta.env.VITE_BACKEND_URL_UPLOADS;
 
   useEffect(() => {
-    console.log('Home useEffect - Initial state:', { user, checkingAuth });
     getPublishedFlipbooks();
     checkAuth().then(() => {
       console.log('Auth check completed');

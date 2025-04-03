@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Dashboard.scss";
 import useFlipbookStore from "../../stores/useFlipbookStore"; // Import the Zustand store
+import { useUserStore } from "../../stores/useUserStore"; // Add this import
 import {
   Link,
   Routes,
@@ -26,11 +27,14 @@ import { IoHomeOutline } from "react-icons/io5";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { FaEdit, FaUsers } from "react-icons/fa";
 import { IoMenuOutline } from "react-icons/io5";
+import { IoImageOutline } from "react-icons/io5";
+import { IoCloseOutline } from "react-icons/io5";
 
 function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUserStore();
   const {
     flipbook,
     getFlipbookById,
@@ -38,10 +42,14 @@ function Dashboard() {
     error,
     publishFlipbook,
     scheduleFlipbook,
+    updateFlipbook,
   } = useFlipbookStore();
 
   const sidebarRef = useRef(null);
   const toggleButtonRef = useRef(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const titleInputRef = useRef(null);
 
   // Close sidebar on route change
   useEffect(() => {
@@ -68,12 +76,52 @@ function Dashboard() {
     };
   }, []);
 
+  // Focus the title input when editing starts
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+
+  // Update edited title when flipbook changes
+  useEffect(() => {
+    if (flipbook?.name) {
+      setEditedTitle(flipbook.name);
+    }
+  }, [flipbook?.name]);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Only show back button if not on the main flipbook list
-  const showBackButton = !location.pathname.endsWith("/flipbooks");
+  const handleTitleEdit = () => {
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = async () => {
+    if (editedTitle.trim() && flipbook?._id) {
+      try {
+        const formData = new FormData();
+        formData.append("name", editedTitle);
+        
+        await updateFlipbook(flipbook._id, formData);
+      } catch (error) {
+        console.error("Error updating flipbook name:", error);
+        toast.error("Failed to update flipbook name");
+      }
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleTitleSave();
+    } else if (e.key === "Escape") {
+      setIsEditingTitle(false);
+      setEditedTitle(flipbook?.name || "");
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -103,10 +151,12 @@ function Dashboard() {
             Published Versions
           </Link>
 
-          <Link to="/admin/admin-dashboard/users" className="nav-item">
-            <FaUsers className="icon" />
-            User Management
-          </Link>
+          {(user?.role === 'admin'  || user?.role === 'atk') && (
+            <Link to="/admin/admin-dashboard/users" className="nav-item">
+              <FaUsers className="icon" />
+              User Management
+            </Link>
+          )}
         </nav>
       </div>
 
@@ -126,6 +176,55 @@ function Dashboard() {
             </button>
 
             <h1>Flipbook Content Manager</h1>
+            
+            {location.pathname.includes('/admin/admin-dashboard/') && 
+             !location.pathname.includes('/flipbooks') && 
+             !location.pathname.includes('/scheduled') && 
+             !location.pathname.includes('/published') && 
+             !location.pathname.includes('/users') && (
+              <div className="flipbook-title-container">
+                <FaEdit className="edit-icon" />
+                {isEditingTitle ? (
+                  <div className="title-edit-container">
+                    <input
+                      ref={titleInputRef}
+                      type="text"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onKeyDown={handleTitleKeyDown}
+                      className="title-edit-input"
+                    />
+                    <div className="title-edit-actions">
+                      <button 
+                        className="title-save-btn"
+                        onClick={handleTitleSave}
+                        title="Save"
+                      >
+                        <IoCheckmarkDoneOutline />
+                      </button>
+                      <button 
+                        className="title-cancel-btn"
+                        onClick={() => {
+                          setIsEditingTitle(false);
+                          setEditedTitle(flipbook?.name || "");
+                        }}
+                        title="Cancel"
+                      >
+                        <IoCloseOutline />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <h2 
+                    className="flipbook-title"
+                    onClick={handleTitleEdit}
+                    title="Click to edit"
+                  >
+                    {flipbook?.name || 'Loading...'}
+                  </h2>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -152,7 +251,9 @@ function Dashboard() {
           <Route path="/custom-pages/:id" element={<CustomPageEditor />} />
           <Route path="/published" element={<PublishedFlipbooks />} />
           <Route path="/flipbooks" element={<FlipbookList />} />
-          <Route path="/users" element={<UserPanel />} />
+          {(user?.role === 'admin' || user?.role === 'editor' || user?.role === 'atk') && (
+            <Route path="/users" element={<UserPanel />} />
+          )}
         </Routes>
       </div>
     </div>
@@ -168,12 +269,16 @@ function FlipbookEditor({
   getFlipbookById,
 }) {
   const { id } = useParams();
+  const updateFlipbook = useFlipbookStore((state) => state.updateFlipbook);
 
   const [openPublishModal, setOpenPublishModal] = useState(false);
   const [publishName, setPublishName] = useState("");
   const [publishIssueName, setPublishIssueName] = useState("");
   const [scheduleDate, setScheduleDate] = useState(new Date());
   const [isScheduling, setIsScheduling] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [newImage, setNewImage] = useState(null);
+  const [newName, setNewName] = useState(flipbook?.name || "");
 
   useEffect(() => {
     if (id) {
@@ -206,6 +311,22 @@ function FlipbookEditor({
       setIsScheduling(false);
     } catch (error) {
       console.error("Failed to schedule flipbook:", error);
+    }
+  };
+
+  const handleImageChange = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", newName);
+      if (newImage) {
+        formData.append("image", newImage);
+      }
+
+      await updateFlipbook(id, formData);
+      setShowImageModal(false);
+      setNewImage(null);
+    } catch (error) {
+      console.error("Error updating flipbook:", error);
     }
   };
 
@@ -244,7 +365,6 @@ function FlipbookEditor({
           Add A Custom Page
         </Link>
         <div className="divider">|</div>
-
         <Link
           to={`/admin/admin-dashboard/custom-pages/${id}`}
           className="action-button editor animated"
@@ -252,6 +372,14 @@ function FlipbookEditor({
           <FaEdit className="icon" />
           Custom Page Editor
         </Link>
+        <div className="divider">|</div>
+        <button
+          onClick={() => setShowImageModal(true)}
+          className="action-button image animated"
+        >
+          <IoImageOutline className="icon" />
+          Change Cover Image
+        </button>
       </div>
 
       {flipbook && (
@@ -414,6 +542,60 @@ function FlipbookEditor({
           </div>
         </div>
       )}
+
+      {/* Image Change Modal */}
+      {showImageModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Change Flipbook Cover Image</h2>
+
+            <div className="input-group">
+              <label>Flipbook Name</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Enter flipbook name"
+              />
+            </div>
+
+            <div className="input-group">
+              <label>New Cover Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewImage(e.target.files[0])}
+              />
+              {newImage && (
+                <div className="file-info">
+                  <p>Selected file: {newImage.name}</p>
+                  <button
+                    className="remove-file"
+                    onClick={() => setNewImage(null)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button onClick={handleImageChange} className="create-btn">
+                Update
+              </button>
+              <button
+                onClick={() => {
+                  setShowImageModal(false);
+                  setNewImage(null);
+                }}
+                className="close-btn"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -455,16 +637,16 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
   const handleUpdate = async () => {
     try {
       const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('contentType', contentType);
-      formData.append('pageNumber', pageNumber);
-      formData.append('pageType', 'Page');
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("contentType", contentType);
+      formData.append("pageNumber", pageNumber);
+      formData.append("pageType", "Page");
 
       if (uploadMethod === "file" && file) {
-        formData.append('file', file);
+        formData.append("file", file);
       } else {
-        formData.append('content', content);
+        formData.append("content", content);
       }
 
       await updatePage(pageData._id, formData, flipbookId);
@@ -501,11 +683,9 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
         return;
       }
       setFile(selectedFile);
-      setContent(''); // Clear URL when file is selected
+      setContent(""); // Clear URL when file is selected
     }
   };
-
-  
 
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return "";
@@ -566,7 +746,7 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
           value={uploadMethod}
           onChange={(e) => {
             setUploadMethod(e.target.value);
-            setContent('');
+            setContent("");
             setFile(null);
           }}
         >
@@ -597,11 +777,11 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
             {file && (
               <div className="file-info">
                 <p>Selected file: {file.name}</p>
-                <button 
-                  className="remove-file" 
+                <button
+                  className="remove-file"
                   onClick={() => {
                     setFile(null);
-                    setContent('');
+                    setContent("");
                   }}
                 >
                   Remove

@@ -24,19 +24,22 @@ export const protectRoute = async (req, res, next) => {
   }
 };
 
-
-export const adminRoute = async(req,res,next)=>{
-try {
-    const user = req.user
-    if(user.role === "admin"){
-        return next()
-    }else{
-        return res.status(401).json({
-            message : "Not authorized,only admins can access this route!"
-        })
+export const adminRoute = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (
+      user.role === "admin" ||
+      user.role === "editor" ||
+      user.role === "atk"
+    ) {
+      return next();
+    } else {
+      return res.status(401).json({
+        message:
+          "Not authorized, only admins and editors can access this route!",
+      });
     }
-} catch (error) {
+  } catch (error) {
     res.status(401).json({ message: error.message });
-    
-}
-} 
+  }
+};

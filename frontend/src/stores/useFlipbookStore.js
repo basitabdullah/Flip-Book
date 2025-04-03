@@ -569,6 +569,45 @@ const useFlipbookStore = create((set) => ({
     }
   },
 
+  updateFlipbook: async (flipbookId, formData) => {
+    try {
+      set({ loading: true, error: null });
+
+      const response = await axiosInstance.put(`/flipbook/${flipbookId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (!response.data) {
+        throw new Error("No data received from server");
+      }
+
+      // Update the flipbook in the state
+      set((state) => ({
+        flipbook: response.data.updatedFlipbook,
+        flipbooks: state.flipbooks.map((fb) =>
+          fb._id === flipbookId ? response.data.updatedFlipbook : fb
+        ),
+        loading: false,
+      }));
+
+      toast.success("Flipbook updated successfully");
+      return response.data;
+    } catch (error) {
+      console.error("Error updating flipbook:", error.response || error);
+      const errorMessage = error.response?.data?.message || error.message;
+
+      set({
+        loading: false,
+        error: errorMessage,
+      });
+
+      toast.error(errorMessage);
+      throw errorMessage;
+    }
+  },
+
   addIndexPage: async (flipbookId, pageData) => {
     try {
       set({ loading: true, error: null });

@@ -36,19 +36,19 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      const toast = document.createElement('div');
-      toast.className = 'share-toast';
-      toast.textContent = '🔗 Link copied to clipboard!';
+      const toast = document.createElement("div");
+      toast.className = "share-toast";
+      toast.textContent = "🔗 Link copied to clipboard!";
       document.body.appendChild(toast);
 
       setTimeout(() => {
-        toast.classList.add('fade-out');
+        toast.classList.add("fade-out");
         setTimeout(() => {
           document.body.removeChild(toast);
         }, 300);
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -58,7 +58,7 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -71,13 +71,17 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
           <div className="button" title="Next Page">
             <RxThickArrowRight onClick={goForward} />
           </div>
-          <div className="button" title="Table of Contents" onClick={handleTocClick}>
+          <div
+            className="button"
+            title="Table of Contents"
+            onClick={handleTocClick}
+          >
             <MdBackupTable />
           </div>
           <div className="button" title="Share" onClick={handleShare}>
             <FaShareAlt />
           </div>
-         
+
           {user ? (
             <div className="button" title="Logout" onClick={handleLogout}>
               <IoLogOutOutline />
@@ -88,12 +92,19 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
             </Link>
           )}
 
-          {user && user.role === "admin" && (
-            <Link to="/admin/admin-dashboard/flipbooks" className="button" title="Search">
-              <FaLock />
-            </Link>
-          )}
-           {/* for now removed */}
+          {user &&
+            (user.role === "admin" ||
+              user.role === "editor" ||
+              user.role === "atk") && (
+              <Link
+                to="/admin/admin-dashboard/flipbooks"
+                className="button"
+                title="Search"
+              >
+                <FaLock />
+              </Link>
+            )}
+          {/* for now removed */}
           {/* <div className="button" title="Take Screenshot">
             <BiScreenshot onClick={onStartSnipping} />
           </div> */}
@@ -101,11 +112,19 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
       </header>
 
       {showShareModal && (
-        <div className="share-modal-overlay" onClick={() => setShowShareModal(false)}>
-          <div className="share-modal" onClick={e => e.stopPropagation()}>
+        <div
+          className="share-modal-overlay"
+          onClick={() => setShowShareModal(false)}
+        >
+          <div className="share-modal" onClick={(e) => e.stopPropagation()}>
             <div className="share-modal-header">
               <h3>Share Link</h3>
-              <button className="close-button" onClick={() => setShowShareModal(false)}>×</button>
+              <button
+                className="close-button"
+                onClick={() => setShowShareModal(false)}
+              >
+                ×
+              </button>
             </div>
             <div className="share-modal-content">
               <div className="url-container">
@@ -118,17 +137,27 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
       )}
 
       {showTocModal && (
-        <div className="toc-modal-overlay" onClick={() => setShowTocModal(false)}>
-          <div className="toc-modal" onClick={e => e.stopPropagation()}>
+        <div
+          className="toc-modal-overlay"
+          onClick={() => setShowTocModal(false)}
+        >
+          <div className="toc-modal" onClick={(e) => e.stopPropagation()}>
             <div className="toc-modal-header">
               <h3>Table of Contents</h3>
-              <button className="close-button" onClick={() => setShowTocModal(false)}>×</button>
+              <button
+                className="close-button"
+                onClick={() => setShowTocModal(false)}
+              >
+                ×
+              </button>
             </div>
             <div className="toc-modal-content">
               <div className="page-grid">
-                {[...Array(bookRef?.current?.pageFlip().getPageCount() || 0)].map((_, index) => (
-                  <div 
-                    key={index} 
+                {[
+                  ...Array(bookRef?.current?.pageFlip().getPageCount() || 0),
+                ].map((_, index) => (
+                  <div
+                    key={index}
                     className="page-preview"
                     onClick={() => {
                       bookRef.current.pageFlip().flip(index);

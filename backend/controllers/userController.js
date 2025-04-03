@@ -3,8 +3,7 @@ import { User } from "../models/userModel.js";
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    // Only allow admins to access this endpoint
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'atk') {
       return res.status(403).json({
         message: "Access denied. Only admins can view all users."
       });
@@ -22,8 +21,7 @@ export const getAllUsers = async (req, res) => {
 // Update user role
 export const updateUserRole = async (req, res) => {
   try {
-    // Only allow admins to update roles
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'atk') {
       return res.status(403).json({
         message: "Access denied. Only admins can update user roles."
       });
@@ -33,9 +31,9 @@ export const updateUserRole = async (req, res) => {
     const { role } = req.body;
 
     // Validate role
-    if (!['user', 'admin'].includes(role)) {
+    if (!['user', 'admin', 'editor'].includes(role)) {
       return res.status(400).json({
-        message: "Invalid role. Role must be either 'user' or 'admin'."
+        message: "Invalid role. Role must be either 'user', 'admin', or 'editor'."
       });
     }
 
@@ -69,8 +67,7 @@ export const updateUserRole = async (req, res) => {
 // Delete user
 export const deleteUser = async (req, res) => {
   try {
-    // Only allow admins to delete users
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && req.user.role !== 'atk') {
       return res.status(403).json({
         message: "Access denied. Only admins can delete users."
       });

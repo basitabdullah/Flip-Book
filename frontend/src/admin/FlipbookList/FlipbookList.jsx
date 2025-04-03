@@ -118,7 +118,7 @@ const FlipbookList = () => {
                 {/* Flipbook Image */}
                 {flipbook.image && (
                   <div className="flipbook-image">
-                    <img src={flipbook.image} alt={flipbook.name} />
+                    <img src={`${import.meta.env.VITE_BACKEND_URL_UPLOADS+"/"+flipbook.image}`} alt={flipbook.name}/>
                   </div>
                 )}
 

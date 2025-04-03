@@ -191,6 +191,119 @@ $border-radius: 8px;
           }
         }
 
+        .flipbook-title-container {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-left: auto;
+          order: 4;
+          background-color: #f8f9fa;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          border-left: 3px solid #3498db;
+          
+          @media (max-width: 768px) {
+            width: 100%;
+            order: 3;
+            margin-top: 0.5rem;
+          }
+
+          .edit-icon {
+            font-size: 1.1rem;
+            color: #3498db;
+            animation: pulse 1.5s infinite;
+          }
+
+          .flipbook-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            
+            &:hover {
+              color: #3498db;
+            }
+            
+            @media (max-width: 768px) {
+              max-width: none;
+            }
+          }
+
+          .title-edit-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+          }
+
+          .title-edit-input {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            width: 100%;
+            max-width: 200px;
+            background-color: white;
+            
+            &:focus {
+              outline: none;
+              box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            }
+            
+            @media (max-width: 768px) {
+              max-width: none;
+            }
+          }
+
+          .title-edit-actions {
+            display: flex;
+            gap: 0.25rem;
+          }
+
+          .title-save-btn,
+          .title-cancel-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            svg {
+              font-size: 1rem;
+            }
+          }
+
+          .title-save-btn {
+            background-color: #2ecc71;
+            color: white;
+            
+            &:hover {
+              background-color: #27ae60;
+            }
+          }
+
+          .title-cancel-btn {
+            background-color: #e74c3c;
+            color: white;
+            
+            &:hover {
+              background-color: #c0392b;
+            }
+          }
+        }
+
         .header-actions {
           display: flex;
           gap: 0.5rem;
@@ -967,5 +1080,21 @@ $border-radius: 8px;
   }
   100% {
     box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.flipbook-header {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  .flipbook-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    text-align: center;
   }
 }
