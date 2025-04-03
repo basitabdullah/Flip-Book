@@ -46,9 +46,7 @@ const Home = () => {
     });
   }, [getPublishedFlipbooks, checkAuth]);
 
-  useEffect(() => {
-    console.log('Home state updated:', { user, checkingAuth });
-  }, [user, checkingAuth]);
+  
 
   useEffect(() => {
     if (audioRef.current) {
@@ -217,7 +215,6 @@ const Home = () => {
           .sort((a, b) => a.pageNumber - b.pageNumber)
       : [];
   }, [publishedPages]);
-  console.log(sortedPages);
 
   const goToPage = (pageIndex) => {
     if (bookRef.current) {
@@ -395,7 +392,6 @@ const Home = () => {
     >
       <Navigation bookRef={bookRef} onStartSnipping={handleStartSnipping} />
       <div className="home">
-        {console.log('Home render:', { checkingAuth, user })}
         {!checkingAuth && !user && <LoginPopup />}
         <HTMLFlipBook
           width={Math.min(window.innerWidth * 0.8, 450)}

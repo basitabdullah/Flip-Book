@@ -644,7 +644,7 @@ function PageCard({ pageData, pageNumber, loading, flipbookId }) {
       formData.append("pageType", "Page");
 
       if (uploadMethod === "file" && file) {
-        formData.append("file", file);
+        formData.append("image", file);
       } else {
         formData.append("content", content);
       }
