@@ -29,7 +29,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
+// Create multer instance for route middleware
+export const upload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
@@ -42,6 +43,21 @@ const upload = multer({
     cb(null, true);
   },
 }).single("image");
+
+// Create a separate multer instance for controller functions
+const multerUpload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept images only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error("Only image files are allowed!"), false);
+    }
+    cb(null, true);
+  },
+});
 
 // Get a flipbook by ID
 
@@ -80,7 +96,7 @@ export const getFlipbookById = async (req, res) => {
 export const createFlipbook = async (req, res) => {
   try {
     // Handle file upload
-    upload(req, res, async function (err) {
+    multerUpload.single("image")(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res
           .status(400)
@@ -177,57 +193,64 @@ export const getPageByNumber = async (req, res) => {
 
 // Create a new page
 export const createPage = async (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      return res
-        .status(400)
-        .json({ message: err.message || "Error uploading file" });
-    }
-
+  try {
+    console.log("Request body:", req.body);
+    console.log("Uploaded file:", req.file);
+    
     const { flipbookId } = req.params;
     const { title, pageNumber, description, contentType } = req.body;
 
-    try {
-      const flipbook = await Flipbook.findById(flipbookId);
-      if (!flipbook) {
-        return res.status(404).json({ message: "Flipbook not found." });
-      }
-
-      const existingPage = flipbook.pages.find(
-        (p) => p.pageNumber === parseInt(pageNumber, 10)
-      );
-      if (existingPage) {
-        return res.status(400).json({ message: "Page number already exists." });
-      }
-
-      let content = req.body.content;
-
-      // If file was uploaded, use its path
-      if (req.file) {
-        content = req.file.path;
-      }
-
-      flipbook.pages.push({
-        pageType: "Page",
-        title,
-        pageNumber,
-        description,
-        content,
-        contentType,
-      });
-
-      await flipbook.save();
-      res.status(201).json({ message: "Page added successfully.", flipbook });
-    } catch (error) {
-      console.error("Error creating page:", error);
-      res.status(500).json({ message: error.message });
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(flipbookId)) {
+      return res.status(400).json({ message: "Invalid flipbook ID format" });
     }
-  });
+
+    const flipbook = await Flipbook.findById(flipbookId);
+    if (!flipbook) {
+      return res.status(404).json({ message: "Flipbook not found." });
+    }
+
+    // Check if page number already exists
+    const existingPage = flipbook.pages.find(
+      (p) => p.pageNumber === parseInt(pageNumber, 10)
+    );
+    if (existingPage) {
+      return res.status(400).json({ message: "Page number already exists." });
+    }
+
+    let content = req.body.content;
+
+    // If file was uploaded, use its path
+    if (req.file) {
+      content = req.file.path;
+    }
+
+    // Create a new page object
+    const newPage = {
+      pageType: "Page",
+      title,
+      pageNumber: parseInt(pageNumber, 10),
+      description,
+      content,
+      contentType,
+    };
+
+    // Add the page to the flipbook
+    flipbook.pages.push(newPage);
+
+    // Save the flipbook
+    await flipbook.save();
+    
+    res.status(201).json({ message: "Page added successfully.", flipbook });
+  } catch (error) {
+    console.error("Error creating page:", error);
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Update an existing page
 export const updatePage = async (req, res) => {
-  upload(req, res, async (err) => {
+  multerUpload.single("image")(req, res, async (err) => {
     if (err) {
       return res
         .status(400)
@@ -680,7 +703,7 @@ export const deletePublishedFlipbook = async (req, res) => {
 export const updateFlipbook = async (req, res) => {
   try {
     // Handle file upload
-    upload(req, res, async function (err) {
+    multerUpload.single("image")(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res
           .status(400)
@@ -691,6 +714,12 @@ export const updateFlipbook = async (req, res) => {
 
       const { flipbookId } = req.params;
       const { name } = req.body;
+
+      if(!name){
+        return res.status(400).json({
+          message : "Please add a name!"
+        })
+      }
 
       // Get the uploaded file path if a new image was uploaded
       const imagePath = req.file ? req.file.path : req.body.image;

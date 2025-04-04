@@ -45,7 +45,7 @@ const SocialPage = ({ pageData }) => {
   return (
     <div className="social-page">
       <h1>{title}</h1>
-      {subtitle && <h2>{subtitle}</h2>}
+      {subtitle &&  <p className="social-page-subtitle">{subtitle}</p>}
 
       {/* Map Section */}
       {mapUrl && (

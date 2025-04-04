@@ -110,7 +110,7 @@ function AddPage() {
 
         // Handle file upload
         if (uploadMethod === "file" && file) {
-          formData.append("file", file);
+          formData.append("image", file);
         } else if (uploadMethod === "url" && content) {
           formData.append("content", content);
         } else {

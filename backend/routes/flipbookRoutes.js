@@ -16,6 +16,7 @@ import {
   getAllFlipbooks,
   deleteFlipbook,
   updateFlipbook,
+  upload
 } from "../controllers/flipbookController.js";
 import { protectRoute, adminRoute } from "../middlewares/authMiddleware.js";
 
@@ -24,7 +25,7 @@ const router = express.Router();
 // Page routes (Admin only)
 router.get("/pages", protectRoute, adminRoute, getAllPages);
 router.get("/pages/:pageNumber", protectRoute, adminRoute, getPageByNumber);
-router.post("/pages/:flipbookId", protectRoute, adminRoute, createPage);
+router.post("/pages/:flipbookId", protectRoute, adminRoute, upload, createPage);
 router.put("/:flipbookId/pages/:pageId", protectRoute, adminRoute, updatePage);
 router.delete("/pages/:pageId", protectRoute, adminRoute, deletePage);
 

@@ -83,9 +83,18 @@ const useFlipbookStore = create((set) => ({
   addPage: async (pageData, flipbookId) => {
     try {
       set({ loading: true, error: null });
+      
+      // Set the appropriate headers for FormData
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+      
       const response = await axiosInstance.post(
         `/flipbook/pages/${flipbookId}`,
-        pageData
+        pageData,
+        config
       );
 
       set((state) => ({
@@ -99,6 +108,7 @@ const useFlipbookStore = create((set) => ({
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
+      console.error("Error adding page:", error);
 
       set({
         loading: false,

@@ -38,7 +38,7 @@ const CatalogPage = ({ pageData }) => {
                 />
               </div>
               <div className="room-info">
-                <h3>{room.name}</h3>
+                <h5>{room.name}</h5>
                 <p className="price">
                   {room.price}
                   {/* <span>/booking</span> */}

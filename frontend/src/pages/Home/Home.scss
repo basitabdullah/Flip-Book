@@ -27,8 +27,11 @@
         bottom: clamp(8px, 2vw, 10px);
         right: clamp(8px, 2vw, 10px);
         font-size: clamp(0.7rem, 2vw, 0.8rem);
-        color: #888;
+        color: #ffffff;
         font-style: italic;
+        padding: 5px;
+        background-color: #727272bf;
+        border-radius: 2px;
 
         @media (max-width: 380px) {
           font-size: 0.7rem;
@@ -45,10 +48,8 @@
         flex-direction: column;
 
         h1 {
-          font-size: clamp(0.9rem, 3vw, 1rem);
-          margin-bottom: clamp(0.6rem, 2vw, 1rem);
           color: #222;
-          font-weight: 700;
+          font-weight: 500;
 
           text-align: center;
 
@@ -60,11 +61,11 @@
 
         .page-description {
           margin-top: 10px;
-          font-size: clamp(0.8rem, 2vw, 0.85rem);
+          font-size: 11px;
           line-height: 1.5;
-          color: #121212;
+          color: #2e2e2e;
+          font-weight: normal;
           margin-bottom: clamp(0.6rem, 2vw, 1rem);
-
           @media (min-width: 451px) {
             column-count: 2;
             column-gap: 20px;
@@ -124,7 +125,7 @@
           margin: clamp(0.6rem, 2vw, 1rem) 0;
           position: relative;
           background: #fff;
-          
+
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1),
             0 0 0 1px rgba(0, 0, 0, 0.05);
 
@@ -136,7 +137,6 @@
         }
 
         .video-container {
-
           padding-bottom: 56.25%;
           height: 0;
           overflow: hidden;
@@ -296,7 +296,6 @@
 }
 
 // Add error component styles
-
 
 @keyframes slideUp {
   from {

@@ -331,7 +331,7 @@ const Home = () => {
           return (
             <div className="page-content">
               <div className="content custom-scrollbar">
-                <h1 style={{ fontSize: "2.5rem", marginBottom: "1.5rem" }}>
+                <h1 style={{ fontSize: "2rem", marginBottom: "1.5rem" }}>
                   <SplitText
                     text={page.title}
                     className="text-2xl font-semibold text-center"
