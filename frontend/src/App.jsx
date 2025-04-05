@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import "./styles/global.scss";
 import Dashboard from "./admin/Dashboard/Dashboard";
@@ -20,7 +20,7 @@ const App = () => {
   }, []);
   
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -53,7 +53,7 @@ const App = () => {
       </Routes>
       {/* <Footer /> */}
       <Toaster />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

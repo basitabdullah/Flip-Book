@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IoArrowBack } from 'react-icons/io5';
 import { useUserStore } from '../../stores/useUserStore';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Register.scss';
 
 const Register = () => {
@@ -39,11 +39,19 @@ const Register = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <div className="register-container">
-      <Link to="/" className="back-button">
+      <button onClick={handleBack} className="back-button">
         <IoArrowBack /> Back
-      </Link>
+      </button>
       <div className="register-box">
         <h2>Create Account</h2>
         <form onSubmit={handleSubmit} className="register-form">
@@ -115,7 +123,7 @@ const Register = () => {
           </button>
         </form>
         <p className="login-link">
-          Already have an account? <Link to="/login">Login here</Link>
+          Already have an account? <button onClick={handleLogin} className="login-link-button">Login here</button>
         </p>
       </div>
     </div>

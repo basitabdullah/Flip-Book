@@ -79,10 +79,15 @@ $transition-time: 0.3s;
   text-align: center;
   margin-top: 1rem;
 
-  a {
+  .login-link-button {
+    background: none;
+    border: none;
     color: $secondary-color;
     text-decoration: none;
-    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
 
     &:hover {
       color: $dark-gray;
@@ -90,24 +95,3 @@ $transition-time: 0.3s;
     }
   }
 }
-
-.back-button {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  color: $dark-gray;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: opacity $transition-time ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  
-  svg {
-    font-size: 1.2rem;
-  }
-  
-  &:hover {
-    opacity: 0.7;
-  }
-} 

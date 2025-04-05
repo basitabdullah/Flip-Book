@@ -34,11 +34,19 @@ const Login = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/');
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
+  };
+
   return (
     <div className="login-container">
-      <a href="/" className="back-button">
+      <button onClick={handleBack} className="back-button">
         <IoArrowBack /> Back
-      </a>
+      </button>
       <div className="login-box">
         <h2>Welcome Back</h2>
         <form onSubmit={handleSubmit} className="login-form">
@@ -70,7 +78,7 @@ const Login = () => {
           <a href="#">Forgot Password?</a>
         </p> */}
         <p className="register-link">
-          Don't have an account? <a href="/register">Register here</a>
+          Don't have an account? <button onClick={handleRegister} className="register-link-button">Register here</button>
         </p>
       </div>
     </div>

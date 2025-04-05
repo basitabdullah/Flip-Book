@@ -39,14 +39,14 @@ const Home = () => {
 
   useEffect(() => {
     getPublishedFlipbooks();
-    checkAuth().then(() => {
-      console.log('Auth check completed');
-    }).catch(error => {
-      console.error('Auth check failed:', error);
-    });
+    checkAuth()
+      .then(() => {
+        console.log("Auth check completed");
+      })
+      .catch((error) => {
+        console.error("Auth check failed:", error);
+      });
   }, [getPublishedFlipbooks, checkAuth]);
-
-  
 
   useEffect(() => {
     if (audioRef.current) {
@@ -79,8 +79,8 @@ const Home = () => {
   }, []);
 
   const getImageSrc = (imagePath) => {
-    if (!imagePath) return '';
-    if (imagePath.startsWith('backend/uploads/')) {
+    if (!imagePath) return "";
+    if (imagePath.startsWith("backend/uploads/")) {
       return `${backendUrl}/${imagePath}`;
     }
     return imagePath;
@@ -352,16 +352,7 @@ const Home = () => {
 
                 {renderContent(page)}
 
-                <p className="page-description">
-                  {" "}
-                  <BlurText
-                    text={page.description}
-                    delay={10}
-                    animateBy="words"
-                    direction="top"
-                    className="text-2xl mb-8"
-                  />
-                </p>
+                <p className="page-description">{page.description}</p>
               </div>
               <div className="page-number">{page.pageNumber}</div>
             </div>
@@ -373,7 +364,6 @@ const Home = () => {
 
   if (loading) return <Loader />;
 
-  
   const currentFlipbook = filteredPublishedFlipbooks[0];
   const flipbookImage = currentFlipbook?.flipbook?.image;
   const flipbookName = currentFlipbook?.name;

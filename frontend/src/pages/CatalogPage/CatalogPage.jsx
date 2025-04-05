@@ -50,15 +50,14 @@ const CatalogPage = ({ pageData }) => {
                     </span>
                   ))}
                 </div>
-                <button className="book-button">
-                  <a
-                    href={pageData.booknowLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Book Now
-                  </a>
-                </button>
+                <a
+                  href={pageData.booknowLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="book-button"
+                >
+                  Book Now
+                </a>
               </div>
             </div>
           ))}

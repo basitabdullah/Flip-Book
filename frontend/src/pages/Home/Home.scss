@@ -61,10 +61,12 @@
 
         .page-description {
           margin-top: 10px;
-          font-size: 11px;
-          line-height: 1.5;
+          font-size: 13px;
+          line-height: 1.8;
           color: #2e2e2e;
-          font-weight: normal;
+          font-family: "Roboto";
+          font-weight: 100;
+          letter-spacing: 0.2px;
           margin-bottom: clamp(0.6rem, 2vw, 1rem);
           @media (min-width: 451px) {
             column-count: 2;

@@ -10,7 +10,7 @@ const PageCover = ({ backgroundImage, title, subtitle }) => {
     >
       <div className="overlay"></div>{" "}
       <div className="cover-content">
-        {subtitle && <h2 className="cover-subtitle">{subtitle}</h2>}
+        {/* {subtitle && <h2 className="cover-subtitle">{subtitle}</h2>} */}
         <h2>
           <ShinyText
             text={title}

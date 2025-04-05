@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../stores/useUserStore';
 import './LoginPopup.scss';
 
 const LoginPopup = () => {
   const [showPopup, setShowPopup] = useState(false);
   const { user, checkingAuth, isAuthenticated } = useUserStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('LoginPopup useEffect:', {
@@ -43,6 +44,14 @@ const LoginPopup = () => {
     localStorage.setItem('loginPopupShown', 'true');
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
+  };
+
   console.log('LoginPopup render:', { showPopup, checkingAuth });
 
   if (!showPopup || checkingAuth) return null;
@@ -63,7 +72,7 @@ const LoginPopup = () => {
         <h2 className="welcome-title">Welcome to G-Flip</h2>
         <p className="welcome-message">Sign in to explore our amazing e-catalog</p>
         <div className="popup-buttons">
-          <Link to="/login" className="login-button">
+          <button onClick={handleLogin} className="login-button">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -77,8 +86,8 @@ const LoginPopup = () => {
               />
             </svg>
             Login
-          </Link>
-          <Link to="/register" className="register-button">
+          </button>
+          <button onClick={handleRegister} className="register-button">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -92,7 +101,7 @@ const LoginPopup = () => {
               />
             </svg>
             Register
-          </Link>
+          </button>
         </div>
       </div>
     </div>
