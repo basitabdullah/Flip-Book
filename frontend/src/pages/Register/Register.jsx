@@ -3,6 +3,7 @@ import { IoArrowBack } from 'react-icons/io5';
 import { useUserStore } from '../../stores/useUserStore';
 import { useNavigate } from 'react-router-dom';
 import './Register.scss';
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -25,6 +26,19 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+    if (!passwordRegex.test(formData.password)) {
+      toast.error('Password must contain at least one letter, one number, and be at least 6 characters long.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match.');
+      return;
+    }
+
     try {
       await signup({
         name: formData.fullName,

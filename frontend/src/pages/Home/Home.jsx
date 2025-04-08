@@ -409,7 +409,7 @@ const Home = () => {
           useMouseEvents={false}
           drawShadow={true}
           maxShadowOpacity={0.8}
-          flippingTime={500}
+          flippingTime={600}
           onFlip={() => {
             if (!audioRef.current.src) {
               audioRef.current.src = pageFlipSound;
