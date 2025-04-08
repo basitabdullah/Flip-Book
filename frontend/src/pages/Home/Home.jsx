@@ -19,12 +19,11 @@ import GalleryPage from "../../pages/GalleryPage/GalleryPage";
 import SocialPage from "../../pages/SocialPage/SocialPage";
 import { RiArrowLeftWideFill, RiArrowRightWideFill } from "react-icons/ri";
 import ThanksPage from "../ThanksPage/ThanksPage";
-import { Link, useNavigate } from "react-router-dom";
 import ReviewsOrMapPage from "../ReviewsOrMapPage/ReviewsOrMapPage";
-import BlurText from "../../reactBits/BlurText/BlurText";
 import SplitText from "../../reactBits/SplitText/SplitText";
 import LoginPopup from "../../components/LoginPopup/LoginPopup";
 import { useUserStore } from "../../stores/useUserStore";
+import ani1 from "../../assets/gifs/ani1.gif";
 
 const Home = () => {
   const bookRef = useRef(null);
@@ -331,6 +330,21 @@ const Home = () => {
           return (
             <div className="page-content">
               <div className="content custom-scrollbar">
+                <img
+                  style={{
+                    backgroundColor: "transparent",
+                    width: "110px",
+                    height: "110px",
+                    position: "absolute",
+                    bottom: "50px",
+                    left: "30px",
+                    borderRadius: "5px",
+                    boxShadow: "none",
+                    opacity: 0.6, 
+                  }}
+                  src={ani1}
+                  alt=""
+                />
                 <h1 style={{ fontSize: "2rem", marginBottom: "1.5rem" }}>
                   <SplitText
                     text={page.title}
@@ -405,11 +419,7 @@ const Home = () => {
         >
           <div key="cover" className="page">
             <div className="page-content">
-              <CoverPage
-                backgroundImage={flipbookImage}
-                title={flipbookName}
-                subtitle={"Experience the quality of daynamic e-catalogue."}
-              />
+              <CoverPage backgroundImage={flipbookImage} title={flipbookName} />
             </div>
           </div>
 

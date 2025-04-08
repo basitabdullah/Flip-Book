@@ -67,7 +67,7 @@ const CatalogPage = ({ pageData }) => {
           {pageData.catalogItems.map((room, index) => (
             <div key={index} className="catalog-item">
               <img src={getImageSrc(room.image)} alt={room.name} loading="lazy" />
-              <h4>{room.name}</h4>
+              <h4 className="room-name">{room.name}</h4>
               <div className="catalog-amenities">
                 {room.amenities.map((amenity, idx) => (
                   <span key={idx} className="amenity-tag">
