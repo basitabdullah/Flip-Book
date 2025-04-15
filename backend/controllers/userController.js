@@ -3,7 +3,7 @@ import { User } from "../models/userModel.js";
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    if (req.user.role !== 'admin' && req.user.role !== 'atk') {
+    if (req.user.role !== 'admin' && req.user.role !== 'atk'&& req.user.role !== 'sub-admin') {
       return res.status(403).json({
         message: "Access denied. Only admins can view all users."
       });
@@ -31,7 +31,7 @@ export const updateUserRole = async (req, res) => {
     const { role } = req.body;
 
     // Validate role
-    if (!['user', 'admin', 'editor'].includes(role)) {
+    if (!['user', 'admin', 'editor','sub-admin'].includes(role)) {
       return res.status(400).json({
         message: "Invalid role. Role must be either 'user', 'admin', or 'editor'."
       });

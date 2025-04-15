@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { BiScreenshot } from "react-icons/bi";
 import { useUserStore } from "../../stores/useUserStore";
 import { IoLogOutOutline } from "react-icons/io5";
-
+import { GrUserAdmin } from "react-icons/gr";
 const Navigation = ({ bookRef, onStartSnipping }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTocModal, setShowTocModal] = useState(false);
@@ -102,6 +102,18 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
                 title="Search"
               >
                 <FaLock />
+              </Link>
+            )}
+
+          {user &&
+            user.role === "sub-admin" 
+              && (
+              <Link
+                to="/user-panel"
+                className="button"
+                title="User-Panel"
+              >
+                <GrUserAdmin />
               </Link>
             )}
           {/* for now removed */}

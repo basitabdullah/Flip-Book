@@ -11,6 +11,7 @@ import ScheduledFlipbooks from './admin/ScheduledFlipbooks/ScheduledFlipbooks';
 import ScrollToTop from "./components/ScrollToTop";
 import { useUserStore } from "./stores/useUserStore";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserPanel from "./pages/UserPanel/UserPanel";
 
 const App = () => {
   const { checkAuth } = useUserStore();
@@ -26,6 +27,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/user-panel" element={<UserPanel />} />
         <Route 
           path="/admin/admin-dashboard/*" 
           element={

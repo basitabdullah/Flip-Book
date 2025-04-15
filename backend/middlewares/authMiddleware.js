@@ -30,6 +30,7 @@ export const adminRoute = async (req, res, next) => {
     if (
       user.role === "admin" ||
       user.role === "editor" ||
+      user.role === "sub-admin" ||
       user.role === "atk"
     ) {
       return next();

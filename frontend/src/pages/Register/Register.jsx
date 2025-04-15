@@ -26,19 +26,19 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-
+  
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+  
     if (!passwordRegex.test(formData.password)) {
       toast.error('Password must contain at least one letter, one number, and be at least 6 characters long.');
       return;
     }
-
+  
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match.');
       return;
     }
-
+  
     try {
       await signup({
         name: formData.fullName,
@@ -52,6 +52,7 @@ const Register = () => {
       console.error('Registration error:', error);
     }
   };
+  
 
   const handleBack = () => {
     navigate('/');

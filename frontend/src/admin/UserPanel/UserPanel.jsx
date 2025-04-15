@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './UserPanel.scss';
 import { FaUser, FaEnvelope, FaPhone, FaUserCog } from 'react-icons/fa';
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import {useUserStore} from '../../stores/useUserStore';
+import { useUserStore } from '../../stores/useUserStore';
 import Loader from '../../components/Loader/Loader';
 import { toast } from 'react-hot-toast';
 
@@ -62,7 +62,7 @@ const UserPanel = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
@@ -70,6 +70,7 @@ const UserPanel = () => {
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
+            <option value="sub-admin">Sub-admin</option>
             <option value="editor">Editor</option>
             <option value="user">User</option>
           </select>
@@ -127,14 +128,14 @@ const UserPanel = () => {
                   <td>
                     {currentUser?._id !== user._id && (
                       <div className="action-buttons">
-                        <button 
+                        <button
                           className="action-button role-button"
                           onClick={() => setShowRoleModal(user)}
                           title="Change Role"
                         >
                           <FaUserCog />
                         </button>
-                        <button 
+                        <button
                           className="action-button delete-button"
                           onClick={() => setShowDeleteConfirm(user)}
                           title="Delete User"
@@ -162,21 +163,27 @@ const UserPanel = () => {
           <div className="modal-content">
             <h2>Change User Role</h2>
             <p>Change role for {showRoleModal.name}</p>
-            
+
             <div className="role-options">
-              <button 
+              <button
                 className={`role-option ${showRoleModal.role === 'user' ? 'active' : ''}`}
                 onClick={() => handleRoleChange(showRoleModal._id, 'user')}
               >
                 User
               </button>
-              <button 
+              <button
                 className={`role-option ${showRoleModal.role === 'editor' ? 'active' : ''}`}
                 onClick={() => handleRoleChange(showRoleModal._id, 'editor')}
               >
                 Editor
               </button>
-              <button 
+              <button
+                className={`role-option ${showRoleModal.role === 'sub-admin' ? 'active' : ''}`}
+                onClick={() => handleRoleChange(showRoleModal._id, 'sub-admin')}
+              >
+                Sub-admin
+              </button>
+              <button
                 className={`role-option ${showRoleModal.role === 'admin' ? 'active' : ''}`}
                 onClick={() => handleRoleChange(showRoleModal._id, 'admin')}
               >
@@ -202,13 +209,13 @@ const UserPanel = () => {
             <p className="warning">This action cannot be undone.</p>
 
             <div className="modal-actions">
-              <button 
+              <button
                 onClick={() => handleDeleteUser(showDeleteConfirm._id)}
                 className="delete-btn"
               >
                 Delete
               </button>
-              <button 
+              <button
                 onClick={() => setShowDeleteConfirm(null)}
                 className="cancel-btn"
               >
@@ -222,4 +229,4 @@ const UserPanel = () => {
   );
 };
 
-export default UserPanel; 
+export default UserPanel;
