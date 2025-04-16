@@ -12,9 +12,11 @@ import { BiScreenshot } from "react-icons/bi";
 import { useUserStore } from "../../stores/useUserStore";
 import { IoLogOutOutline } from "react-icons/io5";
 import { GrUserAdmin } from "react-icons/gr";
+import { FaExpand } from "react-icons/fa";
 const Navigation = ({ bookRef, onStartSnipping }) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTocModal, setShowTocModal] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { user, logout } = useUserStore();
   const navigate = useNavigate();
   const goForward = () => {
@@ -61,6 +63,33 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
     navigate("/");
   };
 
+  const toggleFullscreen = () => {
+    const element = document.documentElement;
+    
+    if (!document.fullscreenElement) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) { /* Firefox */
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) { /* IE/Edge */
+        element.msRequestFullscreen();
+      }
+      setIsFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+      setIsFullscreen(false);
+    }
+  };
   return (
     <>
       <header className="navigation">
@@ -120,6 +149,9 @@ const Navigation = ({ bookRef, onStartSnipping }) => {
           {/* <div className="button" title="Take Screenshot">
             <BiScreenshot onClick={onStartSnipping} />
           </div> */}
+          <div className="button" title="Toggle Fullscreen" onClick={toggleFullscreen}>
+            <FaExpand />
+          </div>
         </div>
       </header>
 
