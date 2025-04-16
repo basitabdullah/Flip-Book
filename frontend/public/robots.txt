@@ -4,19 +4,19 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   
   <url>
-    <loc>https://flip.kom.ac/</loc>
+    <loc>catalog.kom.ac/</loc>
     <lastmod>2025-04-11T10:13:45+00:00</lastmod>
     <priority>1.0</priority> 
   </url>
 
   <url>
-    <loc>https://flip.kom.ac/login</loc>
+    <loc>catalog.kom.ac/login</loc>
     <lastmod>2025-04-11T10:13:45+00:00</lastmod>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://flip.kom.ac/signup</loc>
+    <loc>catalog.kom.ac/signup</loc>
     <lastmod>2025-04-11T10:13:45+00:00</lastmod>
     <priority>0.6</priority>
   </url>

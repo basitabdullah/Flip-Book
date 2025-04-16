@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import useGalleryPageStore from '../../stores/useGalleryPageStore';
 import useFlipbookStore from '../../stores/useFlipbookStore';
 import { toast } from 'react-hot-toast';
-import "./GalleryPageCard.scss"
+import "./GalleryPageCard.scss";
+
 const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const { updateGalleryPage, deleteGalleryPage } = useGalleryPageStore();
   const { getFlipbookById } = useFlipbookStore();
@@ -11,7 +12,13 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   const [subtitle, setSubtitle] = useState(pageData?.subtitle || '');
   const [imagesData, setImagesData] = useState(pageData?.imagesData || []);
   const [inputTypes, setInputTypes] = useState(imagesData.map(() => 'url'));
-  const fileInputRef = useRef(null);
+  const [selectedFiles, setSelectedFiles] = useState(imagesData.map(() => null));
+  const fileInputRefs = useRef([]);
+
+  // Initialize fileInputRefs when imagesData changes
+  useEffect(() => {
+    fileInputRefs.current = fileInputRefs.current.slice(0, imagesData.length);
+  }, [imagesData.length]);
 
   const handleAddImage = () => {  
     setImagesData([...imagesData, {
@@ -20,6 +27,7 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
       imagesDataImage: ''
     }]);
     setInputTypes([...inputTypes, 'url']);
+    setSelectedFiles([...selectedFiles, null]);
   };
 
   const handleUpdateImageData = (index, field, value) => {
@@ -33,43 +41,67 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
   const handleRemoveImage = (index) => {
     setImagesData(imagesData.filter((_, i) => i !== index));
+    setInputTypes(inputTypes.filter((_, i) => i !== index));
+    setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
   };
 
   const handleFileUpload = async (index) => {
-    const file = fileInputRef.current.files[0];
+    const file = fileInputRefs.current[index].files[0];
     if (!file) return;
 
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Upload failed');
-
-      const { imageUrl } = await response.json();
-      handleUpdateImageData(index, 'imagesDataImage', imageUrl);
+      // Create a temporary URL for preview
+      const objectUrl = URL.createObjectURL(file);
+      handleUpdateImageData(index, 'imagesDataImage', objectUrl);
+      
+      // Store the file reference for later submission
+      const newSelectedFiles = [...selectedFiles];
+      newSelectedFiles[index] = file;
+      setSelectedFiles(newSelectedFiles);
+      
+      toast.success('Image selected successfully');
     } catch (error) {
-      toast.error('Failed to upload image');
+      console.error('Error selecting image:', error);
+      toast.error('Failed to select image');
     }
   };
 
   const handleUpdate = async () => {
     try {
-      await updateGalleryPage(flipbookId, pageData._id, {
-        title,
-        pageNumber,
-        subtitle,
-        imagesData,
-        pageType: 'Gallery',
-        isCustom: true
+      // Process images based on input type
+      const processedImagesData = imagesData.map((image, index) => {
+        // For upload type, we'll handle the file separately and clear the URL
+        if (inputTypes[index] === 'upload' && selectedFiles[index]) {
+          return {
+            ...image,
+            imagesDataImage: '' // Backend will handle file paths
+          };
+        }
+        return image;
       });
+      
+      // Collect files for upload
+      const filesToUpload = [];
+      selectedFiles.forEach((file, index) => {
+        if (file && inputTypes[index] === 'upload') {
+          filesToUpload.push(file);
+        }
+      });
+      
+      // Create the data object in the format expected by the store
+      const pageDataToUpdate = {
+        title: title,
+        pageNumber: pageNumber,
+        subtitle: subtitle,
+        imagesData: processedImagesData,
+        images: filesToUpload
+      };
+      
+      await updateGalleryPage(flipbookId, pageData._id, pageDataToUpdate);
       setIsEditing(false);
       toast.success('Gallery page updated successfully');
     } catch (error) {
+      console.error('Error updating gallery page:', error);
       toast.error('Failed to update page');
     }
   };
@@ -148,6 +180,13 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
                       const newInputTypes = [...inputTypes];
                       newInputTypes[index] = e.target.value;
                       setInputTypes(newInputTypes);
+                      
+                      // Reset file selection when changing input type
+                      if (e.target.value === 'url') {
+                        const newSelectedFiles = [...selectedFiles];
+                        newSelectedFiles[index] = null;
+                        setSelectedFiles(newSelectedFiles);
+                      }
                     }}
                     className="input-type-select"
                   >
@@ -166,20 +205,20 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
                     <div className="upload-container">
                       <input
                         type="text"
-                        value={image.imagesDataImage}
+                        value={selectedFiles[index] ? selectedFiles[index].name : 'No file chosen'}
                         placeholder="No file chosen"
                         readOnly
                       />
                       <input
                         type="file"
-                        ref={fileInputRef}
+                        ref={el => fileInputRefs.current[index] = el}
                         onChange={() => handleFileUpload(index)}
                         accept="image/*"
                         style={{ display: 'none' }}
                       />
                       <button
                         type="button"
-                        onClick={() => fileInputRef.current.click()}
+                        onClick={() => fileInputRefs.current[index].click()}
                         className="upload-btn"
                       >
                         Upload
@@ -224,4 +263,4 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   );
 };
 
-export default GalleryPageCard; 
+export default GalleryPageCard;
