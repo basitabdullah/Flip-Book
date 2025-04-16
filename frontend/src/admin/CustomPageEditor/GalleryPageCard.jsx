@@ -250,10 +250,10 @@ const GalleryPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
             <div className="gallery-grid">
               {imagesData.map((image, index) => (
                 <div key={index} className="gallery-item">
-                  <img src={image.imagesDataImage} alt={image.imagesDataTitle} />
+                  <img src={image.imagesDataImage} alt="Uploaded images dont have previews!" />
                   <h5 className="item-title">{image.imagesDataTitle}</h5>
                   <p className="item-subtitle">{image.imagesDataSubtitle}</p>
-                </div>
+                </div>  
               ))}
             </div>
           </div>

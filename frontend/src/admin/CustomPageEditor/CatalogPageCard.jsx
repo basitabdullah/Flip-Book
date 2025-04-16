@@ -87,6 +87,25 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
 
   const handleUpdate = async () => {
     try {
+      // Validate catalog items
+      const validationErrors = catalogItems.some((item, index) => {
+        if (!item.name || !item.price || !item.amenities.length) {
+          toast.error(`Item ${index + 1}: Name, price and at least one amenity are required`);
+          return true;
+        }
+        if (uploadMethods[index] === 'url' && !item.image) {
+          toast.error(`Item ${index + 1}: Image URL is required`);
+          return true;
+        }
+        if (uploadMethods[index] === 'file' && !selectedFiles[index] && !item.image) {
+          toast.error(`Item ${index + 1}: Image file is required`);
+          return true;
+        }
+        return false;
+      });
+
+      if (validationErrors) return;
+
       const formData = new FormData();
       formData.append('title', title);
       formData.append('pageNumber', pageNumber);
@@ -97,7 +116,7 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
       // Prepare catalog items data
       const itemsForSubmission = catalogItems.map((item, index) => ({
         ...item,
-        image: uploadMethods[index] === 'url' ? item.image : '', // Clear image URL if using file upload
+        image: uploadMethods[index] === 'url' ? item.image : item.image, // Preserve existing image for file upload
       }));
       formData.append('catalogItems', JSON.stringify(itemsForSubmission));
 
@@ -318,4 +337,4 @@ const CatalogPageCard = ({ pageData, pageNumber, loading, flipbookId }) => {
   );
 };
 
-export default CatalogPageCard; 
+export default CatalogPageCard;
